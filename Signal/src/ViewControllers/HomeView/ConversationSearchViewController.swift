@@ -41,12 +41,12 @@ class ConversationSearchViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        
+
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             owsFail("\(logTag) unknown section selected.")
             return
         }
-        
+
         switch searchSection {
         case .conversations:
             let sectionResults = searchResultSet.conversations
@@ -54,28 +54,30 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
-            
+
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose)
-            
+
         case .messages:
             let sectionResults = searchResultSet.messages
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             let thread = searchResult.thread
-            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
+            SignalApp.shared().presentConversation(for: thread.threadRecord,
+                                                   action: .compose,
+                                                   focusMessageId: searchResult.messageId)
         }
     }
 
