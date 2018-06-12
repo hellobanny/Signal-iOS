@@ -434,12 +434,16 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showHomeView
 {
-    HomeViewController *homeView = [HomeViewController new];
+    BBHomeTabBarVC * tabbarvc = [BBHomeTabBarVC new];
+    [tabbarvc loadTabViews];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = tabbarvc;
+    /*HomeViewController *homeView = [HomeViewController new];
     SignalsNavigationController *navigationController =
         [[SignalsNavigationController alloc] initWithRootViewController:homeView];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
-    OWSAssert([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
+    OWSAssert([navigationController.topViewController isKindOfClass:[HomeViewController class]]);*/
 }
 
 #pragma mark - UITextFieldDelegate

@@ -38,6 +38,9 @@
                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="充 值"/>
+                    <connections>
+                        <action selector="startDeposit:" destination="-1" eventType="touchUpInside" id="g4o-rg-LO1"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9DR-s2-AOm">
                     <rect key="frame" x="32" y="52" width="44" height="44"/>
@@ -47,6 +50,9 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <state key="normal" title="二维码"/>
+                    <connections>
+                        <action selector="showMyQRCode:" destination="-1" eventType="touchUpInside" id="3fh-po-1C7"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="amg-nK-pIP">
                     <rect key="frame" x="299" y="52" width="44" height="44"/>
@@ -56,6 +62,9 @@
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <state key="normal" title="扫一扫"/>
+                    <connections>
+                        <action selector="startScan:" destination="-1" eventType="touchUpInside" id="5v2-yX-RHZ"/>
+                    </connections>
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="eth.png" translatesAutoresizingMaskIntoConstraints="NO" id="Flc-mK-76q">
                     <rect key="frame" x="127" y="120" width="120" height="120"/>
@@ -113,6 +122,9 @@
                     <state key="normal" title="提 币">
                         <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                     </state>
+                    <connections>
+                        <action selector="startWithdraw:" destination="-1" eventType="touchUpInside" id="CtV-dy-4lT"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

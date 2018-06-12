@@ -286,7 +286,7 @@ extension GiphyError: LocalizedError {
     public class func giphySessionConfiguration() -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.ephemeral
         //let proxyHost = "giphy-proxy-production.whispersystems.org"
-        let proxyHost = "giphy-proxy-production.10.35.0.57"
+        let proxyHost = "giphy-proxy-production.10.35.11.134"
         let proxyPort = 80
         configuration.connectionProxyDictionary = [
             "HTTPEnable": 1,
