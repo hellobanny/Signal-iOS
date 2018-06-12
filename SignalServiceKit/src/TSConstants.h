@@ -21,14 +21,18 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define SHOW_LEGAL_TERMS_LINK
 
 //#ifndef DEBUG
-
+#define textSecureWebSocketAPI @"ws://10.35.0.57:8080/v1/websocket/"
+#define textSecureServerURL @"http://10.35.0.57:8080/"
+#define textSecureCDNServerURL @"http://10.35.0.57:8080"
+#define textSecureServiceReflectorHost @"textsecure-service-reflected.10.35.0.57"
+#define textSecureCDNReflectorHost @"textsecure-service-reflected.10.35.0.57"
 // Production
-#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
+/*#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
 #define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
 #define textSecureCDNServerURL @"https://cdn.signal.org"
 // Use same reflector for service and CDN
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
-#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
+#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"*/
 
 //#else
 //
@@ -57,6 +61,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"/v1/accounts/pin"
 
-#define SignalApplicationGroup @"group.org.whispersystems.signal.group"
+#define SignalApplicationGroup @"group.com.bamboo.tokenpipe"
 
 #endif

@@ -40,6 +40,9 @@
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
+#import "SignalsNavigationController.h"
+#import "AppDelegate.h"
+#import "NewContactThreadViewController.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
