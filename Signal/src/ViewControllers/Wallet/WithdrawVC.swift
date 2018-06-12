@@ -18,13 +18,25 @@ class WithdrawVC: UIViewController {
     @IBOutlet weak var buttonWithdrawAll: UIButton!
     @IBOutlet weak var buttonWithdraw: UIButton!
     
+    var total:Double = 100.0{
+        didSet{
+            labelTip.text = "账户余额:\(total),手续费0.01ETH"
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(WithdrawVC.close))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(WithdrawVC.viewWithdrawHistory))
     }
     
     @objc func close(){
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func viewWithdrawHistory(){
+        let his = WithdrawHistoryTC(nibName: "WithdrawHistoryTC", bundle: nil)
+        self.navigationController?.pushViewController(his, animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -38,10 +50,12 @@ class WithdrawVC: UIViewController {
     }
     
     @IBAction func chooseWithdrawAddress(_ sender: Any) {
+        let wa = WithdrawAddressTC(nibName: "WithdrawAddressTC", bundle: nil)
+        self.navigationController?.pushViewController(wa, animated: true)
     }
     
     @IBAction func withdrawAll(_ sender: Any) {
-        
+        textFiledNumber.text = "\(total)"
     }
     
     @IBAction func startWithdraw(_ sender: Any) {

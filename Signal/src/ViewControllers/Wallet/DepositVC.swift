@@ -27,10 +27,16 @@ class DepositVC: UIViewController {
         super.viewDidLoad()
         loadQRCodeImage()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(DepositVC.close))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(DepositVC.viewDepositHistory))
     }
     
     @objc func close(){
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func viewDepositHistory(){
+        let his = DepositHistoryTC(nibName: "DepositHistoryTC", bundle: nil)
+        self.navigationController?.pushViewController(his, animated: true)
     }
     
     func loadQRCodeImage() {

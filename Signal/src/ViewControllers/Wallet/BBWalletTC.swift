@@ -18,6 +18,13 @@ class BBWalletTC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "编辑", style: .done, target: self, action: #selector(BBWalletTC.editCurrencyList))
+    }
+    
+    @objc func editCurrencyList(){
+        let his = CurrencyListTC(nibName: "CurrencyListTC", bundle: nil)
+        let nav = UINavigationController(rootViewController: his)
+        self.present(nav, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {

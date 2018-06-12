@@ -1,5 +1,5 @@
 //
-//  CurrencyListTC.swift
+//  CurrencyHistoryTC.swift
 //  Signal
 //
 //  Created by 张忠 on 2018/6/12.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CurrencyListTC: UITableViewController {
+class CurrencyHistoryTC: UITableViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,39 +18,34 @@ class CurrencyListTC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(CurrencyListTC.done))
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    @objc func done(){
-        self.dismiss(animated: true, completion: nil)
-    }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 3
+        return 0
     }
 
-    
+    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "CurrencyCell")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
-        cell.textLabel?.text = "\(indexPath.row)"
+        // Configure the cell...
 
         return cell
     }
- 
+    */
 
     /*
     // Override to support conditional editing of the table view.

@@ -24,6 +24,15 @@ class CurrencyDetailVC: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "历史明细", style: .done, target: self, action: #selector(CurrencyDetailVC.viewCurrencyHistory))
+    }
+    
+   
+    
+    @objc func viewCurrencyHistory(){
+        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
+        self.navigationController?.pushViewController(his, animated: true)
     }
 
     override func didReceiveMemoryWarning() {
