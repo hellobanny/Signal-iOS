@@ -28,8 +28,11 @@ class CurrencyDetailVC: UIViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "历史明细", style: .done, target: self, action: #selector(CurrencyDetailVC.viewCurrencyHistory))
     }
     
-   
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = true
+    }
+
     @objc func viewCurrencyHistory(){
         let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
         self.navigationController?.pushViewController(his, animated: true)

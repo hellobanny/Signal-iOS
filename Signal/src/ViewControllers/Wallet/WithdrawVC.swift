@@ -72,3 +72,18 @@ class WithdrawVC: UIViewController {
     */
 
 }
+
+extension WithdrawVC : UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == "." {
+            if textField.text?.contains(".") ?? false{
+                return false
+            }
+            else if textField.text?.isEmpty ?? true{
+                textField.text = "0"
+                return true
+            }
+        }
+        return true
+    }
+}
