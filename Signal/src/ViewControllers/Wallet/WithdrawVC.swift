@@ -59,7 +59,7 @@ class WithdrawVC: UIViewController {
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
-        
+        InputPaywordVC.displayInputPayword(home: self)
     }
     /*
     // MARK: - Navigation

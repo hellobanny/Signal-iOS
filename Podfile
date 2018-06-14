@@ -31,13 +31,16 @@ def shared_pods
   pod 'Reachability', :inhibit_warnings => true
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
+
 end
 
 target 'Signal' do
   shared_pods
   pod 'ATAppUpdater', :inhibit_warnings => true
   pod 'SSZipArchive', :inhibit_warnings => true
-
+  pod 'PopupDialog', :inhibit_warnings => true
+  pod 'YBPopupMenu', :inhibit_warnings => true
+  
   target 'SignalTests' do
     inherit! :search_paths
   end
