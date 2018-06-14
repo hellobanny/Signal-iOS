@@ -35,7 +35,7 @@ import UIKit
         contactsNav.tabBarItem = contactsBI
         
         let walletTC = BBWalletTC(style: .grouped)
-        let walletNav = SignalsNavigationController(rootViewController: walletTC)
+        let walletNav = OWSNavigationController(rootViewController: walletTC)
         let coinBagBI = UITabBarItem(title: "钱包", image: UIImage(named: "biBag"), tag: 2)
         walletTC.tabBarItem = coinBagBI
         

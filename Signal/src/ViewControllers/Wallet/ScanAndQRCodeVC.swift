@@ -13,6 +13,7 @@ protocol ScanAddressDelegate {
     func didFinishScan(viewController:UIViewController,text:String)
 }
 
+@objc(ScanAndQRCodeVC)
 class ScanAndQRCodeVC: UIViewController {
 
     @IBOutlet weak var viewQRCode: UIView!
@@ -22,7 +23,7 @@ class ScanAndQRCodeVC: UIViewController {
     @IBOutlet weak var viewScan: UIView!
     @IBOutlet weak var buttonToQRCode: UIButton!
 
-    var isScan:Bool = false
+    @objc var isScan:Bool = false
     
     var scanAddressDelegate:ScanAddressDelegate?
     var capture:ZXCapture?

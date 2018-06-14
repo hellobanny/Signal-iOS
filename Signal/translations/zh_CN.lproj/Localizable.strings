@@ -989,6 +989,8 @@
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "归档";
 
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "搜索";
+
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
@@ -1134,7 +1136,7 @@
 "MESSAGE_APPROVAL_RECIPIENT_LABEL" = "致：";
 
 /* No comment provided by engineer. */
-"MESSAGE_COMPOSEVIEW_TITLE" = "新信息";
+"MESSAGE_COMPOSEVIEW_TITLE" = "通讯录";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "文件大小";

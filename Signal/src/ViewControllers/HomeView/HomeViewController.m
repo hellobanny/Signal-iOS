@@ -17,6 +17,8 @@
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
+#import "YBPopupMenu.h"
+#import "NewGroupViewController.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
@@ -41,7 +43,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
-    UISearchBarDelegate>
+    UISearchBarDelegate,YBPopupMenuDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -323,6 +325,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchResultsController.view.hidden = self;
 
     [self updateBarButtonItems];
+    //先询问通讯录权限
+    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+            DDLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
+        }
+    }];
 }
 
 - (void)applyDefaultBackButton
@@ -366,7 +374,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
     // The contents of the navigation bar are cramped in this view.
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+    UIImage *image = [UIImage imageNamed:@"add-conversation"];
     [button setImage:image forState:UIControlStateNormal];
     UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
     // We normally would want to use left and right insets that ensure the button
@@ -387,7 +395,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     button.imageEdgeInsets = imageEdgeInsets;
     button.accessibilityLabel = CommonStrings.openSettingsButton;
 
-    [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(popupMenuPressed:) forControlEvents:UIControlEventTouchUpInside];
     button.frame = CGRectMake(0,
         0,
         round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
@@ -395,18 +403,45 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:button];
     settingsButton.accessibilityLabel
         = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
-    self.navigationItem.leftBarButtonItem = settingsButton;
+    self.navigationItem.rightBarButtonItem = settingsButton;
+    
 
-    self.navigationItem.rightBarButtonItem =
+    /*self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                       target:self
-                                                      action:@selector(showNewConversationView)];
+                                                      action:@selector(showNewConversationView)];*/
 }
 
-- (void)settingsButtonPressed:(id)sender
+- (void)popupMenuPressed:(id)sender
 {
-    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    NSArray * titles =  @[@"发起群聊",@"添加朋友",@"扫一扫",@"收付币"];
+    [YBPopupMenu showRelyOnView:self.navigationItem.rightBarButtonItem.customView titles:titles icons:NULL menuWidth:120.0 otherSettings:^(YBPopupMenu *popupMenu) {
+        popupMenu.delegate = self;
+        popupMenu.type = YBPopupMenuTypeDefault;
+    }];
+    /*OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
+    [self presentViewController:navigationController animated:YES completion:nil];*/
+}
+
+- (void)ybPopupMenu:(YBPopupMenu *)ybPopupMenu didSelectedAtIndex:(NSInteger)index{
+    if(index == 0){
+        NewGroupViewController *newGroupViewController = [NewGroupViewController new];
+        [self.navigationController pushViewController:newGroupViewController animated:YES];
+    }
+    else if (index == 1){
+        
+    }
+    else if (index == 2){
+        ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
+        saq.isScan = TRUE;
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
+        [self presentViewController:nav animated:TRUE completion:NULL];
+    }
+    else if (index == 3){
+        ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
+        [self presentViewController:nav animated:TRUE completion:NULL];
+    }
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext

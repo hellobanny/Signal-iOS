@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     _hideContactsPermissionReminderViewConstraint =
         [contactsPermissionReminderView autoSetDimension:ALDimensionHeight toSize:0];
 
-    self.navigationItem.leftBarButtonItem =
+    /*self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
                                                       action:@selector(dismissPressed)];
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       action:@selector(showNewGroupView:)];
     newGroupButton.accessibilityLabel
         = NSLocalizedString(@"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
-    self.navigationItem.rightBarButtonItem = newGroupButton;
+    self.navigationItem.rightBarButtonItem = newGroupButton;*/
 
     // Search
     UISearchBar *searchBar = [UISearchBar new];
@@ -794,11 +794,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)newConversationWithThread:(TSThread *)thread
 {
     OWSAssert(thread != nil);
-    [self dismissViewControllerAnimated:YES
+    [[self tabBarController] setSelectedIndex:0];
+    [SignalApp.sharedApp presentConversationForThread:thread
+                                               action:ConversationViewActionCompose];
+    /*[self dismissViewControllerAnimated:YES
                              completion:^() {
                                  [SignalApp.sharedApp presentConversationForThread:thread
                                                                             action:ConversationViewActionCompose];
-                             }];
+                             }];*/
 }
 
 - (void)showNewGroupView:(id)sender

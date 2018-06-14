@@ -42,13 +42,13 @@
                                 <outlet property="delegate" destination="-1" id="c6a-DA-PgD"/>
                             </connections>
                         </textField>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x9p-if-au7">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x9p-if-au7">
                             <rect key="frame" x="12" y="12" width="30" height="30"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="30" id="AT7-80-M4O"/>
                                 <constraint firstAttribute="height" constant="30" id="rYG-58-S4p"/>
                             </constraints>
-                            <state key="normal" title="X">
+                            <state key="normal" image="btnCancel--blue">
                                 <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
                             <connections>
@@ -129,4 +129,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
         </view>
     </objects>
+    <resources>
+        <image name="btnCancel--blue" width="40" height="40"/>
+    </resources>
 </document>

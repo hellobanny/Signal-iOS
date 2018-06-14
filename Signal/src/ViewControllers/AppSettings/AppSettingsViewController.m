@@ -80,10 +80,10 @@
 
     OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
-    self.navigationItem.leftBarButtonItem =
+    /*self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(dismissWasPressed:)];
+                                                      action:@selector(dismissWasPressed:)];*/
 
     [self observeNotifications];
 
