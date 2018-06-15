@@ -441,6 +441,8 @@
 		5144C9B920CFEA3F00319062 /* DepositHistoryTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9B720CFEA3F00319062 /* DepositHistoryTC.xib */; };
 		5144C9BC20D1066400319062 /* InputPaywordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9BA20D1066400319062 /* InputPaywordVC.swift */; };
 		5144C9BD20D1066400319062 /* InputPaywordVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9BB20D1066400319062 /* InputPaywordVC.xib */; };
+		5144C9C020D364F300319062 /* BBRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9BF20D364F200319062 /* BBRequestFactory.swift */; };
+		5144C9C220D3B87900319062 /* BBRequestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9C120D3B87900319062 /* BBRequestHelper.swift */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1123,6 +1125,8 @@
 		5144C9B720CFEA3F00319062 /* DepositHistoryTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DepositHistoryTC.xib; sourceTree = "<group>"; };
 		5144C9BA20D1066400319062 /* InputPaywordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPaywordVC.swift; sourceTree = "<group>"; };
 		5144C9BB20D1066400319062 /* InputPaywordVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputPaywordVC.xib; sourceTree = "<group>"; };
+		5144C9BF20D364F200319062 /* BBRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBRequestFactory.swift; sourceTree = "<group>"; };
+		5144C9C120D3B87900319062 /* BBRequestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBRequestHelper.swift; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2125,6 +2129,15 @@
 			path = Wallet;
 			sourceTree = "<group>";
 		};
+		5144C9BE20D3648A00319062 /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				5144C9BF20D364F200319062 /* BBRequestFactory.swift */,
+				5144C9C120D3B87900319062 /* BBRequestHelper.swift */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -2174,6 +2187,7 @@
 		76EB041D18170B33006006FC /* network */ = {
 			isa = PBXGroup;
 			children = (
+				5144C9BE20D3648A00319062 /* Wallet */,
 				3430FE171F7751D4000EC51B /* GiphyAPI.swift */,
 				34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */,
 				B6B9ECFA198B31BA00C620D3 /* PushManager.h */,
@@ -3320,6 +3334,7 @@
 				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
+				5144C9C220D3B87900319062 /* BBRequestHelper.swift in Sources */,
 				5144C9B020CFEA0B00319062 /* CurrencyHistoryTC.swift in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
@@ -3421,6 +3436,7 @@
 				45638BDF1F3DDB2200128435 /* MessageSender+Promise.swift in Sources */,
 				45FBC5C81DF8575700E9B410 /* CallKitCallManager.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
+				5144C9C020D364F300319062 /* BBRequestFactory.swift in Sources */,
 				45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */,
 				340FC8BB204DAC8D007AEB0F /* OWSAddToContactViewController.m in Sources */,
 				4523149E1F7E916B003A428C /* SlideOffAnimatedTransition.swift in Sources */,
