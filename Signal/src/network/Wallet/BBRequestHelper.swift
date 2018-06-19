@@ -7,9 +7,18 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class BBRequestHelper: NSObject {
+    
     static func parseSuccessResult(object:Any) -> JSON{
+        print(object)
+        //TODO parse
+        
+        return JSON()
+    }
+    
+    static func showError(error:Error){
         
     }
 }

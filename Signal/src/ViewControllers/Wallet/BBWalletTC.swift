@@ -10,6 +10,9 @@ import UIKit
 
 class BBWalletTC: UITableViewController {
 
+    var currencys = [BBCurrency]()
+    var pullVC : UIRefreshControl?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "钱包"
@@ -19,11 +22,35 @@ class BBWalletTC: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "编辑", style: .done, target: self, action: #selector(BBWalletTC.editCurrencyList))
+        
+        loadMyCurrencys()
+        
+        let pullView = UIRefreshControl()
+        pullView.tintColor = UIColor.gray
+        pullView.addTarget(self, action: #selector(BBWalletTC.loadMyCurrencys), for: UIControlEvents.valueChanged)
+        self.tableView.insertSubview(pullView, at: 0)
+        self.pullVC = pullView
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
+    }
+    
+    @objc func loadMyCurrencys(){
+        print("Load my currencys")
+        let request = BBRequestFactory.shared.memberCurrency()
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let res = BBRequestHelper.parseSuccessResult(object: result)
+                self.currencys = BBCurrency.currencyArrayFrom(json: res)
+                self.tableView.reloadData()
+            }
+            self.pullVC?.endRefreshing()
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+            self.pullVC?.endRefreshing()
+        }
     }
     
     @objc func editCurrencyList(){

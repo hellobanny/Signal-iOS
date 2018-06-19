@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CurrencyDetailVC: UIViewController {
     
@@ -19,6 +20,9 @@ class CurrencyDetailVC: UIViewController {
     @IBOutlet weak var buttonScan:UIButton!
     @IBOutlet weak var buttonDeposit:UIButton!
     @IBOutlet weak var buttonWithdraw:UIButton!
+    
+    var cid:String?
+    var currency:BBCurrency?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +30,42 @@ class CurrencyDetailVC: UIViewController {
         // Do any additional setup after loading the view.
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "历史明细", style: .done, target: self, action: #selector(CurrencyDetailVC.viewCurrencyHistory))
+        loadCurrencyDetail()
+    }
+    
+    func loadCurrencyDetail(){
+        guard let mycid = cid else {
+            return
+        }
+        let request = BBRequestFactory.shared.memberAsset(cid: mycid)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let res = BBRequestHelper.parseSuccessResult(object: result)
+                self.currency = BBCurrency.currencyFrom(json: res)
+                self.updateImageAndLabels()
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
+    }
+    
+    func updateImageAndLabels(){
+        guard let cc = currency else {
+            return
+        }
+        let url = URL(string: cc.iconURL)
+        imgIcon.kf.setImage(with: url)
+        labelName.text = cc.name
+        guard let price = cc.price else {
+            return
+        }
+        guard let number = cc.balance else {
+            return
+        }
+        labelPrice.text = BBCurrency.goodPrice(value: price)
+        labelNumber.text = BBCurrency.goodNumber(value: number)
+        labelTotal.text = BBCurrency.goodPrice(value: price * number)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {

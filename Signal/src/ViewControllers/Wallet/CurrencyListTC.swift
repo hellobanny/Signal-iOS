@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class CurrencyListTC: UITableViewController {
+    
+    var attentions = [BBCurrency]()
+    var unAttentions = [BBCurrency]()
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +23,10 @@ class CurrencyListTC: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(CurrencyListTC.done))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(CurrencyListTC.done))
+        self.tableView.isEditing = true
+        self.title = "所有币种"
+        loadCurrencyLists()
     }
 
     override func didReceiveMemoryWarning() {
@@ -27,74 +35,102 @@ class CurrencyListTC: UITableViewController {
     }
     
     @objc func done(){
+        var cids = ""
+        for cc in attentions{
+            if !cids.isEmpty {
+                cids.append(",")
+            }
+            cids.append(cc.cid)
+        }
+        let request = BBRequestFactory.shared.currencyAttention(cids: cids)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            self.dismiss(animated: true, completion: nil)
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
+    }
+    
+    @objc func cancel(){
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func loadCurrencyLists(){
+        let request = BBRequestFactory.shared.platformCurrency()
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let res = BBRequestHelper.parseSuccessResult(object: result)
+                let array = BBCurrency.currencyArrayFrom(json: res)
+                self.attentions.removeAll()
+                self.unAttentions.removeAll()
+                for cc in array{
+                    if cc.isAttention {
+                        self.attentions.append(cc)
+                    }
+                    else{
+                        self.unAttentions.append(cc)
+                    }
+                }
+                self.tableView.reloadData()
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 3
+        return section == 0 ? attentions.count : unAttentions.count
     }
 
+    func currencyFrom(index:IndexPath) -> BBCurrency{
+        if index.section == 0 {
+            return attentions[index.row]
+        }
+        else{
+            return unAttentions[index.row]
+        }
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "CurrencyCell")
-
-        cell.textLabel?.text = "\(indexPath.row)"
+        let cc = currencyFrom(index: indexPath)
+        cell.textLabel?.text = cc.name
 
         return cell
     }
  
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
         return true
     }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        //update array after move
+        let s1 = sourceIndexPath.section
+        let s2 = destinationIndexPath.section
+        let r1 = sourceIndexPath.row
+        let r2 = destinationIndexPath.row
+        if s1 == 0 && s2 == 0 {
+            let cc = attentions.remove(at: r1)
+            attentions.insert(cc, at: r2)
+        }
+        else if s1 == 1 && s2 == 0 {
+            let cc = unAttentions.remove(at: r1)
+            attentions.insert(cc, at: r2)
+        }
+        else if s1 == 0 && s2 == 1 {
+            let cc = attentions.remove(at: r1)
+            unAttentions.insert(cc, at: r2)
+        }
+        else {
+            let cc = unAttentions.remove(at: r1)
+            unAttentions.insert(cc, at: r2)
+        }
+    }
 }
