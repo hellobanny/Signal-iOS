@@ -21,7 +21,7 @@ class CurrencyDetailVC: UIViewController {
     @IBOutlet weak var buttonDeposit:UIButton!
     @IBOutlet weak var buttonWithdraw:UIButton!
     
-    var cid:String?
+    var cid:String! //进入前先设置
     var currency:BBCurrency?
 
     override func viewDidLoad() {
@@ -40,9 +40,11 @@ class CurrencyDetailVC: UIViewController {
         let request = BBRequestFactory.shared.memberAsset(cid: mycid)
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
-                let res = BBRequestHelper.parseSuccessResult(object: result)
-                self.currency = BBCurrency.currencyFrom(json: res)
-                self.updateImageAndLabels()
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let detail = res{
+                    self.currency = BBCurrency.currencyFrom(json: detail)
+                    self.updateImageAndLabels()
+                }
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)
@@ -51,6 +53,9 @@ class CurrencyDetailVC: UIViewController {
     
     func updateImageAndLabels(){
         guard let cc = currency else {
+            return
+        }
+        if cc.cid != self.cid {
             return
         }
         let url = URL(string: cc.iconURL)
@@ -65,7 +70,6 @@ class CurrencyDetailVC: UIViewController {
         labelPrice.text = BBCurrency.goodPrice(value: price)
         labelNumber.text = BBCurrency.goodNumber(value: number)
         labelTotal.text = BBCurrency.goodPrice(value: price * number)
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,6 +79,8 @@ class CurrencyDetailVC: UIViewController {
 
     @objc func viewCurrencyHistory(){
         let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
+        his.cid = cid
+        his.type = .all
         self.navigationController?.pushViewController(his, animated: true)
     }
 
@@ -92,21 +98,29 @@ class CurrencyDetailVC: UIViewController {
     }
     
     func loadScanAndQRCodeVC(scan:Bool) {
-        let sqv = ScanAndQRCodeVC(nibName: "ScanAndQRCodeVC", bundle: nil)
-        sqv.isScan = scan
-        sqv.scanAddressDelegate = self
-        let nav = UINavigationController(rootViewController: sqv)
-        self.present(nav, animated: true, completion: nil)
+        if let address = self.currency?.waddress {
+            let sqv = ScanAndQRCodeVC(nibName: "ScanAndQRCodeVC", bundle: nil)
+            sqv.isScan = scan
+            sqv.scanAddressDelegate = self
+            sqv.myaddress = address
+            let nav = UINavigationController(rootViewController: sqv)
+            self.present(nav, animated: true, completion: nil)
+        }
     }
     
     @IBAction func startDeposit(_ sender: Any) {
-        let vc = DepositVC(nibName: "DepositVC", bundle: nil)
-        let nav = UINavigationController(rootViewController: vc)
-        self.present(nav, animated: true, completion: nil)
+        if let address = self.currency?.waddress{
+            let vc = DepositVC(nibName: "DepositVC", bundle: nil)
+            vc.address = address
+            vc.cid = cid
+            let nav = UINavigationController(rootViewController: vc)
+            self.present(nav, animated: true, completion: nil)
+        }
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
         let vc = WithdrawVC(nibName: "WithdrawVC", bundle: nil)
+        vc.cid = cid
         let nav = UINavigationController(rootViewController: vc)
         self.present(nav, animated: true, completion: nil)
     }

@@ -9,34 +9,24 @@
 import UIKit
 import SwiftyJSON
 
-struct BBCommonHistory {
-    var dataID:String //dataId
-    var name:String //currName
-    var time:Date // tradeTime
+class BBCommonHistory : BBBaseHistory {
     var type:Int // tradeType
-    var description:String //tradeTypeDes
+    var comment:String //tradeTypeDes
     var abstract:String//tradeAbstract
-    var pageTime:Int //dataTime  用于分页
+    
+    override init(json: JSON) {
+        type = json["tradeType"].int!
+        comment = json["tradeTypeDes"].string!
+        abstract = json["tradeAbstract"].string!
+        super.init(json: json)
+    }
     
     static func historyArrayFrom(json:JSON) -> [BBCommonHistory]{
         var array = [BBCommonHistory]()
         for js in json.arrayValue{
-            if let cc = historyFrom(json: js){
-                array.append(cc)
-            }
+            let cc = BBCommonHistory(json: js)
+            array.append(cc)
         }
         return array
-    }
-    
-    static func historyFrom(json:JSON) -> BBCommonHistory?{
-        let id = json["dateId"].string!
-        let name = json["currName"].string!
-        let ts = json["tradeTime"].double ?? 0
-        let time = Date(timeIntervalSince1970: ts)
-        let type = json["tradeType"].int!
-        let des = json["tradeTypeDes"].string!
-        let abs = json["tradeAbstract"].string!
-        let dt = json["dataTime"].int!
-        return BBCommonHistory(dataID: id, name: name, time: time, type: type, description: des, abstract: abs, pageTime: dt)
     }
 }

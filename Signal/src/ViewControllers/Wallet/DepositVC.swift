@@ -17,6 +17,8 @@ class DepositVC: UIViewController {
     @IBOutlet weak var labelAddress: UILabel!
     @IBOutlet weak var buttonCopy: UIButton!
     
+    var cid:String!
+    
     var address = "0x7913d361B2eF28195b99726E930f163BE3801ac4"{
         didSet{
             loadQRCodeImage()
@@ -27,7 +29,7 @@ class DepositVC: UIViewController {
         super.viewDidLoad()
         loadQRCodeImage()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(DepositVC.close))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(DepositVC.viewDepositHistory))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "充值记录", style: .done, target: self, action: #selector(DepositVC.viewDepositHistory))
     }
     
     @objc func close(){
@@ -35,7 +37,9 @@ class DepositVC: UIViewController {
     }
     
     @objc func viewDepositHistory(){
-        let his = DepositHistoryTC(nibName: "DepositHistoryTC", bundle: nil)
+        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
+        his.cid = cid
+        his.type = .deposit
         self.navigationController?.pushViewController(his, animated: true)
     }
     

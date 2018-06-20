@@ -42,6 +42,7 @@ target 'Signal' do
   pod 'PopupDialog', :inhibit_warnings => true
   pod 'YBPopupMenu', :inhibit_warnings => true
   pod 'SwiftyJSON', :inhibit_warnings => true
+  pod 'MJRefresh', :inhibit_warnings => true
   target 'SignalTests' do
     inherit! :search_paths
   end

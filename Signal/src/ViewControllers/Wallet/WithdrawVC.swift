@@ -18,6 +18,8 @@ class WithdrawVC: UIViewController {
     @IBOutlet weak var buttonWithdrawAll: UIButton!
     @IBOutlet weak var buttonWithdraw: UIButton!
     
+    var cid:String!
+    
     var total:Double = 100.0{
         didSet{
             labelTip.text = "账户余额:\(total),手续费0.01ETH"
@@ -35,7 +37,9 @@ class WithdrawVC: UIViewController {
     }
     
     @objc func viewWithdrawHistory(){
-        let his = WithdrawHistoryTC(nibName: "WithdrawHistoryTC", bundle: nil)
+        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
+        his.cid = cid
+        his.type = .withdraw
         self.navigationController?.pushViewController(his, animated: true)
     }
     

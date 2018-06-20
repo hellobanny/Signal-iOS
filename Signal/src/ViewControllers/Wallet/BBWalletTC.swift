@@ -42,9 +42,11 @@ class BBWalletTC: UITableViewController {
         let request = BBRequestFactory.shared.memberCurrency()
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
-                let res = BBRequestHelper.parseSuccessResult(object: result)
-                self.currencys = BBCurrency.currencyArrayFrom(json: res)
-                self.tableView.reloadData()
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    self.currencys = BBCurrency.currencyArrayFrom(json: cus)
+                    self.tableView.reloadData()
+                }
             }
             self.pullVC?.endRefreshing()
         }) { (task, error) in
@@ -73,15 +75,14 @@ class BBWalletTC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 3
+        return currencys.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellnib = Bundle.main.loadNibNamed("CurrencyCell", owner: self, options: nil)
         let cell = cellnib?.first! as! CurrencyCell
-        cell.avator.image = UIImage(named: ["btc","eth","bnb"][indexPath.row])
-        cell.labelName.text = ["BTC","ETH","BNB"][indexPath.row]
+        cell.configWith(currency: currencys[indexPath.row])
         return cell
     }
     
@@ -91,6 +92,7 @@ class BBWalletTC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currencyDetail = CurrencyDetailVC()
+        currencyDetail.cid = currencys[indexPath.row].cid
         self.navigationController?.pushViewController(currencyDetail, animated: true)
     }
 

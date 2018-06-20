@@ -38,6 +38,7 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
+  - MJRefresh (3.1.15.3)
   - PopupDialog (0.7.1):
     - DynamicBlurView (~> 2.0)
   - ProtocolBuffers (1.9.11)
@@ -142,6 +143,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/signalapp/JSQMessagesViewController.git`, branch `mkirk/share-compatible`)
   - Kingfisher
   - Mantle
+  - MJRefresh
   - PopupDialog
   - PureLayout
   - Reachability
@@ -164,6 +166,7 @@ SPEC REPOS:
     - Kingfisher
     - libPhoneNumber-iOS
     - Mantle
+    - MJRefresh
     - PopupDialog
     - ProtocolBuffers
     - PureLayout
@@ -241,6 +244,7 @@ SPEC CHECKSUMS:
   Kingfisher: 976d828df2b24834c6a3f2fc4d82cdbd26552be1
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
+  MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
   PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
@@ -257,6 +261,6 @@ SPEC CHECKSUMS:
   YBPopupMenu: 6efb286385d95ba5f97c58b8464ec873645e8764
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 1e94f0d3f97ebd8fdbd025f9885419b01165aec5
+PODFILE CHECKSUM: f0fc969fe4cebaa0834005ee0ef4ed68128ba488
 
 COCOAPODS: 1.5.2

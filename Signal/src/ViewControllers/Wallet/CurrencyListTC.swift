@@ -58,19 +58,21 @@ class CurrencyListTC: UITableViewController {
         let request = BBRequestFactory.shared.platformCurrency()
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
-                let res = BBRequestHelper.parseSuccessResult(object: result)
-                let array = BBCurrency.currencyArrayFrom(json: res)
-                self.attentions.removeAll()
-                self.unAttentions.removeAll()
-                for cc in array{
-                    if cc.isAttention {
-                        self.attentions.append(cc)
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    let array = BBCurrency.currencyArrayFrom(json: cus)
+                    self.attentions.removeAll()
+                    self.unAttentions.removeAll()
+                    for cc in array{
+                        if cc.isAttention {
+                            self.attentions.append(cc)
+                        }
+                        else{
+                            self.unAttentions.append(cc)
+                        }
                     }
-                    else{
-                        self.unAttentions.append(cc)
-                    }
+                    self.tableView.reloadData()
                 }
-                self.tableView.reloadData()
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)

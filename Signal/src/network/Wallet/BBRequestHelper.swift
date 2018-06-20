@@ -11,11 +11,20 @@ import SwiftyJSON
 
 class BBRequestHelper: NSObject {
     
-    static func parseSuccessResult(object:Any) -> JSON{
+    //当解析
+    static func parseSuccessResult(object:Any) -> (JSON?,String?){
         print(object)
-        //TODO parse
-        
-        return JSON()
+        let js = JSON(object)
+        if js["code"].int == 200 {
+            return (js["data"],js["cid"].string)
+        }
+        else{
+            let code = js["code"].int ?? -1
+            let warn = UIAlertController(title: "Error Code \(code)", message: js["message"].string, preferredStyle: .alert)
+            warn.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            UIApplication.shared.frontmostViewController?.present(warn, animated: true, completion: nil)
+        }
+        return (nil,nil)
     }
     
     static func showError(error:Error){

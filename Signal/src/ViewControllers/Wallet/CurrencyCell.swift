@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CurrencyCell: UITableViewCell {
     @IBOutlet weak var avator:UIImageView!
@@ -26,4 +27,12 @@ class CurrencyCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func configWith(currency:BBCurrency){
+        let url = URL(string: currency.iconURL)
+        avator.kf.setImage(with: url)
+        labelName.text = currency.name
+        labelPrice.text = BBCurrency.goodPrice(value: currency.price!)
+        labelNumber.text = BBCurrency.goodNumber(value: currency.balance!)
+        labelTotal.text = BBCurrency.goodPrice(value: currency.price! * currency.balance!)
+    }
 }

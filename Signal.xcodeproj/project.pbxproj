@@ -413,6 +413,9 @@
 		4AC4EA13C8A444455DAB351F /* Pods_SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */; };
 		4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */; };
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
+		5120A1AC20DA27EE00190B1E /* BBCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AB20DA27EE00190B1E /* BBCommon.swift */; };
+		5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AD20DA294100190B1E /* BBBaseHistory.swift */; };
+		5120A1B020DA2F0500190B1E /* BBHistoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */; };
 		5144C98820CF66AB00319062 /* btc.png in Resources */ = {isa = PBXBuildFile; fileRef = 5144C98520CF66AB00319062 /* btc.png */; };
 		5144C98920CF66AB00319062 /* bnb.png in Resources */ = {isa = PBXBuildFile; fileRef = 5144C98620CF66AB00319062 /* bnb.png */; };
 		5144C98A20CF66AB00319062 /* eth.png in Resources */ = {isa = PBXBuildFile; fileRef = 5144C98720CF66AB00319062 /* eth.png */; };
@@ -435,10 +438,6 @@
 		5144C9AD20CFC40500319062 /* WithdrawAddressTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9AB20CFC40500319062 /* WithdrawAddressTC.xib */; };
 		5144C9B020CFEA0B00319062 /* CurrencyHistoryTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9AE20CFEA0B00319062 /* CurrencyHistoryTC.swift */; };
 		5144C9B120CFEA0B00319062 /* CurrencyHistoryTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9AF20CFEA0B00319062 /* CurrencyHistoryTC.xib */; };
-		5144C9B420CFEA2900319062 /* WithdrawHistoryTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9B220CFEA2900319062 /* WithdrawHistoryTC.swift */; };
-		5144C9B520CFEA2900319062 /* WithdrawHistoryTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9B320CFEA2900319062 /* WithdrawHistoryTC.xib */; };
-		5144C9B820CFEA3F00319062 /* DepositHistoryTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9B620CFEA3F00319062 /* DepositHistoryTC.swift */; };
-		5144C9B920CFEA3F00319062 /* DepositHistoryTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9B720CFEA3F00319062 /* DepositHistoryTC.xib */; };
 		5144C9BC20D1066400319062 /* InputPaywordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9BA20D1066400319062 /* InputPaywordVC.swift */; };
 		5144C9BD20D1066400319062 /* InputPaywordVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5144C9BB20D1066400319062 /* InputPaywordVC.xib */; };
 		5144C9C020D364F300319062 /* BBRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144C9BF20D364F200319062 /* BBRequestFactory.swift */; };
@@ -1101,6 +1100,9 @@
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
 		45FDA43420A4D22700396358 /* OWSNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationBar.swift; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
+		5120A1AB20DA27EE00190B1E /* BBCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommon.swift; sourceTree = "<group>"; };
+		5120A1AD20DA294100190B1E /* BBBaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBBaseHistory.swift; sourceTree = "<group>"; };
+		5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBHistoryType.swift; sourceTree = "<group>"; };
 		5144C98520CF66AB00319062 /* btc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btc.png; sourceTree = "<group>"; };
 		5144C98620CF66AB00319062 /* bnb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bnb.png; sourceTree = "<group>"; };
 		5144C98720CF66AB00319062 /* eth.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eth.png; sourceTree = "<group>"; };
@@ -1123,10 +1125,6 @@
 		5144C9AB20CFC40500319062 /* WithdrawAddressTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WithdrawAddressTC.xib; sourceTree = "<group>"; };
 		5144C9AE20CFEA0B00319062 /* CurrencyHistoryTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyHistoryTC.swift; sourceTree = "<group>"; };
 		5144C9AF20CFEA0B00319062 /* CurrencyHistoryTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CurrencyHistoryTC.xib; sourceTree = "<group>"; };
-		5144C9B220CFEA2900319062 /* WithdrawHistoryTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawHistoryTC.swift; sourceTree = "<group>"; };
-		5144C9B320CFEA2900319062 /* WithdrawHistoryTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WithdrawHistoryTC.xib; sourceTree = "<group>"; };
-		5144C9B620CFEA3F00319062 /* DepositHistoryTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositHistoryTC.swift; sourceTree = "<group>"; };
-		5144C9B720CFEA3F00319062 /* DepositHistoryTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DepositHistoryTC.xib; sourceTree = "<group>"; };
 		5144C9BA20D1066400319062 /* InputPaywordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputPaywordVC.swift; sourceTree = "<group>"; };
 		5144C9BB20D1066400319062 /* InputPaywordVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputPaywordVC.xib; sourceTree = "<group>"; };
 		5144C9BF20D364F200319062 /* BBRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBRequestFactory.swift; sourceTree = "<group>"; };
@@ -2127,12 +2125,10 @@
 				5144C9AB20CFC40500319062 /* WithdrawAddressTC.xib */,
 				5144C9AE20CFEA0B00319062 /* CurrencyHistoryTC.swift */,
 				5144C9AF20CFEA0B00319062 /* CurrencyHistoryTC.xib */,
-				5144C9B220CFEA2900319062 /* WithdrawHistoryTC.swift */,
-				5144C9B320CFEA2900319062 /* WithdrawHistoryTC.xib */,
-				5144C9B620CFEA3F00319062 /* DepositHistoryTC.swift */,
-				5144C9B720CFEA3F00319062 /* DepositHistoryTC.xib */,
+				5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */,
 				5144C9BA20D1066400319062 /* InputPaywordVC.swift */,
 				5144C9BB20D1066400319062 /* InputPaywordVC.xib */,
+				5120A1AB20DA27EE00190B1E /* BBCommon.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -2146,6 +2142,7 @@
 				518D4CED20D9083F0020B353 /* BBDepositHistory.swift */,
 				518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */,
 				518D4CF120D908840020B353 /* BBCommonHistory.swift */,
+				5120A1AD20DA294100190B1E /* BBBaseHistory.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -2895,7 +2892,6 @@
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
-				5144C9B920CFEA3F00319062 /* DepositHistoryTC.xib in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				5144C98A20CF66AB00319062 /* eth.png in Resources */,
@@ -2903,7 +2899,6 @@
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
-				5144C9B520CFEA2900319062 /* WithdrawHistoryTC.xib in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				5144C9BD20D1066400319062 /* InputPaywordVC.xib in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
@@ -3047,6 +3042,7 @@
 				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
+				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/PopupDialog/PopupDialog.framework",
 				"${BUILT_PRODUCTS_DIR}/ProtocolBuffers/ProtocolBuffers.framework",
@@ -3078,6 +3074,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PopupDialog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtocolBuffers.framework",
@@ -3338,7 +3335,6 @@
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
-				5144C9B420CFEA2900319062 /* WithdrawHistoryTC.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,
@@ -3367,6 +3363,7 @@
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				5144C9C420D3BCC300319062 /* BBCurrency.swift in Sources */,
+				5120A1AC20DA27EE00190B1E /* BBCommon.swift in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
@@ -3399,7 +3396,7 @@
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
-				5144C9B820CFEA3F00319062 /* DepositHistoryTC.swift in Sources */,
+				5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
@@ -3417,6 +3414,7 @@
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
+				5120A1B020DA2F0500190B1E /* BBHistoryType.swift in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
