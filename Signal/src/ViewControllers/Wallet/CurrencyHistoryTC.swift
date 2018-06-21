@@ -17,6 +17,12 @@ class CurrencyHistoryTC: UITableViewController {
     var historys = [BBBaseHistory]()
     var lastLoadTime:Int = 0
     
+    convenience init(cid:String,type:BBHistoryType){
+        self.init()
+        self.cid = cid
+        self.type = type
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -70,10 +76,26 @@ class CurrencyHistoryTC: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "HistoryCell")
+        
+        let his = historys[indexPath.row]
+        if type == .all {
+            if let h = his as? BBCommonHistory{
+                cell.textLabel?.text = h.abstract
+            }
+        }
+        else if type == .deposit {
+            if let h = his as? BBDepositHistory{
+                cell.textLabel?.text = h.address + " +\(h.amt)"
+            }
+        }
+        else if type == .withdraw {
+            if let h = his as? BBWithdrawHistory{
+                cell.textLabel?.text = h.statusDes
+            }
+        }
+        cell.detailTextLabel?.text = his.time.description
+        
         return cell
     }
     

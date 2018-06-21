@@ -19,10 +19,12 @@ class DepositVC: UIViewController {
     
     var cid:String!
     
-    var address = "0x7913d361B2eF28195b99726E930f163BE3801ac4"{
-        didSet{
-            loadQRCodeImage()
-        }
+    var address:String!
+    
+    convenience init(cid:String,address:String){
+        self.init()
+        self.cid = cid
+        self.address = address
     }
     
     override func viewDidLoad() {
@@ -37,9 +39,7 @@ class DepositVC: UIViewController {
     }
     
     @objc func viewDepositHistory(){
-        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
-        his.cid = cid
-        his.type = .deposit
+        let his = CurrencyHistoryTC(cid: cid, type: .deposit)
         self.navigationController?.pushViewController(his, animated: true)
     }
     

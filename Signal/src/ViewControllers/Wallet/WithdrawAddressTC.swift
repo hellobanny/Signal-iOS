@@ -7,11 +7,25 @@
 //
 
 import UIKit
+import PopupDialog
+
+protocol ChooseWithdrawAddressDelegate {
+    func chooseWithdraw(address:BBWithdrawAddress)
+}
 
 class WithdrawAddressTC: UITableViewController {
     
+    var cid:String!
     
-        
+    var allAddress = [BBWithdrawAddress]()
+    
+    var delegate:ChooseWithdrawAddressDelegate?
+    
+    convenience init(cid:String){
+        self.init()
+        self.cid = cid
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -21,6 +35,24 @@ class WithdrawAddressTC: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(WithdrawAddressTC.newAddress))
+        loadMyWithdrawAddresss()
+    }
+    
+    @objc func loadMyWithdrawAddresss(){
+        let request = BBRequestFactory.shared.withdrawAddress(cid: cid)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let (res,cc) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    if cc == self.cid {
+                        self.allAddress = BBWithdrawAddress.addressArrayFrom(json: cus)
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,7 +61,36 @@ class WithdrawAddressTC: UITableViewController {
     }
     
     @objc func newAddress(){
-        //TODO
+        let vc = NewWithdrawAddressVC(nibName: "NewWithdrawAddressVC", bundle: nil)
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
+        let add = PopupDialogButton(title: "添加") {
+            let name = vc.tfName.text ?? ""
+            let adds = vc.tfAddress.text ?? ""
+            if name.isEmpty || adds.isEmpty{
+                return
+            }
+            self.addNewAddresss(name: name, address: adds)
+        }
+        let cancel = PopupDialogButton(title: "取消", action: nil)
+        pd.addButtons([add,cancel])
+        self.present(pd, animated: true, completion: nil)
+    }
+    
+    func addNewAddresss(name:String,address:String){
+        let request = BBRequestFactory.shared.withdrawAddressAdd(cid: cid, name: name, address: address)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    let did = cus["dataId"].string!
+                    let add = BBWithdrawAddress(dId: did, pname: name, paddress: address)
+                    self.allAddress.append(add)
+                    self.tableView.insertRows(at: [IndexPath(row: self.allAddress.count - 1, section: 0)], with: .right)
+                }
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
     }
 
     // MARK: - Table view data source
@@ -41,64 +102,43 @@ class WithdrawAddressTC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 4
+        return allAddress.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "AddressCell")
-        cell.textLabel?.text = "我的提现地址"
-        cell.detailTextLabel?.text = "0x7913d361B2eF28195b99726E930f163BE3801ac4"
+        let wa = allAddress[indexPath.row]
+        cell.textLabel?.text = wa.name
+        cell.detailTextLabel?.text = wa.address
         return cell
     }
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate?.chooseWithdraw(address: allAddress[indexPath.row])
         self.navigationController?.popViewController(animated: true)
     }
-
-    /*
-    // Override to support conditional editing of the table view.
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
         return true
     }
-    */
 
-    /*
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
+            let add = allAddress.remove(at: indexPath.row)
+            let request = BBRequestFactory.shared.withdrawAddressDel(dataId: add.id)
+            TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                if let result = obj{
+                    BBRequestHelper.parseSuccessResult(object: result)
+                }
+            }) { (task, error) in
+                BBRequestHelper.showError(error: error)
+            }
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
 }

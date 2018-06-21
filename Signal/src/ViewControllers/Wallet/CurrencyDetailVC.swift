@@ -23,6 +23,11 @@ class CurrencyDetailVC: UIViewController {
     
     var cid:String! //进入前先设置
     var currency:BBCurrency?
+    
+    convenience init(cid:String){
+        self.init()
+        self.cid = cid
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,9 +83,7 @@ class CurrencyDetailVC: UIViewController {
     }
 
     @objc func viewCurrencyHistory(){
-        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
-        his.cid = cid
-        his.type = .all
+        let his = CurrencyHistoryTC(cid: cid, type: .all)
         self.navigationController?.pushViewController(his, animated: true)
     }
 
@@ -99,10 +102,8 @@ class CurrencyDetailVC: UIViewController {
     
     func loadScanAndQRCodeVC(scan:Bool) {
         if let address = self.currency?.waddress {
-            let sqv = ScanAndQRCodeVC(nibName: "ScanAndQRCodeVC", bundle: nil)
-            sqv.isScan = scan
+            let sqv = ScanAndQRCodeVC(cid: cid, address: address, isScan: scan)
             sqv.scanAddressDelegate = self
-            sqv.myaddress = address
             let nav = UINavigationController(rootViewController: sqv)
             self.present(nav, animated: true, completion: nil)
         }
@@ -119,8 +120,7 @@ class CurrencyDetailVC: UIViewController {
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
-        let vc = WithdrawVC(nibName: "WithdrawVC", bundle: nil)
-        vc.cid = cid
+        let vc = WithdrawVC(cid: cid, balance: self.currency?.balance ?? 0.0)
         let nav = UINavigationController(rootViewController: vc)
         self.present(nav, animated: true, completion: nil)
     }
@@ -141,6 +141,19 @@ extension CurrencyDetailVC:ScanAddressDelegate{
     func didFinishScan(viewController: UIViewController, text: String) {
         print("Scan result: \(text)")
         viewController.dismiss(animated: false, completion: nil)
+        let request = BBRequestFactory.shared.qrcodeAttr(address: text)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let js = res {
+                    //是否是平台用户
+                    let isOurPlatform = (js["platformMark"].int ?? 0) == 1
+                    
+                }
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
     }
 }
 

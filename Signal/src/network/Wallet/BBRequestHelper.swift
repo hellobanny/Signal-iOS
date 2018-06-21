@@ -12,10 +12,10 @@ import SwiftyJSON
 class BBRequestHelper: NSObject {
     
     //当解析
-    static func parseSuccessResult(object:Any) -> (JSON?,String?){
+    @discardableResult static func parseSuccessResult(object:Any) -> (JSON?,String?){
         print(object)
         let js = JSON(object)
-        if js["code"].int == 200 {
+        if js["code"].int == BBCommon.NetCodeSuccess {
             return (js["data"],js["cid"].string)
         }
         else{

@@ -104,8 +104,17 @@ class CurrencyListTC: UITableViewController {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "CurrencyCell")
         let cc = currencyFrom(index: indexPath)
         cell.textLabel?.text = cc.name
-
+        let url = URL(string: cc.iconURL)
+        cell.imageView?.kf.setImage(with: url)
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return ["已关注","未关注"][section]
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60.0
     }
  
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {

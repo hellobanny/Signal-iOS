@@ -16,11 +16,11 @@ class BBBaseHistory : NSObject {
     var pageTime:Int //dataTime  用于分页
     
     init(json:JSON) {
-        dataID = json["dateId"].string!
-        name = json["currName"].string!
-        let ts = json["tradeTime"].double ?? 0
+        dataID = json["dateId"].stringValue
+        name = json["currName"].stringValue
+        let ts = json["tradeTime"].doubleValue/1000
         time = Date(timeIntervalSince1970: ts)
-        pageTime = json["dataTime"].int!
+        pageTime = json["dataTime"].intValue
         super.init()
     }
 }

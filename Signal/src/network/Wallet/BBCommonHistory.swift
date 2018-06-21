@@ -15,9 +15,9 @@ class BBCommonHistory : BBBaseHistory {
     var abstract:String//tradeAbstract
     
     override init(json: JSON) {
-        type = json["tradeType"].int!
-        comment = json["tradeTypeDes"].string!
-        abstract = json["tradeAbstract"].string!
+        type = json["tradeType"].intValue
+        comment = json["tradeTypeDes"].stringValue
+        abstract = json["tradeAbstract"].stringValue
         super.init(json: json)
     }
     

@@ -38,20 +38,20 @@ struct BBCurrency {
     }
     
     static func currencyFrom(json:JSON) -> BBCurrency?{
-        let cid = json["cid"].string!
-        let name = json["currName"].string!
-        let icon = json["symbol"].string!
-        let balance = json["balance"].double
-        let price = json["marketPrice"].double
-        let att = json["attention"].int
-        let add = json["waddress"].string
+        let cid = json["cid"].stringValue
+        let name = json["currName"].stringValue
+        let icon = json["symbol"].stringValue
+        let balance = json["balance"].doubleValue
+        let price = json["marketPrice"].doubleValue
+        let att = json["attention"].intValue
+        let add = json["waddress"].stringValue
         let cc = BBCurrency(cid: cid, name: name, iconURL: icon, balance: balance, price: price, attention: att, waddress: add)
         return cc
     }
     
     //返回一个合适的显示价格，至少两个有效数字
     static func goodPrice(value:Double) -> String{
-        return "￥ " + value.fractionDigits(min: 2, max: 4, roundingMode: NumberFormatter.RoundingMode.halfUp)
+        return "￥" + value.fractionDigits(min: 2, max: 4, roundingMode: NumberFormatter.RoundingMode.halfUp)
     }
     
     static func goodNumber(value:Double) -> String{

@@ -17,11 +17,11 @@ class BBWithdrawHistory : BBBaseHistory {
     var statusDes:String //statusDes
     
     override init(json: JSON) {
-        address = json["toAddressAlias"].string!
-        txid = json["txid"].string!
-        amt = json["withdrawAmt"].double!
-        status = json["status"].int!
-        statusDes = json["statusDes"].string!
+        address = json["toAddressAlias"].stringValue
+        txid = json["txid"].stringValue
+        amt = json["withdrawAmt"].doubleValue
+        status = json["status"].intValue
+        statusDes = json["statusDes"].stringValue
         super.init(json: json)
     }
     

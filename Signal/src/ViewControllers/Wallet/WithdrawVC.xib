@@ -82,6 +82,7 @@
                             <fontDescription key="fontDescription" type="system" pointSize="48"/>
                             <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                             <connections>
+                                <action selector="editChaned:" destination="-1" eventType="editingChanged" id="f85-DF-k55"/>
                                 <outlet property="delegate" destination="-1" id="HVX-al-RGl"/>
                             </connections>
                         </textField>

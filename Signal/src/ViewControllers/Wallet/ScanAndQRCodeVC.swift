@@ -31,6 +31,14 @@ class ScanAndQRCodeVC: UIViewController {
     var maskingView:UIView?
     
     var myaddress = "0x7913d361B2eF28195b99726E930f163BE3801ac4"
+    var cid:String!
+    
+    convenience init(cid:String,address:String,isScan:Bool){
+        self.init()
+        self.cid = cid
+        self.myaddress = address
+        self.isScan = isScan
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,7 +102,7 @@ class ScanAndQRCodeVC: UIViewController {
                 cap.layer.frame = self.viewScan.bounds
                 cap.delegate = self
                 self.capture = cap
-            self.viewScan.layer.insertSublayer(cap.layer, at: 0)
+                self.viewScan.layer.insertSublayer(cap.layer, at: 0)
                 self.viewScan.bringSubview(toFront: self.maskingView!)
                 cap.start()
             }
@@ -146,7 +154,6 @@ class ScanAndQRCodeVC: UIViewController {
 
 extension ScanAndQRCodeVC:ZXCaptureDelegate{
     func captureResult(_ capture: ZXCapture!, result: ZXResult!) {
-       print(result.text)
         self.scanAddressDelegate?.didFinishScan(viewController: self, text: result.text)
     }
     

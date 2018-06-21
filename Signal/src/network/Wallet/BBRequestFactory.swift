@@ -81,9 +81,9 @@ class BBRequestFactory: NSObject {
     }
     
     //添加提现地址
-    func withdrawAddressAdd(name:String,address:String) -> TSRequest{
+    func withdrawAddressAdd(cid:String,name:String,address:String) -> TSRequest{
         let path = PATH + "/member/withdraw/address/add"
-        let param:[String:Any] = ["toAddressAlias":name,"toAddress":address]
+        let param:[String:Any] = ["toAddressAlias":name,"toAddress":address,"cid":cid]
         return TSRequest(url: URL(string: path), method: "POST", parameters: param)
     }
 

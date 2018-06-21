@@ -20,16 +20,28 @@ class WithdrawVC: UIViewController {
     
     var cid:String!
     
-    var total:Double = 100.0{
+    var withdrawAddress:BBWithdrawAddress?{
         didSet{
-            labelTip.text = "账户余额:\(total),手续费0.01ETH"
+            let title = withdrawAddress?.name ?? "点击选择提现地址"
+            buttonChoose.setTitle(title, for: .normal)
+            checkButtonStatus()
         }
     }
     
+    var balance:Double = 0.0
+    
+    convenience init(cid:String,balance:Double){
+        self.init()
+        self.cid = cid
+        self.balance = balance
+    }
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(WithdrawVC.close))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(WithdrawVC.viewWithdrawHistory))
+        buttonWithdraw.isEnabled = false
+        labelTip.text = "账户余额:\(balance),手续费0.01ETH"
     }
     
     @objc func close(){
@@ -37,9 +49,7 @@ class WithdrawVC: UIViewController {
     }
     
     @objc func viewWithdrawHistory(){
-        let his = CurrencyHistoryTC(nibName: "CurrencyHistoryTC", bundle: nil)
-        his.cid = cid
-        his.type = .withdraw
+        let his = CurrencyHistoryTC(cid: cid, type: .withdraw)
         self.navigationController?.pushViewController(his, animated: true)
     }
     
@@ -54,40 +64,50 @@ class WithdrawVC: UIViewController {
     }
     
     @IBAction func chooseWithdrawAddress(_ sender: Any) {
-        let wa = WithdrawAddressTC(nibName: "WithdrawAddressTC", bundle: nil)
+        let wa = WithdrawAddressTC(cid: cid)
+        wa.delegate = self
         self.navigationController?.pushViewController(wa, animated: true)
     }
     
     @IBAction func withdrawAll(_ sender: Any) {
-        textFiledNumber.text = "\(total)"
+        textFiledNumber.text = "\(balance)"
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
-        InputPaywordVC.displayInputPayword(home: self)
+        guard let address = self.withdrawAddress?.address else {
+            buttonChoose.layer.shake()
+            return
+        }
+        guard let strNum = self.textFiledNumber.text else{
+            textFiledNumber.layer.shake()
+            return
+        }
+        let (good,_) = NumberChecker.isGoodNumber(string: strNum)
+        if !good {
+            textFiledNumber.layer.shake()
+            return
+        }
+        WithdrawHelper.shared.startWithdraw(home: self,currId: cid, toAddress: address, value: strNum)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func editChaned(_ sender: Any) {
+        checkButtonStatus()
     }
-    */
+    
+    func checkButtonStatus(){
+        let (good,_) = NumberChecker.isGoodNumber(string: textFiledNumber.text ?? "0")
+        buttonWithdraw.isEnabled = withdrawAddress != nil && good
+    }
+}
 
+extension WithdrawVC : ChooseWithdrawAddressDelegate{
+    func chooseWithdraw(address: BBWithdrawAddress) {
+        self.withdrawAddress = address
+    }
 }
 
 extension WithdrawVC : UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if string == "." {
-            if textField.text?.contains(".") ?? false{
-                return false
-            }
-            else if textField.text?.isEmpty ?? true{
-                textField.text = "0"
-                return true
-            }
-        }
-        return true
+        return NumberChecker.checkInputNumber(textField: textField, string: string)
     }
 }

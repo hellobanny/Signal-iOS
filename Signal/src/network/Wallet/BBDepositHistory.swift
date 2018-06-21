@@ -15,9 +15,9 @@ class BBDepositHistory : BBBaseHistory{
     var amt:Double //chargeAmt
     
     override init(json: JSON) {
-        address = json["fromAddress"].string!
-        txid = json["txid"].string!
-        amt = json["chargeAmt"].double!
+        address = json["fromAddress"].stringValue
+        txid = json["txId"].stringValue
+        amt = json["chargeAmt"].doubleValue
         super.init(json: json)
     }
     

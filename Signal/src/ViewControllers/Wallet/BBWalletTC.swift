@@ -91,8 +91,7 @@ class BBWalletTC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currencyDetail = CurrencyDetailVC()
-        currencyDetail.cid = currencys[indexPath.row].cid
+        let currencyDetail = CurrencyDetailVC(cid: currencys[indexPath.row].cid)
         self.navigationController?.pushViewController(currencyDetail, animated: true)
     }
 

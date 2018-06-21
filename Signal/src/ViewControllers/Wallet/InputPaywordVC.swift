@@ -10,7 +10,7 @@ import UIKit
 import PopupDialog
 
 protocol InputPaywordDelegate {
-   func inputPassword(success:Bool)
+    func passwordInputed(password:String)
 }
 
 class InputPaywordVC: UIViewController {
@@ -64,8 +64,7 @@ class InputPaywordVC: UIViewController {
             v.isHidden = i >= c
         }
         if c == 6 {
-            //TODO check
-            delegate?.inputPassword(success: true)
+            delegate?.passwordInputed(password: textFieldPassword.text!)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -75,14 +74,13 @@ class InputPaywordVC: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    
     @IBAction func closeSelf(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    static func displayInputPayword(home:UIViewController){
+    static func displayInputPayword(home:UIViewController,delegate:InputPaywordDelegate){
         let vc = InputPaywordVC(nibName: "InputPaywordVC", bundle: nil)
+        vc.delegate = delegate
         let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
         home.present(pd, animated: true, completion: nil)
     }
