@@ -30,7 +30,13 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
         address = toAddress
         balance = value
         cid = currId
-        InputPaywordVC.displayInputPayword(home: baseVC, delegate: self)
+        prepareAndShow()
+    }
+    
+    func prepareAndShow(){
+        let title = "输入交易密码"
+        let hint = "转账"
+        InputPaywordVC.displayInputPayword(home: baseVC, delegate: self,title: title,hint: hint,value: balance)
     }
 
     func passwordInputed(password: String) {
@@ -39,8 +45,10 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             //这里需要自己分析错误值
             if let res = obj {
+                print(res)
                 if let code = JSON(res)["code"].int{
                     if code == BBCommon.NetCodeSuccess {
+                        self.baseVC.dismiss(animated: true, completion: nil)
                         self.showNotice(title: "转账成功")
                     }
                     else if code == BBCommon.NetCodeBalaceLess {
@@ -53,7 +61,7 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
                         let av = UIAlertController(title: "字符密码错误", message: nil, preferredStyle: .alert)
                         av.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
                         av.addAction(UIAlertAction(title: "重新输入", style: .default, handler: { (_) in
-                            InputPaywordVC.displayInputPayword(home: self.baseVC, delegate: self)
+                            self.prepareAndShow()
                         }))
                         self.baseVC.present(av, animated: true, completion: nil)
                     }

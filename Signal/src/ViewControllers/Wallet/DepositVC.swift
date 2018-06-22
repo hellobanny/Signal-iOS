@@ -32,6 +32,7 @@ class DepositVC: UIViewController {
         loadQRCodeImage()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(DepositVC.close))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "充值记录", style: .done, target: self, action: #selector(DepositVC.viewDepositHistory))
+        self.title = "充值"
     }
     
     @objc func close(){

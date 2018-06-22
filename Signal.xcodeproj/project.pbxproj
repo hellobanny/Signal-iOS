@@ -454,6 +454,8 @@
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
 		51A9649020DB3CE60058B4F4 /* NumberChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */; };
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
+		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
+		51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1149,6 +1151,8 @@
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
 		51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberChecker.swift; sourceTree = "<group>"; };
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
+		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
+		51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNumberFT.swift; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2145,11 +2149,11 @@
 				51A9648E20DB3C030058B4F4 /* History */,
 				51A9648D20DB3BBD0058B4F4 /* Config */,
 				5120A1B320DA3C0400190B1E /* Withdraw */,
+				5144C99120CF695300319062 /* BBWalletTC.swift */,
 				5144C98D20CF695300319062 /* CurrencyDetailVC.swift */,
 				5144C99020CF695300319062 /* CurrencyDetailVC.xib */,
 				5144C98F20CF695300319062 /* CurrencyCell.swift */,
 				5144C98E20CF695300319062 /* CurrencyCell.xib */,
-				5144C99120CF695300319062 /* BBWalletTC.swift */,
 				5144C99A20CF9D6B00319062 /* CurrencyListTC.swift */,
 				5144C99B20CF9D6B00319062 /* CurrencyListTC.xib */,
 				5144C99E20CF9F3500319062 /* ScanAndQRCodeVC.swift */,
@@ -2181,6 +2185,8 @@
 				51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */,
 				5120A1AB20DA27EE00190B1E /* BBCommon.swift */,
 				51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */,
+				51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */,
+				51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -3426,6 +3432,7 @@
 				34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */,
+				51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */,
 				5144C9A420CFBE7800319062 /* DepositVC.swift in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
@@ -3482,6 +3489,7 @@
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */,
+				51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,

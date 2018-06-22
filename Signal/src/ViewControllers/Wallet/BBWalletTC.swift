@@ -30,6 +30,7 @@ class BBWalletTC: UITableViewController {
         pullView.addTarget(self, action: #selector(BBWalletTC.loadMyCurrencys), for: UIControlEvents.valueChanged)
         self.tableView.insertSubview(pullView, at: 0)
         self.pullVC = pullView
+        BBCurrencyCache.shared.loadCurrency()
     }
     
     override func viewWillAppear(_ animated: Bool) {

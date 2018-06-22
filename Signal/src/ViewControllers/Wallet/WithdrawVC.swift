@@ -41,7 +41,9 @@ class WithdrawVC: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(WithdrawVC.close))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(WithdrawVC.viewWithdrawHistory))
         buttonWithdraw.isEnabled = false
+        buttonChoose.setTitle("点击选择提现地址", for: .normal)
         labelTip.text = "账户余额:\(balance),手续费0.01ETH"
+        self.title = "提币"
     }
     
     @objc func close(){

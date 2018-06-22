@@ -31,8 +31,8 @@ class CurrencyCell: UITableViewCell {
         let url = URL(string: currency.iconURL)
         avator.kf.setImage(with: url)
         labelName.text = currency.name
-        labelPrice.text = BBCurrency.goodPrice(value: currency.price!)
-        labelNumber.text = BBCurrency.goodNumber(value: currency.balance!)
-        labelTotal.text = BBCurrency.goodPrice(value: currency.price! * currency.balance!)
+        labelPrice.text = BBNumberFT.shared.goodPrice(value: currency.price!)
+        labelNumber.text = BBNumberFT.shared.goodNumber(value: currency.balance!)
+        labelTotal.text = BBNumberFT.shared.goodPrice(value: currency.price! * currency.balance!)
     }
 }

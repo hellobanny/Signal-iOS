@@ -66,15 +66,16 @@ class CurrencyDetailVC: UIViewController {
         let url = URL(string: cc.iconURL)
         imgIcon.kf.setImage(with: url)
         labelName.text = cc.name
+        self.title = cc.name
         guard let price = cc.price else {
             return
         }
         guard let number = cc.balance else {
             return
         }
-        labelPrice.text = BBCurrency.goodPrice(value: price)
-        labelNumber.text = BBCurrency.goodNumber(value: number)
-        labelTotal.text = BBCurrency.goodPrice(value: price * number)
+        labelPrice.text = BBNumberFT.shared.goodPrice(value: price)
+        labelNumber.text = BBNumberFT.shared.goodNumber(value: number)
+        labelTotal.text = BBNumberFT.shared.goodPrice(value: price * number)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -148,7 +149,10 @@ extension CurrencyDetailVC:ScanAddressDelegate{
                 if let js = res {
                     //是否是平台用户
                     let isOurPlatform = (js["platformMark"].int ?? 0) == 1
-                    
+                    //TODO 各种检验
+                    let roll = RolloutVC(cid: self.cid, address: text, platform: isOurPlatform)
+                    let nav = UINavigationController(rootViewController: roll)
+                    self.present(nav, animated: true, completion: nil)
                 }
             }
         }) { (task, error) in

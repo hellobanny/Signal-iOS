@@ -25,4 +25,16 @@ enum BBHistoryType {
             return BBWithdrawHistory.historyArrayFrom(json:json)
         }
     }
+    
+    func name() -> String{
+        if self == .all {
+            return "历史明细"
+        }
+        else if self == .deposit{
+            return "充值记录"
+        }
+        else {
+            return "提现记录"
+        }
+    }
 }

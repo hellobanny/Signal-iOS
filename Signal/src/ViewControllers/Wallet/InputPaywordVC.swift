@@ -23,12 +23,26 @@ class InputPaywordVC: UIViewController {
     
     var dotArray = [UIView]()
     var delegate:InputPaywordDelegate?
+    
+    var titleStr:String!
+    var hint:String!
+    var value:String!
+    
+    convenience init(title:String,hint:String,value:String){
+        self.init()
+        self.titleStr = title
+        self.hint = hint
+        self.value = value
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         textFieldPassword.becomeFirstResponder()
         initTextFieldPwd()
+        labelTitle.text = titleStr
+        labelHint.text = hint
+        labelValue.text = value
     }
     
     func initTextFieldPwd(){
@@ -78,8 +92,8 @@ class InputPaywordVC: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    static func displayInputPayword(home:UIViewController,delegate:InputPaywordDelegate){
-        let vc = InputPaywordVC(nibName: "InputPaywordVC", bundle: nil)
+    static func displayInputPayword(home:UIViewController,delegate:InputPaywordDelegate,title:String,hint:String,value:String){
+        let vc = InputPaywordVC(title: title, hint: hint, value: value)
         vc.delegate = delegate
         let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
         home.present(pd, animated: true, completion: nil)

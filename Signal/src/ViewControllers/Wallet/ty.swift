@@ -59,9 +59,6 @@ class CurrencyHistoryTC: UITableViewController {
                         self.historys.append(contentsOf: na)
                         self.tableView.insertRows(at: indexs, with: .right)
                         self.lastLoadTime = na.last!.pageTime
-                    }
-                    
-                    if na.count == BBCommon.PageSize {
                         self.tableView.mj_footer.endRefreshing()
                     }
                     else {

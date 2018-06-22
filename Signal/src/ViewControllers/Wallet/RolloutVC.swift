@@ -19,11 +19,13 @@ class RolloutVC: UIViewController {
     
     var cid:String!
     var address:String!
+    var isOurPlatform:Bool = true
     
-    convenience init(cid:String,address:String) {
+    convenience init(cid:String,address:String, platform:Bool) {
         self.init()
         self.cid = cid
         self.address = address
+        self.isOurPlatform = platform
     }
     
     override func viewDidLoad() {
@@ -32,6 +34,13 @@ class RolloutVC: UIViewController {
         // Do any additional setup after loading the view.
         buttonPay.isEnabled = false
         labelAddress.text = address
+        labelHit.text = isOurPlatform ? "是平台用户，无需手续费" : "非平台用户，需要0.01ETH手续费"
+        tfInput.becomeFirstResponder()
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(RolloutVC.close))
+    }
+    
+    @objc func close(){
+        self.dismiss(animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {
