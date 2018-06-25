@@ -41,4 +41,8 @@ class BBCurrencyCache: NSObject {
     func getCurrencyby(cid:String) -> BBCurrency? {
         return currencyDic[cid]
     }
+    
+    func update(currency:BBCurrency){
+        currencyDic[currency.cid] = currency
+    }
 }

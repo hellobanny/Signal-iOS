@@ -452,10 +452,13 @@
 		518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CED20D9083F0020B353 /* BBDepositHistory.swift */; };
 		518D4CF020D908520020B353 /* BBWithdrawHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */; };
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
+		5197D5A020E10FAB00B7D51A /* TotalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5197D59E20E10FAB00B7D51A /* TotalCell.swift */; };
+		5197D5A120E10FAB00B7D51A /* TotalCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D59F20E10FAB00B7D51A /* TotalCell.xib */; };
 		51A9649020DB3CE60058B4F4 /* NumberChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */; };
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
 		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
 		51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */; };
+		51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1149,10 +1152,13 @@
 		518D4CED20D9083F0020B353 /* BBDepositHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBDepositHistory.swift; sourceTree = "<group>"; };
 		518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBWithdrawHistory.swift; sourceTree = "<group>"; };
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
+		5197D59E20E10FAB00B7D51A /* TotalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalCell.swift; sourceTree = "<group>"; };
+		5197D59F20E10FAB00B7D51A /* TotalCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TotalCell.xib; sourceTree = "<group>"; };
 		51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberChecker.swift; sourceTree = "<group>"; };
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
 		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
 		51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNumberFT.swift; sourceTree = "<group>"; };
+		51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywordHelper.swift; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2135,6 +2141,7 @@
 				5120A1B420DA3C3F00190B1E /* NewWithdrawAddressVC.swift */,
 				5120A1B520DA3C3F00190B1E /* NewWithdrawAddressVC.xib */,
 				5120A1B820DA51B600190B1E /* WithdrawHelper.swift */,
+				51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */,
 				5144C9BA20D1066400319062 /* InputPaywordVC.swift */,
 				5144C9BB20D1066400319062 /* InputPaywordVC.xib */,
 				5120A1BA20DA785200190B1E /* RolloutVC.swift */,
@@ -2152,6 +2159,8 @@
 				5144C99120CF695300319062 /* BBWalletTC.swift */,
 				5144C98D20CF695300319062 /* CurrencyDetailVC.swift */,
 				5144C99020CF695300319062 /* CurrencyDetailVC.xib */,
+				5197D59E20E10FAB00B7D51A /* TotalCell.swift */,
+				5197D59F20E10FAB00B7D51A /* TotalCell.xib */,
 				5144C98F20CF695300319062 /* CurrencyCell.swift */,
 				5144C98E20CF695300319062 /* CurrencyCell.xib */,
 				5144C99A20CF9D6B00319062 /* CurrencyListTC.swift */,
@@ -2915,6 +2924,7 @@
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
+				5197D5A120E10FAB00B7D51A /* TotalCell.xib in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
@@ -3442,6 +3452,7 @@
 				34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */,
 				34D1F0AC1F867BFC0066283D /* OWSExpirationTimerView.m in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
+				5197D5A020E10FAB00B7D51A /* TotalCell.swift in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
@@ -3458,6 +3469,7 @@
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
+				51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
 				5144C99220CF695300319062 /* BBHomeTabBarVC.swift in Sources */,

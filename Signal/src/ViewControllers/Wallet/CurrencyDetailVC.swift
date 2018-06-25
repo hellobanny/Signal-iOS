@@ -47,8 +47,11 @@ class CurrencyDetailVC: UIViewController {
             if let result = obj{
                 let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
                 if let detail = res{
-                    self.currency = BBCurrency.currencyFrom(json: detail)
-                    self.updateImageAndLabels()
+                    if let cur = BBCurrency.currencyFrom(json: detail) {
+                        self.currency = cur
+                        BBCurrencyCache.shared.update(currency: cur)
+                        self.updateImageAndLabels()
+                    }
                 }
             }
         }) { (task, error) in
@@ -121,7 +124,7 @@ class CurrencyDetailVC: UIViewController {
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
-        let vc = WithdrawVC(cid: cid, balance: self.currency?.balance ?? 0.0)
+        let vc = WithdrawVC(cid: cid, balance: self.currency?.balance ?? 0.0, fee:self.currency?.fee ?? 0)
         let nav = UINavigationController(rootViewController: vc)
         self.present(nav, animated: true, completion: nil)
     }

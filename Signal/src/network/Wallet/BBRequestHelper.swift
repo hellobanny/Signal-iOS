@@ -15,19 +15,22 @@ class BBRequestHelper: NSObject {
     @discardableResult static func parseSuccessResult(object:Any) -> (JSON?,String?){
         print(object)
         let js = JSON(object)
-        if js["code"].int == BBCommon.NetCodeSuccess {
+        let code = js["code"].intValue
+        if code == BBCommon.NetCodeSuccess {
             return (js["data"],js["cid"].string)
         }
         else{
-            let code = js["code"].int ?? -1
-            let warn = UIAlertController(title: "Error Code \(code)", message: js["message"].string, preferredStyle: .alert)
-            warn.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            UIApplication.shared.frontmostViewController?.present(warn, animated: true, completion: nil)
+            BBCommon.notice(title: "Error Code \(code)", message: js["message"].string)
         }
         return (nil,nil)
     }
     
+    static func parseCodeOnly(object:Any) -> Int{
+        let js = JSON(object)
+        return js["code"].intValue
+    }
+    
     static func showError(error:Error){
-        
+        BBCommon.notice(title: "Error", message: error.localizedDescription)
     }
 }

@@ -12,14 +12,11 @@ import SwiftyJSON
 class BBBaseHistory : NSObject {
     var dataID:String //dataId
     var name:String //currName
-    var time:Date // tradeTime
     var pageTime:Int //dataTime  用于分页
     
     init(json:JSON) {
         dataID = json["dateId"].stringValue
         name = json["currName"].stringValue
-        let ts = json["tradeTime"].doubleValue/1000
-        time = Date(timeIntervalSince1970: ts)
         pageTime = json["dataTime"].intValue
         super.init()
     }

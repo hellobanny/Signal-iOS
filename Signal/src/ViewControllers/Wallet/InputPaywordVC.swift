@@ -78,8 +78,9 @@ class InputPaywordVC: UIViewController {
             v.isHidden = i >= c
         }
         if c == 6 {
-            delegate?.passwordInputed(password: textFieldPassword.text!)
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true) {
+                self.delegate?.passwordInputed(password: self.textFieldPassword.text!)
+            }
         }
     }
     

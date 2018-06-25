@@ -34,7 +34,15 @@ class RolloutVC: UIViewController {
         // Do any additional setup after loading the view.
         buttonPay.isEnabled = false
         labelAddress.text = address
-        labelHit.text = isOurPlatform ? "是平台用户，无需手续费" : "非平台用户，需要0.01ETH手续费"
+        if isOurPlatform {
+            labelHit.text = "是平台用户，无需手续费且立刻到账"
+        }
+        else {
+            if let cur = BBCurrencyCache.shared.getCurrencyby(cid: cid){
+                labelHit.text = "非平台用户，需要\(cur.fee!)\(cur.name)手续费"
+            }
+        }
+        
         tfInput.becomeFirstResponder()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(RolloutVC.close))
     }
@@ -58,7 +66,7 @@ class RolloutVC: UIViewController {
             tfInput.layer.shake()
             return
         }
-        WithdrawHelper.shared.startWithdraw(home: self,currId: cid, toAddress: address, value: strNum)
+        WithdrawHelper.shared.startWithdraw(home: self,currId: cid, toAddress: address, value: strNum,indoor: isOurPlatform)
     }
     
     @IBAction func editChaned(_ sender: Any) {

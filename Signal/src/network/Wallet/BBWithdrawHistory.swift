@@ -15,6 +15,7 @@ class BBWithdrawHistory : BBBaseHistory {
     var amt:Double //withdrawAmt
     var status:Int // status
     var statusDes:String //statusDes
+    var time:Date // withdrawTime
     
     override init(json: JSON) {
         address = json["toAddressAlias"].stringValue
@@ -22,6 +23,8 @@ class BBWithdrawHistory : BBBaseHistory {
         amt = json["withdrawAmt"].doubleValue
         status = json["status"].intValue
         statusDes = json["statusDes"].stringValue
+        let ts = json["withdrawTime"].doubleValue/1000
+        time = Date(timeIntervalSince1970: ts)
         super.init(json: json)
     }
     

@@ -13,11 +13,14 @@ class BBCommonHistory : BBBaseHistory {
     var type:Int // tradeType
     var comment:String //tradeTypeDes
     var abstract:String//tradeAbstract
+    var time:Date // tradeTime
     
     override init(json: JSON) {
         type = json["tradeType"].intValue
         comment = json["tradeTypeDes"].stringValue
         abstract = json["tradeAbstract"].stringValue
+        let ts = json["tradeTime"].doubleValue/1000
+        time = Date(timeIntervalSince1970: ts)
         super.init(json: json)
     }
     

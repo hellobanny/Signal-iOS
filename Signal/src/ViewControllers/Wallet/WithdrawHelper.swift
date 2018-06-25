@@ -15,6 +15,7 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
     var address:String!
     var balance:String!
     var cid:String!
+    var indoor = false
     
     static let shared : WithdrawHelper = {
         let instance = WithdrawHelper()
@@ -25,11 +26,12 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
         super.init()
     }
     
-    func startWithdraw(home:UIViewController,currId:String,toAddress:String,value:String){
+    func startWithdraw(home:UIViewController,currId:String,toAddress:String,value:String,indoor:Bool = false){
         baseVC = home
         address = toAddress
         balance = value
         cid = currId
+        self.indoor = indoor
         prepareAndShow()
     }
     
@@ -41,46 +43,40 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
 
     func passwordInputed(password: String) {
         //开始转币
-        let request = BBRequestFactory.shared.withdrawDo(cid: cid, toAddress: address, amt: balance, token: password)
+        let request = indoor ? BBRequestFactory.shared.transferDo(cid: cid, toAddress: address, amt: balance, token: password) : BBRequestFactory.shared.withdrawDo(cid: cid, toAddress: address, amt: balance, token: password)
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             //这里需要自己分析错误值
             if let res = obj {
                 print(res)
-                if let code = JSON(res)["code"].int{
-                    if code == BBCommon.NetCodeSuccess {
-                        self.baseVC.dismiss(animated: true, completion: nil)
-                        self.showNotice(title: "转账成功")
-                    }
-                    else if code == BBCommon.NetCodeBalaceLess {
-                        self.showNotice(title: "余额不足")
-                    }
-                    else if code == BBCommon.NetCodeAddressError {
-                        self.showNotice(title: "地址错误")
-                    }
-                    else if code == BBCommon.NetCodePaywordError {//可重新输入密码
-                        let av = UIAlertController(title: "字符密码错误", message: nil, preferredStyle: .alert)
-                        av.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-                        av.addAction(UIAlertAction(title: "重新输入", style: .default, handler: { (_) in
-                            self.prepareAndShow()
-                        }))
-                        self.baseVC.present(av, animated: true, completion: nil)
-                    }
-                    else if code == BBCommon.NetCodeAccountLocked {
-                        self.showNotice(title: "账号已经被锁定")
-                    }
-                    else if code == BBCommon.NetCodePaywordUnset {
-                        self.showNotice(title: "字符密码未设置")
-                    }
+                let code = BBRequestHelper.parseCodeOnly(object: res)
+                if code == BBCommon.NetCodeSuccess {
+                    self.baseVC.dismiss(animated: true, completion: nil)
+                    BBCommon.notice(title: "转账成功")
                 }
+                else if code == BBCommon.NetCodeBalaceLess {
+                    BBCommon.notice(title: "余额不足")
+                }
+                else if code == BBCommon.NetCodeAddressError {
+                    BBCommon.notice(title: "地址错误")
+                }
+                else if code == BBCommon.NetCodePaywordError {//可重新输入密码
+                    let av = UIAlertController(title: "字符密码错误", message: nil, preferredStyle: .alert)
+                    av.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                    av.addAction(UIAlertAction(title: "重新输入", style: .default, handler: { (_) in
+                        self.prepareAndShow()
+                    }))
+                    self.baseVC.present(av, animated: true, completion: nil)
+                }
+                else if code == BBCommon.NetCodeAccountLocked {
+                    BBCommon.notice(title: "账号已经被锁定，30分钟后解锁")
+                }
+                else if code == BBCommon.NetCodePaywordUnset {
+                    BBCommon.notice(title: "字符密码未设置")
+                }
+                
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)
         }
-    }
-    
-    func showNotice(title:String){
-        let av = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-        av.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        self.baseVC.present(av, animated: true, completion: nil)
     }
 }

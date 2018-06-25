@@ -94,19 +94,22 @@ class CurrencyHistoryTC: UITableViewController {
         if type == .all {
             if let h = his as? BBCommonHistory{
                 cell.textLabel?.text = h.abstract
+                cell.detailTextLabel?.text = h.time.description
             }
         }
         else if type == .deposit {
             if let h = his as? BBDepositHistory{
                 cell.textLabel?.text = h.address + " +\(h.amt)"
+                cell.detailTextLabel?.text = h.time.description
             }
         }
         else if type == .withdraw {
             if let h = his as? BBWithdrawHistory{
                 cell.textLabel?.text = h.statusDes
+                cell.detailTextLabel?.text = h.time.description
             }
         }
-        cell.detailTextLabel?.text = his.time.description
+        
         
         return cell
     }

@@ -20,10 +20,12 @@ class ScanAndQRCodeVC: UIViewController {
     @IBOutlet weak var buttonToScan: UIButton!
     @IBOutlet weak var imageViewQR: UIImageView!
     
+    @IBOutlet weak var labelIconTitle: UILabel!
     @IBOutlet weak var viewScan: UIView!
     @IBOutlet weak var buttonToQRCode: UIButton!
 
     @objc var isScan:Bool = false
+    @IBOutlet weak var imageIcon: UIImageView!
     
     var scanAddressDelegate:ScanAddressDelegate?
     var capture:ZXCapture?
@@ -42,8 +44,9 @@ class ScanAndQRCodeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        BBCommon.changeNavigationBar(bar: self.navigationController?.navigationBar, isBlack: true)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(ScanAndQRCodeVC.close))
+        self.viewQRCode.backgroundColor = BBCommon.ColorBlack
     }
     
     @objc func close(){
@@ -83,6 +86,11 @@ class ScanAndQRCodeVC: UIViewController {
             let writer = ZXMultiFormatWriter()
             let result = try writer.encode(myaddress, format: kBarcodeFormatQRCode, width: 480, height: 480)
             imageViewQR.image = UIImage(cgImage: ZXImage(matrix: result).cgimage)
+            if let cur = BBCurrencyCache.shared.getCurrencyby(cid: self.cid) {
+                self.labelIconTitle.text = cur.name
+                let url = URL(string: cur.iconURL)
+                self.imageIcon.kf.setImage(with: url)
+            }
         } catch {
             
         }

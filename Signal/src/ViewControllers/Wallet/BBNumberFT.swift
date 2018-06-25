@@ -42,12 +42,11 @@ class BBNumberFT: NSObject {
     
     //返回一个合适的显示价格，至少两个有效数字
     func goodPrice(value:Double) -> String{
-        return "￥" + goodNumber(value: value)
+        return "≈" + goodNumber(value: value) + "CNY"
     }
     
     func goodNumber(value:Double) -> String{
         let num = NSNumber(value: value)
-        var re = ""
         if value >= 1000 {
             return bigFT.string(from: num) ?? "ERROR"
         }

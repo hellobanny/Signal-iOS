@@ -97,7 +97,7 @@ class BBRequestFactory: NSObject {
     //付款转币
     func transferDo(cid:String,toAddress:String,amt:String,token:String) -> TSRequest{
         let path = PATH + "/member/transfer/do"
-        let param:[String:Any] = ["cid":cid,"toAddress":toAddress,"withdrawAmt":amt,"authorizeToken":token]
+        let param:[String:Any] = ["cid":cid,"toAddress":toAddress,"transferAmt":amt,"authorizeToken":token]
         return TSRequest(url: URL(string: path), method: "POST", parameters: param)
     }
     
@@ -126,6 +126,13 @@ class BBRequestFactory: NSObject {
     func authorizetokenUpdate(oldToken:String,newToken:String) -> TSRequest{
         let path = PATH + "/member/authorizetoken/update"
         let param:[String:Any] = ["authorizeToken":oldToken,"newAuthorizeToken":newToken]
+        return TSRequest(url: URL(string: path), method: "POST", parameters: param)
+    }
+    
+    //查看用户是否设置过交易密码
+    func authorizetokenSetted() -> TSRequest{
+        let path = PATH + "/member/authorizetoken/check"
+        let param = [String:Any]()
         return TSRequest(url: URL(string: path), method: "POST", parameters: param)
     }
     

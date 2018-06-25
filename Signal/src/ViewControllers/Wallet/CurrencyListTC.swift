@@ -23,7 +23,7 @@ class CurrencyListTC: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(CurrencyListTC.done))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(CurrencyListTC.done))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(CurrencyListTC.cancel))
         self.tableView.isEditing = true
         self.title = "所有币种"
         loadCurrencyLists()
@@ -104,13 +104,21 @@ class CurrencyListTC: UITableViewController {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "CurrencyCell")
         let cc = currencyFrom(index: indexPath)
         cell.textLabel?.text = cc.name
+        //cell.detailTextLabel?.text = BBNumberFT.shared.goodNumber(value: cc.balance ?? 0.0)
         let url = URL(string: cc.iconURL)
         cell.imageView?.kf.setImage(with: url)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return ["关注币种列表","未关注列表"][section]
+        return ["关注币种列表","未关注币种列表"][section]
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 0 {
+            return "上下移动位置可调整顺序"
+        }
+        return nil
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -119,6 +127,14 @@ class CurrencyListTC: UITableViewController {
  
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
+    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return UITableViewCellEditingStyle.none
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
     
     

@@ -17,6 +17,7 @@ struct BBCurrency {
     var price:Double? //marketPrice
     var attention:Int? //attention
     var waddress:String? //waddress
+    var fee:Double?//withdrawFee
     
     var isAttention:Bool{
         get{
@@ -45,7 +46,8 @@ struct BBCurrency {
         let price = json["marketPrice"].doubleValue
         let att = json["attention"].intValue
         let add = json["waddress"].stringValue
-        let cc = BBCurrency(cid: cid, name: name, iconURL: icon, balance: balance, price: price, attention: att, waddress: add)
+        let fee = json["withdrawFee"].doubleValue
+        let cc = BBCurrency(cid: cid, name: name, iconURL: icon, balance: balance, price: price, attention: att, waddress: add, fee:fee)
         return cc
     }
     

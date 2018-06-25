@@ -13,11 +13,14 @@ class BBDepositHistory : BBBaseHistory{
     var address:String //fromAddress
     var txid:String //txid
     var amt:Double //chargeAmt
+    var time:Date // tradeTime
     
     override init(json: JSON) {
         address = json["fromAddress"].stringValue
         txid = json["txId"].stringValue
         amt = json["chargeAmt"].doubleValue
+        let ts = json["chargeTime"].doubleValue/1000
+        time = Date(timeIntervalSince1970: ts)
         super.init(json: json)
     }
     

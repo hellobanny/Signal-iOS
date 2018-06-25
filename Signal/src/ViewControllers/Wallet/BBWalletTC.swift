@@ -12,6 +12,7 @@ class BBWalletTC: UITableViewController {
 
     var currencys = [BBCurrency]()
     var pullVC : UIRefreshControl?
+    var pwh:PaywordHelper?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,9 +22,11 @@ class BBWalletTC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        BBCommon.changeNavigationBar(bar: self.navigationController?.navigationBar, isBlack: true)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "编辑", style: .done, target: self, action: #selector(BBWalletTC.editCurrencyList))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "修改密码(临时)", style: .done, target: self, action: #selector(BBWalletTC.changePayword))
         
-        loadMyCurrencys()
+        //loadMyCurrencys()
         
         let pullView = UIRefreshControl()
         pullView.tintColor = UIColor.gray
@@ -31,15 +34,17 @@ class BBWalletTC: UITableViewController {
         self.tableView.insertSubview(pullView, at: 0)
         self.pullVC = pullView
         BBCurrencyCache.shared.loadCurrency()
+        pwh = PaywordHelper()
+        pwh?.checkPaywordInited()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
+        loadMyCurrencys()
     }
     
     @objc func loadMyCurrencys(){
-        print("Load my currencys")
         let request = BBRequestFactory.shared.memberCurrency()
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
@@ -61,6 +66,10 @@ class BBWalletTC: UITableViewController {
         let nav = UINavigationController(rootViewController: his)
         self.present(nav, animated: true, completion: nil)
     }
+    
+    @objc func changePayword(){
+        pwh?.changePayword()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -71,29 +80,45 @@ class BBWalletTC: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return currencys.count
+        if section == 1 {
+            return currencys.count
+        }
+        return 1
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellnib = Bundle.main.loadNibNamed("CurrencyCell", owner: self, options: nil)
-        let cell = cellnib?.first! as! CurrencyCell
-        cell.configWith(currency: currencys[indexPath.row])
-        return cell
+        if indexPath.section == 1 {
+            let cellnib = Bundle.main.loadNibNamed("CurrencyCell", owner: self, options: nil)
+            let cell = cellnib?.first! as! CurrencyCell
+            cell.configWith(currency: currencys[indexPath.row])
+            return cell
+        }
+        else {
+            let cellnib = Bundle.main.loadNibNamed("TotalCell", owner: self, options: nil)
+            let cell = cellnib?.first! as! TotalCell
+            return cell
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80.0
+        if indexPath.section == 1 {
+            return 72.0
+        }
+        return 152.0
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currencyDetail = CurrencyDetailVC(cid: currencys[indexPath.row].cid)
-        self.navigationController?.pushViewController(currencyDetail, animated: true)
+        if indexPath.section == 1 {
+            let currencyDetail = CurrencyDetailVC(cid: currencys[indexPath.row].cid)
+            self.navigationController?.pushViewController(currencyDetail, animated: true)
+        }
     }
 
 }
+

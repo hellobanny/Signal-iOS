@@ -29,11 +29,13 @@ class WithdrawVC: UIViewController {
     }
     
     var balance:Double = 0.0
+    var fee:Double = 0.0
     
-    convenience init(cid:String,balance:Double){
+    convenience init(cid:String,balance:Double,fee:Double){
         self.init()
         self.cid = cid
         self.balance = balance
+        self.fee = fee
     }
         
     override func viewDidLoad() {
@@ -42,7 +44,9 @@ class WithdrawVC: UIViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提币历史", style: .done, target: self, action: #selector(WithdrawVC.viewWithdrawHistory))
         buttonWithdraw.isEnabled = false
         buttonChoose.setTitle("点击选择提现地址", for: .normal)
-        labelTip.text = "账户余额:\(balance),手续费0.01ETH"
+        if let cur = BBCurrencyCache.shared.getCurrencyby(cid: cid){
+            labelTip.text = "账户余额:\(balance),手续费\(fee)\(cur.name)"
+        }
         self.title = "提币"
     }
     
@@ -72,7 +76,12 @@ class WithdrawVC: UIViewController {
     }
     
     @IBAction func withdrawAll(_ sender: Any) {
-        textFiledNumber.text = "\(balance)"
+        if balance > fee {
+            textFiledNumber.text = "\(balance - fee)"
+        }
+        else {
+            textFiledNumber.text = "0.0"
+        }
     }
     
     @IBAction func startWithdraw(_ sender: Any) {
@@ -84,9 +93,13 @@ class WithdrawVC: UIViewController {
             textFiledNumber.layer.shake()
             return
         }
-        let (good,_) = NumberChecker.isGoodNumber(string: strNum)
+        let (good,v) = NumberChecker.isGoodNumber(string: strNum)
         if !good {
             textFiledNumber.layer.shake()
+            return
+        }
+        if v! + fee > balance {
+            BBCommon.notice(title: "余额不足")
             return
         }
         WithdrawHelper.shared.startWithdraw(home: self,currId: cid, toAddress: address, value: strNum)
