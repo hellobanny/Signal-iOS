@@ -16,6 +16,8 @@ class CurrencyDetailVC: UIViewController {
     @IBOutlet weak var labelPrice:UILabel!
     @IBOutlet weak var labelNumber:UILabel!
     @IBOutlet weak var labelTotal:UILabel!
+    @IBOutlet weak var labelNumberTitle:UILabel!
+    @IBOutlet weak var labelTotalTitle:UILabel!
     @IBOutlet weak var buttonQRCode:UIButton!
     @IBOutlet weak var buttonScan:UIButton!
     @IBOutlet weak var buttonDeposit:UIButton!
@@ -36,6 +38,13 @@ class CurrencyDetailVC: UIViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "历史明细", style: .done, target: self, action: #selector(CurrencyDetailVC.viewCurrencyHistory))
         loadCurrencyDetail()
+        
+        buttonDeposit.backgroundColor = BBCommon.ColorGreen
+        buttonDeposit.layer.masksToBounds = true
+        buttonDeposit.layer.cornerRadius = 4.0
+        
+        buttonWithdraw.layer.masksToBounds = true
+        buttonWithdraw.layer.cornerRadius = 4.0
     }
     
     func loadCurrencyDetail(){
@@ -84,7 +93,9 @@ class CurrencyDetailVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = true
+       
     }
+    
 
     @objc func viewCurrencyHistory(){
         let his = CurrencyHistoryTC(cid: cid, type: .all)

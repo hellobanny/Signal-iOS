@@ -31,6 +31,11 @@ class NewWithdrawAddressVC: UIViewController {
         tfAddress.text = UIPasteboard.general.string
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tfName.becomeFirstResponder()
+    }
+    
     /*
     // MARK: - Navigation
 

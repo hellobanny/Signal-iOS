@@ -15,6 +15,7 @@ import UIKit
 
         // Do any additional setup after loading the view.
         self.delegate = self
+        UITabBar.appearance().tintColor = BBCommon.ColorGreen
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -26,21 +27,25 @@ import UIKit
     public func loadTabViews() {
         let homeView = HomeViewController()
         let homeNav = SignalsNavigationController(rootViewController: homeView)
-        let homeBarItem = UITabBarItem(title: "信息", image: UIImage(named: "biMessages"), tag: 0)
+        let homeBarItem = UITabBarItem(title: "信息", image: UIImage(named: "message-grey"), tag: 0)
+        homeBarItem.selectedImage = UIImage(named: "message")
         homeNav.tabBarItem = homeBarItem
         
         let contacts  = NewContactThreadViewController()
         let contactsNav = SignalsNavigationController(rootViewController: contacts)
-        let contactsBI = UITabBarItem(title: "通讯录", image: UIImage(named: "biContacts"), tag: 1)
+        let contactsBI = UITabBarItem(title: "通讯录", image: UIImage(named: "addressbook-grey"), tag: 1)
+        contactsBI.selectedImage = UIImage(named: "address-book")
         contactsNav.tabBarItem = contactsBI
         
-        let walletTC = BBWalletTC(style: .grouped)
+        let walletTC = BBWalletTC(style: .plain)
         let walletNav = OWSNavigationController(rootViewController: walletTC)
-        let coinBagBI = UITabBarItem(title: "钱包", image: UIImage(named: "biBag"), tag: 2)
+        let coinBagBI = UITabBarItem(title: "钱包", image: UIImage(named: "wallet-grey"), tag: 2)
+        coinBagBI.selectedImage = UIImage(named: "wallet")
         walletTC.tabBarItem = coinBagBI
         
         let setNav = AppSettingsViewController.inModalNavigationController()
-        let setBarItem = UITabBarItem(title: "我", image: UIImage(named: "biSetting"), tag: 3)
+        let setBarItem = UITabBarItem(title: "我", image: UIImage(named: "my-grey"), tag: 3)
+        setBarItem.selectedImage = UIImage(named: "my")
         setNav.tabBarItem = setBarItem
         
         self.viewControllers = [homeNav,contactsNav,walletNav,setNav]

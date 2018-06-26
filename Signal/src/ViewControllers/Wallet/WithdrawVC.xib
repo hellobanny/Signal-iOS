@@ -44,12 +44,12 @@
                                 <action selector="startWithdraw:" destination="-1" eventType="touchUpInside" id="XHD-6X-Bn3"/>
                             </connections>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择提现账户" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J0F-JV-OaX">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择提币地址" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J0F-JV-OaX">
                             <rect key="frame" x="24" y="16" width="295" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="21" id="sga-9O-vjk"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
@@ -58,7 +58,7 @@
                             <constraints>
                                 <constraint firstAttribute="height" constant="21" id="UF8-uZ-O3Z"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>

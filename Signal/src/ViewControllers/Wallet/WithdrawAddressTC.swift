@@ -34,6 +34,7 @@ class WithdrawAddressTC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.title = "选择提币地址"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(WithdrawAddressTC.newAddress))
         loadMyWithdrawAddresss()
     }
@@ -62,7 +63,7 @@ class WithdrawAddressTC: UITableViewController {
     
     @objc func newAddress(){
         let vc = NewWithdrawAddressVC(nibName: "NewWithdrawAddressVC", bundle: nil)
-        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
         let add = PopupDialogButton(title: "添加") {
             let name = vc.tfName.text ?? ""
             let adds = vc.tfAddress.text ?? ""

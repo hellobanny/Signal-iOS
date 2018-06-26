@@ -44,7 +44,6 @@ class ScanAndQRCodeVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        BBCommon.changeNavigationBar(bar: self.navigationController?.navigationBar, isBlack: true)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(ScanAndQRCodeVC.close))
         self.viewQRCode.backgroundColor = BBCommon.ColorBlack
     }
@@ -55,6 +54,7 @@ class ScanAndQRCodeVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        BBCommon.changeNavigationBar(vc: self, isBlack: true)
         changeMode(scan: isScan)
     }
     

@@ -88,29 +88,32 @@ class CurrencyHistoryTC: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "HistoryCell")
+        let cellnib = Bundle.main.loadNibNamed("HistoryCell", owner: self, options: nil)
+        let cell = cellnib?.first! as! HistoryCell
         
         let his = historys[indexPath.row]
         if type == .all {
             if let h = his as? BBCommonHistory{
-                cell.textLabel?.text = h.abstract
-                cell.detailTextLabel?.text = h.time.description
+                cell.labelTitle?.text = h.abstract
+                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                //cell.setValue(value: )
             }
         }
         else if type == .deposit {
             if let h = his as? BBDepositHistory{
-                cell.textLabel?.text = h.address + " +\(h.amt)"
-                cell.detailTextLabel?.text = h.time.description
+                cell.labelTitle?.text = "充值"
+                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                cell.setValue(value: h.amt)
             }
         }
         else if type == .withdraw {
             if let h = his as? BBWithdrawHistory{
-                cell.textLabel?.text = h.statusDes
-                cell.detailTextLabel?.text = h.time.description
+                cell.labelTitle?.text = h.statusDes
+                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                cell.setValue(value: h.amt)
             }
         }
-        
-        
+
         return cell
     }
     

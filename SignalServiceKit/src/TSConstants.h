@@ -22,9 +22,9 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 //#ifndef DEBUG
 //10.35.0.57
-#define textSecureWebSocketAPI @"ws://10.35.11.134:8080/v1/websocket/"
-#define textSecureServerURL @"http://10.35.11.134:8001/"
-#define textSecureCDNServerURL @"http://10.35.11.134:8080"
+#define textSecureWebSocketAPI @"ws://10.35.11.134/v1/websocket/"
+#define textSecureServerURL @"http://10.35.11.134/"
+#define textSecureCDNServerURL @"http://10.35.11.134"
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.10.35.11.134"
 #define textSecureCDNReflectorHost @"textsecure-service-reflected.10.35.11.134"
 // Production

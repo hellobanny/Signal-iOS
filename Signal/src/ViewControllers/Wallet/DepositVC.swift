@@ -33,6 +33,7 @@ class DepositVC: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(DepositVC.close))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "充值记录", style: .done, target: self, action: #selector(DepositVC.viewDepositHistory))
         self.title = "充值"
+        self.buttonCopy.tintColor = BBCommon.ColorGreen
     }
     
     @objc func close(){

@@ -96,7 +96,7 @@ class InputPaywordVC: UIViewController {
     static func displayInputPayword(home:UIViewController,delegate:InputPaywordDelegate,title:String,hint:String,value:String){
         let vc = InputPaywordVC(title: title, hint: hint, value: value)
         vc.delegate = delegate
-        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
         home.present(pd, animated: true, completion: nil)
     }
 

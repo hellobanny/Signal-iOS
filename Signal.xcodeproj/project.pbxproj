@@ -454,6 +454,10 @@
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
 		5197D5A020E10FAB00B7D51A /* TotalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5197D59E20E10FAB00B7D51A /* TotalCell.swift */; };
 		5197D5A120E10FAB00B7D51A /* TotalCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D59F20E10FAB00B7D51A /* TotalCell.xib */; };
+		5197D5A720E21B7300B7D51A /* WRNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5A320E21B7300B7D51A /* WRNavigationBar.m */; };
+		5197D5A820E21B7300B7D51A /* WRCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5A620E21B7300B7D51A /* WRCustomNavigationBar.m */; };
+		5197D5AB20E2598500B7D51A /* HistoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5A920E2598500B7D51A /* HistoryCell.swift */; };
+		5197D5AC20E2598500B7D51A /* HistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D5AA20E2598500B7D51A /* HistoryCell.xib */; };
 		51A9649020DB3CE60058B4F4 /* NumberChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */; };
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
 		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
@@ -1154,6 +1158,12 @@
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
 		5197D59E20E10FAB00B7D51A /* TotalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalCell.swift; sourceTree = "<group>"; };
 		5197D59F20E10FAB00B7D51A /* TotalCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TotalCell.xib; sourceTree = "<group>"; };
+		5197D5A320E21B7300B7D51A /* WRNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WRNavigationBar.m; sourceTree = "<group>"; };
+		5197D5A420E21B7300B7D51A /* WRCustomNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WRCustomNavigationBar.h; sourceTree = "<group>"; };
+		5197D5A520E21B7300B7D51A /* WRNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WRNavigationBar.h; sourceTree = "<group>"; };
+		5197D5A620E21B7300B7D51A /* WRCustomNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WRCustomNavigationBar.m; sourceTree = "<group>"; };
+		5197D5A920E2598500B7D51A /* HistoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCell.swift; sourceTree = "<group>"; };
+		5197D5AA20E2598500B7D51A /* HistoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoryCell.xib; sourceTree = "<group>"; };
 		51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberChecker.swift; sourceTree = "<group>"; };
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
 		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
@@ -2153,6 +2163,7 @@
 		5144C98C20CF695300319062 /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				5197D5A220E21B7300B7D51A /* WRNavigationBar */,
 				51A9648E20DB3C030058B4F4 /* History */,
 				51A9648D20DB3BBD0058B4F4 /* Config */,
 				5120A1B320DA3C0400190B1E /* Withdraw */,
@@ -2188,6 +2199,17 @@
 			path = Wallet;
 			sourceTree = "<group>";
 		};
+		5197D5A220E21B7300B7D51A /* WRNavigationBar */ = {
+			isa = PBXGroup;
+			children = (
+				5197D5A320E21B7300B7D51A /* WRNavigationBar.m */,
+				5197D5A420E21B7300B7D51A /* WRCustomNavigationBar.h */,
+				5197D5A520E21B7300B7D51A /* WRNavigationBar.h */,
+				5197D5A620E21B7300B7D51A /* WRCustomNavigationBar.m */,
+			);
+			path = WRNavigationBar;
+			sourceTree = "<group>";
+		};
 		51A9648D20DB3BBD0058B4F4 /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -2206,6 +2228,8 @@
 				5144C9AE20CFEA0B00319062 /* CurrencyHistoryTC.swift */,
 				5144C9AF20CFEA0B00319062 /* CurrencyHistoryTC.xib */,
 				5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */,
+				5197D5A920E2598500B7D51A /* HistoryCell.swift */,
+				5197D5AA20E2598500B7D51A /* HistoryCell.xib */,
 			);
 			name = History;
 			sourceTree = "<group>";
@@ -2959,6 +2983,7 @@
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
+				5197D5AC20E2598500B7D51A /* HistoryCell.xib in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				5144C98A20CF66AB00319062 /* eth.png in Resources */,
 				5144C99620CF695300319062 /* CurrencyDetailVC.xib in Resources */,
@@ -3441,6 +3466,7 @@
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
+				5197D5AB20E2598500B7D51A /* HistoryCell.swift in Sources */,
 				34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */,
 				51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */,
 				5144C9A420CFBE7800319062 /* DepositVC.swift in Sources */,
@@ -3467,6 +3493,7 @@
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				5197D5A820E21B7300B7D51A /* WRCustomNavigationBar.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */,
@@ -3553,6 +3580,7 @@
 				5144C9AC20CFC40500319062 /* WithdrawAddressTC.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
+				5197D5A720E21B7300B7D51A /* WRNavigationBar.m in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,

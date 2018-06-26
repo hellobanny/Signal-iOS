@@ -26,7 +26,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0x7913d361B2eF28195b99726E930f163BE3801ac4" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="WlT-lD-vRd">
-                    <rect key="frame" x="16" y="506.5" width="343" height="24"/>
+                    <rect key="frame" x="16" y="370.5" width="343" height="24"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="24" id="WSb-Hr-4YW"/>
                     </constraints>
@@ -35,7 +35,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="你的钱包地址" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1jE-Tj-FfO">
-                    <rect key="frame" x="87.5" y="469.5" width="200" height="21"/>
+                    <rect key="frame" x="87.5" y="333.5" width="200" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="9nB-2D-VDw"/>
                         <constraint firstAttribute="width" constant="200" id="gWh-sl-LfT"/>
@@ -45,45 +45,48 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nKJ-sJ-EOq">
-                    <rect key="frame" x="67.5" y="213.5" width="240" height="240"/>
+                    <rect key="frame" x="67.5" y="93.5" width="240" height="240"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="240" id="SMe-ar-Vdc"/>
                         <constraint firstAttribute="width" constant="240" id="s5o-8u-xMh"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="一些说明文字" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ovQ-K3-GGy">
-                    <rect key="frame" x="16" y="36" width="343" height="169.5"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vea-Ek-xy2">
-                    <rect key="frame" x="137" y="538.5" width="100" height="30"/>
+                    <rect key="frame" x="137" y="402.5" width="100" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="54e-co-doR"/>
                         <constraint firstAttribute="width" constant="100" id="Jmx-0o-k8h"/>
                     </constraints>
-                    <state key="normal" title="点击复制"/>
+                    <state key="normal" title="点击复制地址"/>
                     <connections>
                         <action selector="copyAddress:" destination="-1" eventType="touchUpInside" id="Opa-VF-xv6"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ovQ-K3-GGy">
+                    <rect key="frame" x="16" y="456.5" width="343" height="202.5"/>
+                    <string key="text">这是为您充币准备的比特币收款地址； 
+在使用您的钱包进行转账时，扫描二维码或复制以下地址，填写到收款方；
+ 填入您希望充币的金额，请注意支付一定的矿工费以保证交易尽快被全网确认。</string>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="ovQ-K3-GGy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="3kq-JV-zoE"/>
-                <constraint firstItem="nKJ-sJ-EOq" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="6Yi-JJ-H6c"/>
-                <constraint firstItem="ovQ-K3-GGy" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="AjK-l7-oxt"/>
+                <constraint firstItem="nKJ-sJ-EOq" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" constant="-120" id="6Yi-JJ-H6c"/>
                 <constraint firstItem="Vea-Ek-xy2" firstAttribute="top" secondItem="WlT-lD-vRd" secondAttribute="bottom" constant="8" id="BvI-Ih-15r"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ovQ-K3-GGy" secondAttribute="trailing" constant="16" id="HUb-ac-qtX"/>
                 <constraint firstItem="Vea-Ek-xy2" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Hrk-EK-NtR"/>
                 <constraint firstItem="WlT-lD-vRd" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="KuT-cH-THA"/>
-                <constraint firstItem="nKJ-sJ-EOq" firstAttribute="top" secondItem="ovQ-K3-GGy" secondAttribute="bottom" constant="8" id="NdO-dS-2bf"/>
                 <constraint firstItem="1jE-Tj-FfO" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="S7M-mH-fC5"/>
-                <constraint firstItem="1jE-Tj-FfO" firstAttribute="top" secondItem="nKJ-sJ-EOq" secondAttribute="bottom" constant="16" id="bRS-gi-vtT"/>
+                <constraint firstItem="ovQ-K3-GGy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="aZS-lO-Xvs"/>
+                <constraint firstItem="1jE-Tj-FfO" firstAttribute="top" secondItem="nKJ-sJ-EOq" secondAttribute="bottom" id="bRS-gi-vtT"/>
                 <constraint firstItem="nKJ-sJ-EOq" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="dtm-Ij-jra"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="ovQ-K3-GGy" secondAttribute="bottom" constant="8" id="gr9-pS-jfR"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="WlT-lD-vRd" secondAttribute="trailing" constant="16" id="jvK-MB-IPM"/>
+                <constraint firstItem="ovQ-K3-GGy" firstAttribute="top" secondItem="Vea-Ek-xy2" secondAttribute="bottom" constant="24" id="k6K-vp-Cqd"/>
                 <constraint firstItem="WlT-lD-vRd" firstAttribute="top" secondItem="1jE-Tj-FfO" secondAttribute="bottom" constant="16" id="q9d-Mf-EBF"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ovQ-K3-GGy" secondAttribute="trailing" constant="16" id="vWI-UJ-Ynh"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
         </view>

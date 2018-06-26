@@ -8,6 +8,7 @@
 
 import UIKit
 
+@objc
 class BBCommon: NSObject {
     static let PageSize:Int = 20
     
@@ -25,17 +26,24 @@ class BBCommon: NSObject {
         UIApplication.shared.frontmostViewController?.present(av, animated: true, completion: nil)
     }
     
-    static let ColorBlack = UIColor(red:0.20, green:0.22, blue:0.23, alpha:1.00)
-    static let ColorWhite = UIColor(red:1.00, green:1.00, blue:1.00, alpha:1.00)
-    static let ColorDarkText = UIColor(red:0.20, green:0.21, blue:0.22, alpha:1.00)
-    static let ColorLightText = UIColor(red:0.61, green:0.63, blue:0.65, alpha:1.00)
+    @objc static let ColorBlack = UIColor(red:0.20, green:0.22, blue:0.23, alpha:1.00)
+    @objc static let ColorWhite = UIColor(red:1.00, green:1.00, blue:1.00, alpha:1.00)
+    @objc static let ColorDarkText = UIColor(red:0.20, green:0.21, blue:0.22, alpha:1.00)
+    @objc static let ColorLightText = UIColor(red:0.61, green:0.63, blue:0.65, alpha:1.00)
+    @objc static let ColorGreen = UIColor(red:0.20, green:0.71, blue:0.11, alpha:1.00)
     
-    static func changeNavigationBar(bar:UINavigationBar?,isBlack:Bool){
+    static func changeNavigationBar(vc:UIViewController,isBlack:Bool){
         if isBlack {
-            bar?.barTintColor = BBCommon.ColorBlack
+            vc.wr_setNavBarBarTintColor(BBCommon.ColorBlack)
+            vc.wr_setNavBarTintColor(BBCommon.ColorWhite)
+            vc.wr_setNavBarTitleColor(BBCommon.ColorWhite)
+            vc.wr_setStatusBarStyle(.lightContent)
         }
         else {
-            bar?.barTintColor = BBCommon.ColorWhite
+            vc.wr_setNavBarBarTintColor(BBCommon.ColorWhite)
+            vc.wr_setNavBarTintColor(BBCommon.ColorBlack)
+            vc.wr_setNavBarTitleColor(BBCommon.ColorBlack)
+            vc.wr_setStatusBarStyle(.default)
         }
     }
 }

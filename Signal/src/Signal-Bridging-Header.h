@@ -43,6 +43,7 @@
 #import "SignalsNavigationController.h"
 #import "AppDelegate.h"
 #import "NewContactThreadViewController.h"
+#import "WRNavigationBar.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>

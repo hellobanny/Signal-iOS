@@ -45,9 +45,17 @@ class WithdrawVC: UIViewController {
         buttonWithdraw.isEnabled = false
         buttonChoose.setTitle("点击选择提现地址", for: .normal)
         if let cur = BBCurrencyCache.shared.getCurrencyby(cid: cid){
-            labelTip.text = "账户余额:\(balance),手续费\(fee)\(cur.name)"
+            labelTip.text = "账户余额:\(balance), 提币手续费\(fee)\(cur.name)"
         }
         self.title = "提币"
+        
+        buttonChoose.backgroundColor = BBCommon.ColorLightText
+        buttonChoose.layer.masksToBounds = true
+        buttonChoose.layer.cornerRadius = 4.0
+        
+        buttonWithdraw.backgroundColor = BBCommon.ColorGreen
+        buttonWithdraw.layer.masksToBounds = true
+        buttonWithdraw.layer.cornerRadius = 4.0
     }
     
     @objc func close(){

@@ -22,11 +22,13 @@ class BBWalletTC: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        BBCommon.changeNavigationBar(bar: self.navigationController?.navigationBar, isBlack: true)
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "编辑", style: .done, target: self, action: #selector(BBWalletTC.editCurrencyList))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "修改密码(临时)", style: .done, target: self, action: #selector(BBWalletTC.changePayword))
         
-        //loadMyCurrencys()
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
         
         let pullView = UIRefreshControl()
         pullView.tintColor = UIColor.gray
@@ -42,6 +44,11 @@ class BBWalletTC: UITableViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         loadMyCurrencys()
+        BBCommon.changeNavigationBar(vc: self, isBlack: true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     @objc func loadMyCurrencys(){
@@ -91,6 +98,7 @@ class BBWalletTC: UITableViewController {
         return 1
     }
 
+    private var totalCell:TotalCell?
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 1 {
@@ -100,10 +108,26 @@ class BBWalletTC: UITableViewController {
             return cell
         }
         else {
-            let cellnib = Bundle.main.loadNibNamed("TotalCell", owner: self, options: nil)
-            let cell = cellnib?.first! as! TotalCell
-            return cell
+            if let tc = totalCell{
+                tc.configWith(currencys: self.currencys)
+                return tc
+            }
+            else {
+                let cellnib = Bundle.main.loadNibNamed("TotalCell", owner: self, options: nil)
+                let cell = cellnib?.first! as! TotalCell
+                self.totalCell = cell
+                cell.configWith(currencys: self.currencys)
+                return cell
+            }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return [0.001,8.0][section]
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.001
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
