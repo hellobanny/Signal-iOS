@@ -458,11 +458,24 @@
 		5197D5A820E21B7300B7D51A /* WRCustomNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5A620E21B7300B7D51A /* WRCustomNavigationBar.m */; };
 		5197D5AB20E2598500B7D51A /* HistoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5A920E2598500B7D51A /* HistoryCell.swift */; };
 		5197D5AC20E2598500B7D51A /* HistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D5AA20E2598500B7D51A /* HistoryCell.xib */; };
+		5197D5AF20E2612C00B7D51A /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5197D5AD20E2612C00B7D51A /* WebVC.swift */; };
+		5197D5B020E2612C00B7D51A /* WebVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D5AE20E2612C00B7D51A /* WebVC.xib */; };
 		51A9649020DB3CE60058B4F4 /* NumberChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */; };
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
 		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
 		51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */; };
 		51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */; };
+		51F1003220E5D94A00FCB2E7 /* TransferInputVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1003020E5D94A00FCB2E7 /* TransferInputVC.swift */; };
+		51F1003320E5D94A00FCB2E7 /* TransferInputVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51F1003120E5D94A00FCB2E7 /* TransferInputVC.xib */; };
+		51F1003620E5D96600FCB2E7 /* TransferResultVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1003420E5D96600FCB2E7 /* TransferResultVC.swift */; };
+		51F1003720E5D96600FCB2E7 /* TransferResultVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51F1003520E5D96600FCB2E7 /* TransferResultVC.xib */; };
+		51F1003A20E5D98800FCB2E7 /* TransferDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1003820E5D98800FCB2E7 /* TransferDetailVC.swift */; };
+		51F1003B20E5D98800FCB2E7 /* TransferDetailVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51F1003920E5D98800FCB2E7 /* TransferDetailVC.xib */; };
+		51F1003E20E5D9A500FCB2E7 /* TransferAcceptVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1003C20E5D9A500FCB2E7 /* TransferAcceptVC.swift */; };
+		51F1003F20E5D9A500FCB2E7 /* TransferAcceptVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51F1003D20E5D9A500FCB2E7 /* TransferAcceptVC.xib */; };
+		51F1004120E6283800FCB2E7 /* LabelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1004020E6283800FCB2E7 /* LabelConfig.swift */; };
+		51F1004420E633AC00FCB2E7 /* ChooseCurrencyTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1004220E633AC00FCB2E7 /* ChooseCurrencyTC.swift */; };
+		51F1004520E633AC00FCB2E7 /* ChooseCurrencyTC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51F1004320E633AC00FCB2E7 /* ChooseCurrencyTC.xib */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1164,11 +1177,24 @@
 		5197D5A620E21B7300B7D51A /* WRCustomNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WRCustomNavigationBar.m; sourceTree = "<group>"; };
 		5197D5A920E2598500B7D51A /* HistoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCell.swift; sourceTree = "<group>"; };
 		5197D5AA20E2598500B7D51A /* HistoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoryCell.xib; sourceTree = "<group>"; };
+		5197D5AD20E2612C00B7D51A /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
+		5197D5AE20E2612C00B7D51A /* WebVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WebVC.xib; sourceTree = "<group>"; };
 		51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberChecker.swift; sourceTree = "<group>"; };
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
 		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
 		51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNumberFT.swift; sourceTree = "<group>"; };
 		51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywordHelper.swift; sourceTree = "<group>"; };
+		51F1003020E5D94A00FCB2E7 /* TransferInputVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferInputVC.swift; sourceTree = "<group>"; };
+		51F1003120E5D94A00FCB2E7 /* TransferInputVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransferInputVC.xib; sourceTree = "<group>"; };
+		51F1003420E5D96600FCB2E7 /* TransferResultVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferResultVC.swift; sourceTree = "<group>"; };
+		51F1003520E5D96600FCB2E7 /* TransferResultVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransferResultVC.xib; sourceTree = "<group>"; };
+		51F1003820E5D98800FCB2E7 /* TransferDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferDetailVC.swift; sourceTree = "<group>"; };
+		51F1003920E5D98800FCB2E7 /* TransferDetailVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransferDetailVC.xib; sourceTree = "<group>"; };
+		51F1003C20E5D9A500FCB2E7 /* TransferAcceptVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferAcceptVC.swift; sourceTree = "<group>"; };
+		51F1003D20E5D9A500FCB2E7 /* TransferAcceptVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransferAcceptVC.xib; sourceTree = "<group>"; };
+		51F1004020E6283800FCB2E7 /* LabelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelConfig.swift; sourceTree = "<group>"; };
+		51F1004220E633AC00FCB2E7 /* ChooseCurrencyTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseCurrencyTC.swift; sourceTree = "<group>"; };
+		51F1004320E633AC00FCB2E7 /* ChooseCurrencyTC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChooseCurrencyTC.xib; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1601,6 +1627,7 @@
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
+				51F1002F20E5D87800FCB2E7 /* Transfer */,
 				34D1F0951F867BFC0066283D /* Cells */,
 				34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */,
 				34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */,
@@ -2218,6 +2245,7 @@
 				51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */,
 				51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */,
 				51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */,
+				51F1004020E6283800FCB2E7 /* LabelConfig.swift */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -2230,8 +2258,27 @@
 				5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */,
 				5197D5A920E2598500B7D51A /* HistoryCell.swift */,
 				5197D5AA20E2598500B7D51A /* HistoryCell.xib */,
+				5197D5AD20E2612C00B7D51A /* WebVC.swift */,
+				5197D5AE20E2612C00B7D51A /* WebVC.xib */,
 			);
 			name = History;
+			sourceTree = "<group>";
+		};
+		51F1002F20E5D87800FCB2E7 /* Transfer */ = {
+			isa = PBXGroup;
+			children = (
+				51F1003020E5D94A00FCB2E7 /* TransferInputVC.swift */,
+				51F1003120E5D94A00FCB2E7 /* TransferInputVC.xib */,
+				51F1003420E5D96600FCB2E7 /* TransferResultVC.swift */,
+				51F1003520E5D96600FCB2E7 /* TransferResultVC.xib */,
+				51F1003820E5D98800FCB2E7 /* TransferDetailVC.swift */,
+				51F1003920E5D98800FCB2E7 /* TransferDetailVC.xib */,
+				51F1003C20E5D9A500FCB2E7 /* TransferAcceptVC.swift */,
+				51F1003D20E5D9A500FCB2E7 /* TransferAcceptVC.xib */,
+				51F1004220E633AC00FCB2E7 /* ChooseCurrencyTC.swift */,
+				51F1004320E633AC00FCB2E7 /* ChooseCurrencyTC.xib */,
+			);
+			path = Transfer;
 			sourceTree = "<group>";
 		};
 		76EB03C118170B33006006FC /* src */ = {
@@ -2943,6 +2990,7 @@
 				5144C9A920CFBE8D00319062 /* WithdrawVC.xib in Resources */,
 				5120A1BD20DA785200190B1E /* RolloutVC.xib in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
+				51F1003320E5D94A00FCB2E7 /* TransferInputVC.xib in Resources */,
 				5144C9B120CFEA0B00319062 /* CurrencyHistoryTC.xib in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
@@ -2970,6 +3018,7 @@
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				5144C98820CF66AB00319062 /* btc.png in Resources */,
+				51F1003720E5D96600FCB2E7 /* TransferResultVC.xib in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
@@ -2978,8 +3027,10 @@
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
+				5197D5B020E2612C00B7D51A /* WebVC.xib in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
+				51F1003B20E5D98800FCB2E7 /* TransferDetailVC.xib in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
@@ -3007,12 +3058,14 @@
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
+				51F1004520E633AC00FCB2E7 /* ChooseCurrencyTC.xib in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				5144C9AD20CFC40500319062 /* WithdrawAddressTC.xib in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
+				51F1003F20E5D9A500FCB2E7 /* TransferAcceptVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3146,6 +3199,7 @@
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
+				"${BUILT_PRODUCTS_DIR}/UIColor_Hex_Swift/UIColor_Hex_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
 				"${BUILT_PRODUCTS_DIR}/YBPopupMenu/YBPopupMenu.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
@@ -3178,6 +3232,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIColor_Hex_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YBPopupMenu.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
@@ -3232,6 +3287,7 @@
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
 				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
+				"${BUILT_PRODUCTS_DIR}/UIColor_Hex_Swift/UIColor_Hex_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
@@ -3257,6 +3313,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIColor_Hex_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
@@ -3417,6 +3474,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51F1004120E6283800FCB2E7 /* LabelConfig.swift in Sources */,
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
@@ -3435,6 +3493,7 @@
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
+				51F1003A20E5D98800FCB2E7 /* TransferDetailVC.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
@@ -3463,6 +3522,7 @@
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */,
+				51F1003620E5D96600FCB2E7 /* TransferResultVC.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
@@ -3526,6 +3586,7 @@
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
+				51F1004420E633AC00FCB2E7 /* ChooseCurrencyTC.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */,
 				51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */,
@@ -3568,8 +3629,10 @@
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */,
+				51F1003E20E5D9A500FCB2E7 /* TransferAcceptVC.swift in Sources */,
 				340FC8CA20517B84007AEB0F /* OWSBackupImportJob.m in Sources */,
 				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
+				5197D5AF20E2612C00B7D51A /* WebVC.swift in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
@@ -3596,6 +3659,7 @@
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
 				340FC8A8204DAC8D007AEB0F /* CodeVerificationViewController.m in Sources */,
 				3461299C1FD1EA9E00532771 /* NotificationsManager.m in Sources */,
+				51F1003220E5D94A00FCB2E7 /* TransferInputVC.swift in Sources */,
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,

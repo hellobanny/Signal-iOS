@@ -15,7 +15,7 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
     var address:String!
     var balance:String!
     var cid:String!
-    var indoor = false
+    var indoor = false //indoor 是内部用户转账
     
     static let shared : WithdrawHelper = {
         let instance = WithdrawHelper()

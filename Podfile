@@ -32,7 +32,7 @@ def shared_pods
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
   pod 'Kingfisher', :inhibit_warnings => true
-
+  pod 'UIColor_Hex_Swift'
 end
 
 target 'Signal' do

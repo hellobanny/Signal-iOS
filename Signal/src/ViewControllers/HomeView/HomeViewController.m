@@ -356,6 +356,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                         action:nil];
 }
 
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -432,15 +433,15 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         
     }
     else if (index == 2){
-        ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
+        /*ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
         saq.isScan = TRUE;
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
-        [self presentViewController:nav animated:TRUE completion:NULL];
+        [self presentViewController:nav animated:TRUE completion:NULL];*/
     }
     else if (index == 3){
-        ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
+        /*ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
-        [self presentViewController:nav animated:TRUE completion:NULL];
+        [self presentViewController:nav animated:TRUE completion:NULL];*/
     }
 }
 
@@ -503,7 +504,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
+    [self.tabBarController.tabBar setHidden:FALSE];
     __block BOOL hasAnyMessages;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];

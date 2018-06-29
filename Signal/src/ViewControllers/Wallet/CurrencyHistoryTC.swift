@@ -96,7 +96,7 @@ class CurrencyHistoryTC: UITableViewController {
             if let h = his as? BBCommonHistory{
                 cell.labelTitle?.text = h.abstract
                 cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
-                //cell.setValue(value: )
+                cell.labelValue.text = ""
             }
         }
         else if type == .deposit {
@@ -117,4 +117,25 @@ class CurrencyHistoryTC: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let his = historys[indexPath.row]
+        if type == .deposit {
+            if let h = his as? BBDepositHistory{
+                self.openTx(tx: h.txid)
+            }
+        }
+        else if type == .withdraw {
+            if let h = his as? BBWithdrawHistory{
+                self.openTx(tx: h.txid)
+            }
+        }
+        
+    }
+    
+    func openTx(tx:String){
+        let url = "https://ropsten.etherscan.io/tx/\(tx)"
+        let webVC = WebVC()
+        webVC.url = url
+        self.navigationController?.pushViewController(webVC, animated: true)
+    }
 }

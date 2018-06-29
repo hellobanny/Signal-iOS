@@ -653,6 +653,7 @@ typedef enum : NSUInteger {
 
     [super viewWillAppear:animated];
 
+    [self.tabBarController.tabBar setHidden:TRUE];
     // In case we're dismissing a CNContactViewController, or DocumentPicker which requires default system appearance
     [UIUtil applySignalAppearence];
 
@@ -2656,6 +2657,17 @@ typedef enum : NSUInteger {
     [self presentViewController:menuController animated:YES completion:nil];
 }
 
+#pragma mark - 转账和红包
+- (void)showStartTransfer
+{
+    
+}
+
+- (void)showStartRedPocket
+{
+    
+}
+
 #pragma mark - Attachment Picking: GIFs
 
 - (void)showGifPicker
@@ -3677,6 +3689,29 @@ typedef enum : NSUInteger {
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     [actionSheetController addAction:[OWSAlerts cancelAction]];
+    
+    UIAlertAction *transAction = [UIAlertAction
+                                      actionWithTitle:@"转账"
+                                      style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *_Nonnull action) {
+                                          [self showStartTransfer];
+                                      }];
+    UIImage *zzImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    OWSAssert(zzImage);
+    [transAction setValue:zzImage forKey:@"image"];
+    [actionSheetController addAction:transAction];
+    
+    
+    UIAlertAction * redPocketAction = [UIAlertAction
+                                      actionWithTitle:@"红包"
+                                      style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *_Nonnull action) {
+                                          [self showStartRedPocket];
+                                      }];
+    UIImage *rpImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    OWSAssert(rpImage);
+    [redPocketAction setValue:rpImage forKey:@"image"];
+    [actionSheetController addAction:redPocketAction];
 
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")

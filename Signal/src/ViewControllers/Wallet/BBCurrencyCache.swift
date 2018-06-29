@@ -38,6 +38,11 @@ class BBCurrencyCache: NSObject {
         }
     }
     
+    func allCurrencys() -> [BBCurrency] {
+        let array = self.currencyDic.map{$0.value}
+        return array
+    }
+    
     func getCurrencyby(cid:String) -> BBCurrency? {
         return currencyDic[cid]
     }

@@ -68,6 +68,7 @@ PODS:
   - SwiftyJSON (4.1.0)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
+  - UIColor_Hex_Swift (4.0.1)
   - UnionFind (1.0.1)
   - YapDatabase/SQLCipher (3.0.2):
     - YapDatabase/SQLCipher/Core (= 3.0.2)
@@ -152,6 +153,7 @@ DEPENDENCIES:
   - SQLCipher (from `https://github.com/sqlcipher/sqlcipher.git`, commit `d5c2bec`)
   - SSZipArchive
   - SwiftyJSON
+  - UIColor_Hex_Swift
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `release/unencryptedHeaders`)
   - YBPopupMenu
   - YYImage
@@ -175,6 +177,7 @@ SPEC REPOS:
     - SSZipArchive
     - SwiftyJSON
     - TwistedOakCollapsingFutures
+    - UIColor_Hex_Swift
     - UnionFind
     - YBPopupMenu
     - YYImage
@@ -256,11 +259,12 @@ SPEC CHECKSUMS:
   SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
+  UIColor_Hex_Swift: c5ff88470499383b8fd85302d59344bb24ba9436
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 299a32de9d350d37a9ac5b0532609d87d5d2a5de
   YBPopupMenu: 6efb286385d95ba5f97c58b8464ec873645e8764
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: f0fc969fe4cebaa0834005ee0ef4ed68128ba488
+PODFILE CHECKSUM: 0d5c0aee90cf61642e88816795639b8eed26ba28
 
 COCOAPODS: 1.5.2

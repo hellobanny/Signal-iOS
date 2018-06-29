@@ -21,12 +21,21 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define SHOW_LEGAL_TERMS_LINK
 
 //#ifndef DEBUG
-//10.35.0.57
+//10.35.11.134
 #define textSecureWebSocketAPI @"ws://10.35.11.134/v1/websocket/"
 #define textSecureServerURL @"http://10.35.11.134/"
 #define textSecureCDNServerURL @"http://10.35.11.134"
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.10.35.11.134"
 #define textSecureCDNReflectorHost @"textsecure-service-reflected.10.35.11.134"
+
+/*
+//47.96.76.141
+#define textSecureWebSocketAPI @"ws://47.96.76.141/v1/websocket/"
+#define textSecureServerURL @"http://47.96.76.141/"
+#define textSecureCDNServerURL @"http://47.96.76.141"
+#define textSecureServiceReflectorHost @"textsecure-service-reflected.47.96.76.141"
+#define textSecureCDNReflectorHost @"textsecure-service-reflected.47.96.76.141"
+ */
 // Production
 /*#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
 #define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
