@@ -77,7 +77,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
                         transaction:(YapDatabaseReadTransaction *)transaction
+                  conversationStyle:(ConversationStyle *)conversationStyle
 {
+    OWSAssert(interaction);
+    OWSAssert(transaction);
+    OWSAssert(conversationStyle);
+
     self = [super init];
 
     if (!self) {
@@ -86,8 +91,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
-    self.row = NSNotFound;
-    self.previousRow = NSNotFound;
+    _conversationStyle = conversationStyle;
 
     [self ensureViewState:transaction];
 
@@ -145,24 +149,35 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldHideRecipientStatus:(BOOL)shouldHideRecipientStatus
+- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderAvatar
 {
-    if (_shouldHideRecipientStatus == shouldHideRecipientStatus) {
+    if (_shouldShowSenderAvatar == shouldShowSenderAvatar) {
         return;
     }
 
-    _shouldHideRecipientStatus = shouldHideRecipientStatus;
+    _shouldShowSenderAvatar = shouldShowSenderAvatar;
 
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldHideBubbleTail:(BOOL)shouldHideBubbleTail
+- (void)setSenderName:(nullable NSString *)senderName
 {
-    if (_shouldHideBubbleTail == shouldHideBubbleTail) {
+    if ([NSObject isNullableObject:senderName equalTo:_senderName]) {
         return;
     }
 
-    _shouldHideBubbleTail = shouldHideBubbleTail;
+    _senderName = senderName;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setShouldHideFooter:(BOOL)shouldHideFooter
+{
+    if (_shouldHideFooter == shouldHideFooter) {
+        return;
+    }
+
+    _shouldHideFooter = shouldHideFooter;
 
     [self clearCachedLayoutState];
 }
@@ -172,14 +187,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.cachedCellSize = nil;
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
     OWSAssertIsOnMainThread();
+    OWSAssert(self.conversationStyle);
 
     if (!self.cachedCellSize) {
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
-        CGSize cellSize = [measurementCell cellSizeForViewWidth:viewWidth contentWidth:contentWidth];
+        measurementCell.conversationStyle = self.conversationStyle;
+        CGSize cellSize = [measurementCell cellSizeWithTransaction:transaction];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];
     }
@@ -250,6 +268,33 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     return measurementCell;
+}
+
+- (CGFloat)vSpacingWithPreviousLayoutItem:(ConversationViewItem *)previousLayoutItem
+{
+    OWSAssert(previousLayoutItem);
+
+    if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
+        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator
+        || self.shouldShowDate) {
+        return 20.f;
+    }
+
+    // "Bubble Collapse".  Adjacent messages with the same author should be close together.
+    if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+        TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
+        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
+            return 2.f;
+        }
+    } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        return 2.f;
+    }
+
+    // TODO:
+    return 10.f;
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView

@@ -44,7 +44,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 70;
+    self.tableView.estimatedRowHeight = 60;
 
     [self.tableView applyScrollViewInsetsFix];
 
@@ -195,8 +195,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // External database modifications can't be converted into incremental updates,
     // so rebuild everything.  This is expensive and usually isn't necessary, but

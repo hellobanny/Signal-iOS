@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSDisappearingMessagesConfiguration;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -31,6 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return The name of the thread.
  */
 - (NSString *)name;
+
+@property (readonly, nullable) NSString *conversationColorName;
+- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed;
 
 /**
  * @returns
@@ -122,6 +127,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+
+#pragma mark Disappearing Messages
+
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
+    (YapDatabaseReadTransaction *)transaction;
+- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 #pragma mark Drafts
 
 /**
@@ -146,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate;
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

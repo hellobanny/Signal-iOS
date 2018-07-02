@@ -232,7 +232,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                                                         titleColor:[UIColor whiteColor]
                                                    backgroundColor:[UIColor ows_signalBrandBlueColor]
                                                             target:self
-                                                          selector:@selector(sendCodeAction)];
+                                                          selector:@selector(didTapRegisterButton)];
     self.activateButton = activateButton;
     [contentView addSubview:activateButton];
     [activateButton autoPinLeadingAndTrailingToSuperviewMargin];
@@ -278,6 +278,61 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [self.activateButton setEnabled:YES];
     [self.spinnerView stopAnimating];
     [self.phoneNumberTextField becomeFirstResponder];
+
+    if ([TSAccountManager sharedInstance].isReregistering) {
+        // If re-registering, pre-populate the country (country code, calling code, country name)
+        // and phone number state.
+        NSString *_Nullable phoneNumberE164 = [TSAccountManager sharedInstance].reregisterationPhoneNumber;
+        if (!phoneNumberE164) {
+            OWSFail(@"%@ Could not resume re-registration; missing phone number.", self.logTag);
+        } else if ([self tryToApplyPhoneNumberE164:phoneNumberE164]) {
+            // Don't let user edit their phone number while re-registering.
+            self.phoneNumberTextField.enabled = NO;
+        }
+    }
+}
+
+- (BOOL)tryToApplyPhoneNumberE164:(NSString *)phoneNumberE164
+{
+    OWSAssert(phoneNumberE164);
+
+    if (phoneNumberE164.length < 1) {
+        OWSFail(@"%@ Could not resume re-registration; invalid phoneNumberE164.", self.logTag);
+        return NO;
+    }
+    PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:phoneNumberE164];
+    if (!parsedPhoneNumber) {
+        OWSFail(@"%@ Could not resume re-registration; couldn't parse phoneNumberE164.", self.logTag);
+        return NO;
+    }
+    NSNumber *_Nullable callingCode = parsedPhoneNumber.getCountryCode;
+    if (!callingCode) {
+        OWSFail(@"%@ Could not resume re-registration; missing callingCode.", self.logTag);
+        return NO;
+    }
+    NSString *callingCodeText = [NSString stringWithFormat:@"+%d", callingCode.intValue];
+    NSArray<NSString *> *_Nullable countryCodes =
+        [PhoneNumberUtil.sharedThreadLocal countryCodesFromCallingCode:callingCodeText];
+    if (countryCodes.count < 1) {
+        OWSFail(@"%@ Could not resume re-registration; unknown countryCode.", self.logTag);
+        return NO;
+    }
+    NSString *countryCode = countryCodes.firstObject;
+    NSString *_Nullable countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    if (!countryName) {
+        OWSFail(@"%@ Could not resume re-registration; unknown countryName.", self.logTag);
+        return NO;
+    }
+    if (![phoneNumberE164 hasPrefix:callingCodeText]) {
+        OWSFail(@"%@ Could not resume re-registration; non-matching calling code.", self.logTag);
+        return NO;
+    }
+    NSString *phoneNumberWithoutCallingCode = [phoneNumberE164 substringFromIndex:callingCodeText.length];
+
+    [self updateCountryWithName:countryName callingCode:callingCodeText countryCode:countryCode];
+    self.phoneNumberTextField.text = phoneNumberWithoutCallingCode;
+
+    return YES;
 }
 
 #pragma mark - Country
@@ -323,7 +378,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 #pragma mark - Actions
 
-- (void)sendCodeAction
+- (void)didTapRegisterButton
 {
     NSString *phoneNumberText = [_phoneNumberTextField.text ows_stripped];
     if (phoneNumberText.length < 1) {
@@ -335,6 +390,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                                @"Message of alert indicating that users needs to enter a phone number to register.")];
         return;
     }
+
     NSString *countryCode = self.countryCode;
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
@@ -349,6 +405,29 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
         return;
     }
 
+    if (UIDevice.currentDevice.isIPad) {
+        [OWSAlerts showConfirmationAlertWithTitle:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_TITLE",
+                                                      @"alert title when registering an iPad")
+                                          message:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_BODY",
+                                                      @"alert body when registering an iPad")
+                                     proceedTitle:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_BUTTON",
+                                                      @"button text to proceed with registration when on an iPad")
+                                    proceedAction:^(UIAlertAction *_Nonnull action) {
+                                        [self sendCodeActionWithParsedPhoneNumber:parsedPhoneNumber
+                                                                  phoneNumberText:phoneNumberText
+                                                                      countryCode:countryCode];
+                                    }];
+    } else {
+        [self sendCodeActionWithParsedPhoneNumber:parsedPhoneNumber
+                                  phoneNumberText:phoneNumberText
+                                      countryCode:countryCode];
+    }
+}
+
+- (void)sendCodeActionWithParsedPhoneNumber:(NSString *)parsedPhoneNumber
+                            phoneNumberText:(NSString *)phoneNumberText
+                                countryCode:(NSString *)countryCode
+{
     [self.activateButton setEnabled:NO];
     [self.spinnerView startAnimating];
     [self.phoneNumberTextField resignFirstResponder];
@@ -385,6 +464,11 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)countryCodeRowWasTapped:(UIGestureRecognizer *)sender
 {
+    if (TSAccountManager.sharedInstance.isReregistering) {
+        // Don't let user edit their phone number while re-registering.
+        return;
+    }
+
     if (sender.state == UIGestureRecognizerStateRecognized) {
         [self changeCountryCodeTapped];
     }
@@ -459,7 +543,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [self sendCodeAction];
+    [self didTapRegisterButton];
     [textField resignFirstResponder];
     return NO;
 }

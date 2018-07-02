@@ -174,6 +174,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
@@ -195,6 +196,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSUInteger lastRangeLength;
 @property (nonatomic) ConversationViewAction actionOnOpen;
+@property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
+
 @property (nonatomic) BOOL peek;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -215,7 +218,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleTimestamp;
 
-@property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
 
 @property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
@@ -354,6 +356,13 @@ typedef enum : NSUInteger {
                                                object:nil];
 }
 
+- (BOOL)isGroupConversation
+{
+    OWSAssert(self.thread);
+
+    return self.thread.isGroupThread;
+}
+
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -426,21 +435,25 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)configureForThread:(TSThread *)thread action:(ConversationViewAction)action
+- (void)configureForThread:(TSThread *)thread
+                    action:(ConversationViewAction)action
+            focusMessageId:(nullable NSString *)focusMessageId
 {
+    OWSAssert(thread);
+
     _thread = thread;
-    _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     self.actionOnOpen = action;
+    self.focusMessageIdOnOpen = focusMessageId;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
-
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
     self.lastRangeLength = 0;
     [self ensureDynamicInteractions];
+    [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
 
     if (thread.uniqueId.length > 0) {
         self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
@@ -451,6 +464,13 @@ typedef enum : NSUInteger {
             [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
         return;
     }
+
+    // Cells' appearance can depend on adjacent cells in both directions.
+    [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
+        @(-1),
+        @(+1),
+    ]]
+                                                 forGroup:self.thread.uniqueId];
 
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
@@ -520,7 +540,12 @@ typedef enum : NSUInteger {
 
 - (void)createContents
 {
-    _layout = [ConversationViewLayout new];
+    OWSAssert(self.conversationStyle);
+
+    _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle
+                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+    self.conversationStyle.viewWidth = self.view.width;
+
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
@@ -539,7 +564,7 @@ typedef enum : NSUInteger {
 
     [self.collectionView applyScrollViewInsetsFix];
 
-    _inputToolbar = [ConversationInputToolbar new];
+    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
@@ -699,13 +724,43 @@ typedef enum : NSUInteger {
     return nil;
 }
 
+- (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
+{
+    OWSAssert(self.focusMessageIdOnOpen);
+    OWSAssert(self.dynamicInteractions.focusMessagePosition);
+
+    if (!self.dynamicInteractions.focusMessagePosition) {
+        // This might happen if the focus message has disappeared
+        // before this view could appear.
+        OWSFail(@"%@ focus message has unknown position.", self.logTag);
+        return nil;
+    }
+    NSUInteger focusMessagePosition = self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue;
+    if (focusMessagePosition >= self.viewItems.count) {
+        // This might happen if the focus message is outside the maximum
+        // valid load window size for this view.
+        OWSFail(@"%@ focus message has invalid position.", self.logTag);
+        return nil;
+    }
+    NSInteger row = (NSInteger)((self.viewItems.count - 1) - focusMessagePosition);
+    return [NSIndexPath indexPathForRow:row inSection:0];
+}
+
 - (void)scrollToDefaultPosition
 {
     if (self.isUserScrolling) {
         return;
     }
 
-    NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
+    NSIndexPath *_Nullable indexPath = nil;
+    if (self.focusMessageIdOnOpen) {
+        indexPath = [self indexPathOfMessageOnOpen];
+    }
+
+    if (!indexPath) {
+        indexPath = [self indexPathOfUnreadMessagesIndicator];
+    }
+
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
             [self.collectionView setContentOffset:CGPointZero animated:NO];
@@ -947,15 +1002,16 @@ typedef enum : NSUInteger {
                                                @"numbers of multiple users.")
                                          : NSLocalizedString(@"VERIFY_PRIVACY",
                                                @"Label for button or row which allows users to verify the safety "
-                                               @"number of another user."))style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction *_Nonnull action) {
+                                               @"number of another user."))
+                      style:UIAlertActionStyleDefault
+                    handler:^(UIAlertAction *action) {
                         [weakSelf showNoLongerVerifiedUI];
                     }];
         [actionSheetController addAction:verifyAction];
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *_Nonnull action) {
+                                                              handler:^(UIAlertAction *action) {
                                                                   [weakSelf resetVerificationStateToDefault];
                                                               }];
         [actionSheetController addAction:dismissAction];
@@ -1067,6 +1123,7 @@ typedef enum : NSUInteger {
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
+    [self autoLoadMoreIfNecessary];
 
     switch (self.actionOnOpen) {
         case ConversationViewActionNone:
@@ -1082,8 +1139,9 @@ typedef enum : NSUInteger {
             break;
     }
 
+    // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
-
+    self.focusMessageIdOnOpen = nil;
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
@@ -1558,7 +1616,15 @@ typedef enum : NSUInteger {
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-    if (hasEarlierUnseenMessages) {
+    if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
+        // Ensure view items are updated before trying to scroll to the
+        // unread indicator.
+        //
+        // loadNMoreMessages calls resetMappings which calls ensureDynamicInteractions,
+        // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
+        // to work properly, the view items need to be updated to reflect that change.
+        [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
+
         [self scrollToUnreadIndicatorAnimated];
     }
 }
@@ -1611,7 +1677,7 @@ typedef enum : NSUInteger {
 
 - (void)updateDisappearingMessagesConfiguration
 {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
     }];
@@ -1635,8 +1701,19 @@ typedef enum : NSUInteger {
     
     if (self.lastRangeLength == 0) {
         // If this is the first time we're configuring the range length,
-        // try to take into account the position of the unread indicator.
+        // try to take into account the position of the unread indicator
+        // and the "focus message".
         OWSAssert(self.dynamicInteractions);
+
+        if (self.focusMessageIdOnOpen) {
+            OWSAssert(self.dynamicInteractions.focusMessagePosition);
+            if (self.dynamicInteractions.focusMessagePosition) {
+                DDLogVerbose(@"%@ ensuring load of focus message: %@",
+                    self.logTag,
+                    self.dynamicInteractions.focusMessagePosition);
+                rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
+            }
+        }
 
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
@@ -1650,7 +1727,7 @@ typedef enum : NSUInteger {
             // We'd like to include at least N seen messages,
             // to give the user the context of where they left off the conversation.
             const NSUInteger kPreferredSeenMessageCount = 1;
-            rangeLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
+            rangeLength = MAX(rangeLength, unreadIndicatorPosition + kPreferredSeenMessageCount);
         }
     }
 
@@ -1691,7 +1768,7 @@ typedef enum : NSUInteger {
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                handler:^(UIAlertAction *action) {
                                                                     [message remove];
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
@@ -1699,17 +1776,17 @@ typedef enum : NSUInteger {
     UIAlertAction *retryAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                                     networkManager:self.networkManager];
                     [processor fetchAttachmentsForMessage:message
                         primaryStorage:self.primaryStorage
-                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                        success:^(TSAttachmentStream *attachmentStream) {
                             DDLogInfo(
                                 @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
                         }
-                        failure:^(NSError *_Nonnull error) {
+                        failure:^(NSError *error) {
                             DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
                         }];
                 }];
@@ -1731,7 +1808,7 @@ typedef enum : NSUInteger {
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                handler:^(UIAlertAction *action) {
                                                                     [message remove];
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
@@ -1739,12 +1816,12 @@ typedef enum : NSUInteger {
     UIAlertAction *resendMessageAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    [self.messageSender enqueueMessage:message
                                        success:^{
                                            DDLogInfo(@"%@ Successfully resent failed message.", self.logTag);
                                        }
-                                       failure:^(NSError *_Nonnull error) {
+                                       failure:^(NSError *error) {
                                            DDLogWarn(@"%@ Failed to send message with error: %@", self.logTag, error);
                                        }];
                                }];
@@ -1866,7 +1943,7 @@ typedef enum : NSUInteger {
     UIAlertAction *resetSessionAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     if (![self.thread isKindOfClass:[TSContactThread class]]) {
                         // Corrupt Message errors only appear in contact threads.
                         DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
@@ -1899,7 +1976,7 @@ typedef enum : NSUInteger {
     UIAlertAction *showSafteyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.logTag);
                                    [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
@@ -1908,7 +1985,7 @@ typedef enum : NSUInteger {
     UIAlertAction *acceptSafetyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.logTag);
 
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
@@ -1944,7 +2021,7 @@ typedef enum : NSUInteger {
     __weak ConversationViewController *weakSelf = self;
     UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *_Nonnull action) {
+                                                       handler:^(UIAlertAction *action) {
                                                            [weakSelf startAudioCall];
                                                        }];
     [alertController addAction:callAction];
@@ -1988,7 +2065,7 @@ typedef enum : NSUInteger {
         actionWithTitle:NSLocalizedString(
                             @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
                   style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
                     [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                     // Delete the offers.
@@ -2227,20 +2304,20 @@ typedef enum : NSUInteger {
         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                     networkManager:self.networkManager];
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [processor fetchAttachmentsForMessage:nil
             transaction:transaction
-            success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+            success:^(TSAttachmentStream *attachmentStream) {
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [message saveWithTransaction:postSuccessTransaction];
                     }];
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogWarn(@"%@ Failed to redownload thumbnail with error: %@", self.logTag, error);
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message touchWithTransaction:transaction];
                     }];
             }];
@@ -2387,6 +2464,7 @@ typedef enum : NSUInteger {
     MessageDetailViewController *view =
         [[MessageDetailViewController alloc] initWithViewItem:conversationItem
                                                       message:message
+                                                       thread:self.thread
                                                          mode:MessageMetadataViewModeFocusOnMetadata];
     [self.navigationController pushViewController:view animated:YES];
 }
@@ -2396,7 +2474,7 @@ typedef enum : NSUInteger {
     DDLogDebug(@"%@ user did tap reply", self.logTag);
 
     __block OWSQuotedReplyModel *quotedReply;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         quotedReply = [OWSQuotedReplyModel quotedReplyForConversationViewItem:conversationItem transaction:transaction];
     }];
 
@@ -2474,6 +2552,7 @@ typedef enum : NSUInteger {
                                           dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
+                                        focusMessageId:self.focusMessageIdOnOpen
                                           maxRangeSize:maxRangeSize];
 }
 
@@ -3243,8 +3322,16 @@ typedef enum : NSUInteger {
             case YapDatabaseViewChangeUpdate: {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
                 if (collectionKey.key) {
-                    ConversationViewItem *viewItem = self.viewItemCache[collectionKey.key];
-                    [self reloadInteractionForViewItem:viewItem];
+                    ConversationViewItem *_Nullable viewItem = self.viewItemCache[collectionKey.key];
+                    if (viewItem) {
+                        [self reloadInteractionForViewItem:viewItem];
+                    } else {
+                        hasMalformedRowChange = YES;
+                    }
+                } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
+                    // Do nothing, this is a pseudo-update generated due to
+                    // setCellDrawingDependencyOffsets.
+                    OWSAssert(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
                     hasMalformedRowChange = YES;
                 }
@@ -3272,7 +3359,8 @@ typedef enum : NSUInteger {
     if (hasMalformedRowChange) {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
-        DDLogError(@"%@ hasMalformedRowChange", self.logTag);
+        OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
+        [self reloadViewItems];
         [self.collectionView reloadData];
         [self updateLastVisibleTimestamp];
         [self cleanUpUnreadIndicatorIfNecessary];
@@ -3280,7 +3368,7 @@ typedef enum : NSUInteger {
     }
 
     NSUInteger oldViewItemCount = self.viewItems.count;
-    NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
+    [self reloadViewItems];
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
@@ -3312,8 +3400,6 @@ typedef enum : NSUInteger {
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    // We don't want to reload a row that we just inserted.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -3332,8 +3418,6 @@ typedef enum : NSUInteger {
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
                     [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
-                    // We don't want to reload a row that we just moved.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
@@ -3342,22 +3426,9 @@ typedef enum : NSUInteger {
                         rowChange.indexPath,
                         rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    // We don't want to reload a row that we've already reloaded.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
             }
-        }
-
-        // The changes performed above may affect the size of neighboring cells,
-        // as they may affect which cells show "date" headers or "status" footers.
-        NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
-        for (NSNumber *row in rowsThatChangedSize) {
-            DDLogVerbose(@"rowsToReload: %@", row);
-            [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
-        }
-        if (rowsToReload.count > 0) {
-            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
     };
 
@@ -3716,7 +3787,7 @@ typedef enum : NSUInteger {
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self takePictureOrVideo];
                 }];
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
@@ -3727,7 +3798,7 @@ typedef enum : NSUInteger {
     UIAlertAction *chooseMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self chooseFromLibraryAsMedia];
                 }];
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
@@ -3738,7 +3809,7 @@ typedef enum : NSUInteger {
     UIAlertAction *gifAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON", @"Label for 'select GIF to attach' action sheet button")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self showGifPicker];
                 }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
@@ -3750,7 +3821,7 @@ typedef enum : NSUInteger {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
                                            @"action sheet button title when choosing attachment type")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    [self showAttachmentDocumentPickerMenu];
                                }];
     UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
@@ -3763,7 +3834,7 @@ typedef enum : NSUInteger {
             [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
                                                @"attachment menu option to send contact")
                                      style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *_Nonnull action) {
+                                   handler:^(UIAlertAction *action) {
                                        [self chooseContactForSending];
                                    }];
         UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
@@ -3869,6 +3940,10 @@ typedef enum : NSUInteger {
         DDLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
         return;
     }
+    if (OWSWindowManager.sharedManager.shouldShowCallView) {
+        DDLogInfo(@"%@ Not marking messages as read; call view is presented.", self.logTag);
+        return;
+    }
     if (self.navigationController.topViewController != self) {
         DDLogInfo(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
         return;
@@ -3898,7 +3973,11 @@ typedef enum : NSUInteger {
 
         groupThread.groupModel = newGroupModel;
         [groupThread saveWithTransaction:transaction];
-        message = [TSOutgoingMessage outgoingMessageInThread:groupThread groupMetaMessage:TSGroupMessageUpdate];
+
+        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+                                            groupMetaMessage:TSGroupMessageUpdate
+                                            expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];
 
@@ -3917,7 +3996,7 @@ typedef enum : NSUInteger {
                     successCompletion();
                 }
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
@@ -3928,7 +4007,7 @@ typedef enum : NSUInteger {
                     successCompletion();
                 }
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
             }];
     }
@@ -4280,6 +4359,13 @@ typedef enum : NSUInteger {
                
                [message remove];
            }];
+}
+
+- (void)conversationColorWasUpdated
+{
+    [self.conversationStyle updateProperties];
+    [self.headerView updateAvatar];
+    [self.collectionView reloadData];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
@@ -4723,17 +4809,14 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self updateLastVisibleTimestamp];
+    self.conversationStyle.viewWidth = self.collectionView.width;
 }
 
 #pragma mark - View Items
 
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
-//
-// Returns a list of the rows which may have changed size and
-// need to be reloaded if we're doing an incremental update
-// of the view.
-- (NSSet<NSNumber *> *)reloadViewItems
+- (void)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
@@ -4763,21 +4846,17 @@ typedef enum : NSUInteger {
             }
 
             ConversationViewItem *_Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-            if (viewItem) {
-                viewItem.previousRow = viewItem.row;
-            } else {
+            if (!viewItem) {
                 viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
                                                                isGroupThread:isGroupThread
-                                                                 transaction:transaction];
+                                                                 transaction:transaction
+                                                           conversationStyle:self.conversationStyle];
             }
-            viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
             OWSAssert(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
-
-    NSMutableSet<NSNumber *> *rowsThatChangedSize = [NSMutableSet new];
 
     // Update the "shouldShowDate" property of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
@@ -4818,25 +4897,24 @@ typedef enum : NSUInteger {
             shouldShowDateOnNextViewItem = NO;
         }
 
-        // If this is an existing view item and it has changed size,
-        // note that so that we can reload this cell while doing
-        // incremental updates.
-        if (viewItem.shouldShowDate != shouldShowDate && viewItem.previousRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
-        }
         viewItem.shouldShowDate = shouldShowDate;
 
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
     }
 
-    // Update the "shouldShowDate" property of the view items.
-    OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
-    MessageReceiptStatus lastReceiptStatus = MessageReceiptStatusUploading;
-    NSString *_Nullable lastIncomingSenderId = nil;
-    for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
-        BOOL shouldHideRecipientStatus = NO;
-        BOOL shouldHideBubbleTail = NO;
+    // Update the properties of the view items.
+    //
+    // NOTE: This logic uses shouldShowDate which is set in the previous pass.
+    for (NSUInteger i = 0; i < viewItems.count; i++) {
+        ConversationViewItem *viewItem = viewItems[i];
+        ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
+        ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
+        BOOL shouldShowSenderAvatar = NO;
+        BOOL shouldHideFooter = NO;
+        NSString *_Nullable senderName = nil;
+
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
+        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
@@ -4844,41 +4922,74 @@ typedef enum : NSUInteger {
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage
                                                                   referenceView:self.view];
 
-            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-                // always show "failed to send" status
-                shouldHideRecipientStatus = NO;
-            } else {
-                shouldHideRecipientStatus
-                    = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus);
+            if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
+                MessageReceiptStatus nextReceiptStatus =
+                    [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:nextOutgoingMessage
+                                                                      referenceView:self.view];
+                NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
+
+                // We can skip the "outgoing message status" footer if the next message
+                // has the same footer and no "date break" separates us...
+                // ...but always show "failed to send" status.
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText]
+                    && receiptStatus == nextReceiptStatus
+                    && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.shouldShowDate);
             }
-
-            shouldHideBubbleTail = interactionType == lastInteractionType;
-
-            lastReceiptStatus = receiptStatus;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
+
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
-            shouldHideBubbleTail = (interactionType == lastInteractionType &&
-                [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
-            lastIncomingSenderId = incomingSenderId;
-        }
-        lastInteractionType = interactionType;
 
-        // If this is an existing view item and it has changed size,
-        // note that so that we can reload this cell while doing
-        // incremental updates.
-        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.previousRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
+            if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
+                // We can skip the "incoming message status" footer if the next message
+                // has the same footer and no "date break" separates us.
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate);
+            }
+
+            if (viewItem.isGroupThread) {
+                // Show the sender name for incoming group messages unless
+                // the previous message has the same sender name and
+                // no "date break" separates us.
+                BOOL shouldShowSenderName = YES;
+                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
+
+                    TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
+                    NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
+                    OWSAssert(previousIncomingSenderId.length > 0);
+
+                    shouldShowSenderName
+                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
+                            || viewItem.shouldShowDate);
+                }
+                if (shouldShowSenderName) {
+                    senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
+                }
+
+                // Show the sender avatar for incoming group messages unless
+                // the next message has the same sender avatar and
+                // no "date break" separates us.
+                shouldShowSenderAvatar = YES;
+                if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                    TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
+                    NSString *nextIncomingSenderId = nextIncomingMessage.authorId;
+                    OWSAssert(nextIncomingSenderId.length > 0);
+
+                    shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                        || nextViewItem.shouldShowDate);
+                }
+            }
         }
-        viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
-        viewItem.shouldHideBubbleTail = shouldHideBubbleTail;
+
+        viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
+        viewItem.shouldHideFooter = shouldHideFooter;
+        viewItem.senderName = senderName;
     }
 
     self.viewItems = viewItems;
     self.viewItemCache = viewItemCache;
-
-    return [rowsThatChangedSize copy];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
@@ -4935,9 +5046,9 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
     }
-    cell.contentWidth = self.layout.contentWidth;
+    cell.conversationStyle = self.conversationStyle;
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [cell loadForDisplayWithTransaction:transaction];
     }];
 
@@ -5087,18 +5198,23 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
     OWSAssert(contact);
-    OWSAssert(contact.cnContact);
+
+    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+    if (!cnContact) {
+        OWSFail(@"%@ Could not load system contact.", self.logTag);
+        return;
+    }
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
+    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
-        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+        OWSFail(@"%@ Could not convert system contact.", self.logTag);
         return;
     }
 
     BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = contact.imageData;
+    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
     for (NSString *recipientId in contact.textSecureIdentifiers) {
         if (avatarImageData) {
             break;

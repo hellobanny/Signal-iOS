@@ -494,7 +494,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failureHandler
 {
     dispatch_async([OWSDispatch sendingQueue], ^{
-        TSThread *thread = message.thread;
+        TSThread *_Nullable thread = message.thread;
 
         // TODO: It would be nice to combine the "contact" and "group" send logic here.
         if ([thread isKindOfClass:[TSContactThread class]] &&
@@ -771,11 +771,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                    recipient:(SignalRecipient *)recipient
-                      thread:(TSThread *)thread
+                      thread:(nullable TSThread *)thread
                     attempts:(int)remainingAttempts
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler
 {
+    OWSAssert(thread || [message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+
     DDLogInfo(@"%@ attempting to send message: %@, timestamp: %llu, recipient: %@",
         self.logTag,
         message.class,
@@ -1065,7 +1067,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)messageSendDidFail:(TSOutgoingMessage *)message
                  recipient:(SignalRecipient *)recipient
-                    thread:(TSThread *)thread
+                    thread:(nullable TSThread *)thread
              isLocalNumber:(BOOL)isLocalNumber
             deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
          remainingAttempts:(int)remainingAttempts
@@ -1077,7 +1079,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssert(message);
     OWSAssert(recipient);
-    OWSAssert(thread);
+    OWSAssert(thread || [message isKindOfClass:[OWSOutgoingSyncMessage class]]);
     OWSAssert(deviceMessages);
     OWSAssert(responseError);
     OWSAssert(successHandler);
@@ -1119,6 +1121,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         case 404: {
             DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
 
+            OWSAssert(thread);
             [self unregisteredRecipient:recipient message:message thread:thread];
             NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
             // No need to retry if the recipient is not registered.

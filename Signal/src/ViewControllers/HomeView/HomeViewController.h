@@ -6,11 +6,16 @@
 #import <SignalMessaging/OWSViewController.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSThread;
 
 @interface HomeViewController : OWSViewController
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)presentThread:(TSThread *)thread
+               action:(ConversationViewAction)action
+       focusMessageId:(nullable NSString *)focusMessageId;
 
 - (void)showNewConversationView;
 
@@ -22,3 +27,5 @@
                animatePresentation:(BOOL)animatePresentation;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -511,6 +511,9 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
 
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
 
@@ -647,6 +650,12 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
 
@@ -658,6 +667,9 @@
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Disappearing Messages";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
@@ -820,6 +832,9 @@
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
@@ -1100,9 +1115,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
-/* Label for button that loads more messages in conversation view. */
-"load_earlier_messages" = "Load Earlier Messages";
-
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
@@ -1202,7 +1214,7 @@
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Read";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
@@ -1245,13 +1257,13 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Unread Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
 
-/* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "There are more unread messages (including safety number changes) above. Tap \"%@\" to see them.";
+/* Messages that indicates that there are more unseen messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
 
-/* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
+/* Messages that indicates that there are more unseen messages including safety number changes. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
 
 /* notification title */
 "MISSED_CALL" = "Missed call";
@@ -1302,6 +1314,9 @@
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "Connecting";
+
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Network Status";
@@ -1389,6 +1404,9 @@
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@.";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Outgoing call";
@@ -1624,6 +1642,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
 
+/* alert body when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+
+/* button text to proceed with registration when on an iPad */
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+
+/* alert title when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
 
@@ -1655,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Register";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
@@ -1906,6 +1933,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Delete Account";
 
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
 
@@ -1965,6 +1995,9 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "Re-register";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
@@ -2252,7 +2285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Show Safety Number";
+"VERIFY_PRIVACY" = "View Safety Number";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";

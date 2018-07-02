@@ -55,21 +55,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL hasQuotedText;
 
 @property (nonatomic) BOOL shouldShowDate;
-@property (nonatomic) BOOL shouldHideRecipientStatus;
-@property (nonatomic) BOOL shouldHideBubbleTail;
+@property (nonatomic) BOOL shouldShowSenderAvatar;
+@property (nonatomic, nullable) NSString *senderName;
+@property (nonatomic) BOOL shouldHideFooter;
 
-@property (nonatomic) NSInteger row;
-// During updates, we sometimes need the previous row index
-// (before this update) of this item.
-//
-// If NSNotFound, this view item was just created in the
-// previous update.
-@property (nonatomic) NSInteger previousRow;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction;
+                        transaction:(YapDatabaseReadTransaction *)transaction
+                  conversationStyle:(ConversationStyle *)conversationStyle;
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;

@@ -7,7 +7,7 @@ import XCTest
 @testable import SignalMessaging
 
 @objc
-class FakeEnvironment: TextSecureKitEnv {
+class StubbableEnvironment: TextSecureKitEnv {
     let proxy: TextSecureKitEnv
 
     init(proxy: TextSecureKitEnv) {
@@ -17,51 +17,36 @@ class FakeEnvironment: TextSecureKitEnv {
 
     var stubbedCallMessageHandler: OWSCallMessageHandler?
     override var callMessageHandler: OWSCallMessageHandler {
-        if let callMessageHandler = stubbedCallMessageHandler {
-            return callMessageHandler
-        }
-        return proxy.callMessageHandler
+        return stubbedCallMessageHandler ?? proxy.callMessageHandler
     }
 
     var stubbedContactsManager: ContactsManagerProtocol?
     override var contactsManager: ContactsManagerProtocol {
-        if let contactsManager = stubbedContactsManager {
-            return contactsManager
-        }
-        return proxy.contactsManager
+        return stubbedContactsManager ?? proxy.contactsManager
     }
 
     var stubbedMessageSender: MessageSender?
     override var messageSender: MessageSender {
-        if let messageSender = stubbedMessageSender {
-            return messageSender
-        }
-        return proxy.messageSender
+        return stubbedMessageSender ?? proxy.messageSender
     }
 
     var stubbedNotificationsManager: NotificationsProtocol?
     override var notificationsManager: NotificationsProtocol {
-        if let notificationsManager = stubbedNotificationsManager {
-            return notificationsManager
-        }
-        return proxy.notificationsManager
+        return stubbedNotificationsManager ?? proxy.notificationsManager
     }
 
     var stubbedProfileManager: ProfileManagerProtocol?
     override var profileManager: ProfileManagerProtocol {
-        if let profileManager = stubbedProfileManager {
-            return profileManager
-        }
-        return proxy.profileManager
+        return stubbedProfileManager ?? proxy.profileManager
     }
 }
 
 @objc
 class FakeContactsManager: NSObject, ContactsManagerProtocol {
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
-        if phoneNumber == "+12345678900" {
+        if phoneNumber == aliceRecipientId {
             return "Alice"
-        } else if phoneNumber == "+49030183000" {
+        } else if phoneNumber == bobRecipientId {
             return "Bob Barker"
         } else {
             return ""
@@ -79,7 +64,16 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
     func isSystemContact(withSignalAccount recipientId: String) -> Bool {
         return true
     }
+
+    func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
+        owsFail("if this method ends up being used by the tests, we should provide a better implementation.")
+
+        return .orderedAscending
+    }
 }
+
+let bobRecipientId = "+49030183000"
+let aliceRecipientId = "+12345678900"
 
 class ConversationSearcherTest: XCTestCase {
 
@@ -113,24 +107,24 @@ class ConversationSearcherTest: XCTestCase {
 
         originalEnvironment = TextSecureKitEnv.shared()
 
-        let testEnvironment: FakeEnvironment = FakeEnvironment(proxy: originalEnvironment!)
+        let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()
         TextSecureKitEnv.setShared(testEnvironment)
 
         self.dbConnection.readWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", memberIds: ["+12345678900", "+49030183000"], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
-            let snackModel = TSGroupModel(title: "Snack Club", memberIds: ["+12345678900"], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let snackModel = TSGroupModel(title: "Snack Club", memberIds: [aliceRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: "+12345678900", transaction: transaction)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: "+49030183000", transaction: transaction)
-            self.bobThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.save(with: transaction)
@@ -143,6 +137,12 @@ class ConversationSearcherTest: XCTestCase {
 
             let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
             goodbyeBookClub.save(with: transaction)
+
+            let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 321-321-4321", attachmentId: nil)
+            bobsPhoneNumber.save(with: transaction)
+
+            let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 222-333-4444", attachmentId: nil)
+            bobsFaxNumber.save(with: transaction)
         }
     }
 
@@ -152,7 +152,7 @@ class ConversationSearcherTest: XCTestCase {
     var snackClubThread: ThreadViewModel!
 
     var aliceThread: ThreadViewModel!
-    var bobThread: ThreadViewModel!
+    var bobEmptyThread: ThreadViewModel!
 
     // MARK: Tests
 
@@ -191,49 +191,51 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual(0, threads.count)
 
         // Exact match
-        threads = searchConversations(searchText: "+12345678900")
+        threads = searchConversations(searchText: aliceRecipientId)
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         // Partial match
         threads = searchConversations(searchText: "+123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         // Prefixes
         threads = searchConversations(searchText: "12345678900")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "49")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "1-234-56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "123456")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "1.234.56")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
+
+        threads = searchConversations(searchText: "1 234 56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
     }
 
-    // TODO
-    func pending_testSearchContactByNumber() {
-        var resultSet: SearchResultSet = .empty
-
+    func testSearchContactByNumberWithoutCountryCode() {
+        var threads: [ThreadViewModel] = []
         // Phone Number formatting should be forgiving
-        resultSet = getResultSet(searchText: "234.56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "234.56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
-        resultSet = getResultSet(searchText: "234 56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "234 56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
     }
 
     func testSearchConversationByContactByName() {
@@ -241,19 +243,19 @@ class ConversationSearcherTest: XCTestCase {
 
         threads = searchConversations(searchText: "Alice")
         XCTAssertEqual(3, threads.count)
-        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
+        XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 
         threads = searchConversations(searchText: "Bob")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "Barker")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "Bob B")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
     }
 
     func testSearchMessageByBodyContent() {
@@ -269,6 +271,86 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssert(resultSet.messages.map { $0.thread }.contains(bookClubThread))
     }
 
+    func testSearchEdgeCases() {
+        var resultSet: SearchResultSet = .empty
+
+        resultSet = getResultSet(searchText: "Hello Alice")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "hello alice")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "Hel")
+        XCTAssertEqual(2, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice", "Hello Book Club"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "Hel Ali")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "Hel Ali Alic")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "Ali Hel")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "CLU")
+        XCTAssertEqual(2, resultSet.messages.count)
+        XCTAssertEqual(["Goodbye Book Club", "Hello Book Club"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "hello !@##!@#!$^@!@#! alice")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["Hello Alice"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "3213 phone")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["My phone number is: 321-321-4321"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "PHO 3213")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["My phone number is: 321-321-4321"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "fax")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
+
+        resultSet = getResultSet(searchText: "fax 2223")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
+    }
+
+    func bodies(forMessageResults messageResults: [ConversationSearchResult]) -> [String] {
+        var result = [String]()
+
+        self.dbConnection.read { transaction in
+            for messageResult in messageResults {
+                guard let messageId = messageResult.messageId else {
+                    owsFail("message result missing message id")
+                    continue
+                }
+                guard let interaction = TSInteraction.fetch(uniqueId: messageId, transaction: transaction) else {
+                    owsFail("couldn't load interaction for message result")
+                    continue
+                }
+                guard let message = interaction as? TSMessage else {
+                    owsFail("invalid message for message result")
+                    continue
+                }
+                guard let messageBody = message.body else {
+                    owsFail("message result missing message body")
+                    continue
+                }
+                result.append(messageBody)
+            }
+        }
+
+        return result.sorted()
+    }
+
     // Mark: Helpers
 
     private func searchConversations(searchText: String) -> [ThreadViewModel] {
@@ -279,7 +361,7 @@ class ConversationSearcherTest: XCTestCase {
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
-            results = self.searcher.results(searchText: searchText, transaction: transaction)
+            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: TextSecureKitEnv.shared().contactsManager)
         }
         return results
     }
@@ -354,5 +436,25 @@ class SearcherTest: XCTestCase {
         // Disambiguate the two Liza's by area code
         XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza 323"))
         XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Liza 323"))
+    }
+
+    func testSearchQuery() {
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza +1-323"), "\"1323\"* \"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "\"1323\"* \"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "renaldo RENALDO reñaldo REÑALDO"), "\"RENALDO\"* \"REÑALDO\"* \"renaldo\"* \"reñaldo\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "😏"), "\"😏\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "alice 123 bob 456"), "\"123456\"* \"alice\"* \"bob\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Li!za"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza Liza"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza liza"), "\"Liza\"* \"liza\"*")
+    }
+
+    func testTextNormalization() {
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza"), "Liza")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza +1-323"), "Liza 1323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "Liza 1323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "renaldo RENALDO reñaldo REÑALDO"), "renaldo RENALDO reñaldo REÑALDO")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "😏"), "😏")
     }
 }

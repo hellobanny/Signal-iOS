@@ -4,9 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ConversationStyle;
 @class ConversationViewCell;
 @class ConversationViewItem;
 @class OWSContactOffersInteraction;
+@class OWSContactsManager;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
@@ -46,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
 
+#pragma mark - Contacts
+
+- (OWSContactsManager *)contactsManager;
+
 @end
 
 #pragma mark -
@@ -69,12 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
 // * Users enters another view (e.g. conversation settings view, call screen, etc.).
 @property (nonatomic) BOOL isCellVisible;
 
-// The width of the collection view.
-@property (nonatomic) int contentWidth;
+@property (nonatomic, nullable) ConversationStyle *conversationStyle;
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

@@ -3,8 +3,10 @@
 //
 
 #import "TSThread.h"
+#import "Cryptography.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
@@ -20,9 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
-@property (nonatomic, copy) NSDate *archivalDate;
-@property (nonatomic) NSDate *lastMessageDate;
-@property (nonatomic, copy) NSString *messageDraft;
+@property (nonatomic, copy, nullable) NSDate *archivalDate;
+@property (nonatomic, nullable) NSString *conversationColorName;
+@property (nonatomic, nullable) NSDate *lastMessageDate;
+@property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
 @end
@@ -44,8 +47,23 @@ NS_ASSUME_NONNULL_BEGIN
         _lastMessageDate = nil;
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
+        _conversationColorName = [self.class randomConversationColorName];
     }
 
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    
+    if (!_conversationColorName) {
+        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+    }
+    
     return self;
 }
 
@@ -324,6 +342,26 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark Disappearing Messages
+
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
+    (YapDatabaseReadTransaction *)transaction
+{
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+}
+
+- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+
+    OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
+
+    if (!config.isEnabled) {
+        return 0;
+    } else {
+        return config.durationSeconds;
+    }
+}
+
 #pragma mark Archival
 
 - (nullable NSDate *)archivalDate
@@ -374,16 +412,58 @@ NS_ASSUME_NONNULL_BEGIN
             [mutedUntilDate timeIntervalSinceDate:now] > 0);
 }
 
-#pragma mark - Update With... Methods
-
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSThread *thread) {
-                                     [thread setMutedUntilDate:mutedUntilDate];
-                                 }];
-    }];
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 [thread setMutedUntilDate:mutedUntilDate];
+                             }];
+}
+
+#pragma mark - Conversation Color
+
++ (NSString *)randomConversationColorName
+{
+    NSUInteger count = self.conversationColorNames.count;
+    NSUInteger index = arc4random_uniform((uint32_t)count);
+    return [self.conversationColorNames objectAtIndex:index];
+}
+
++ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed
+{
+    NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
+
+    NSUInteger hashingLength = sizeof(unsigned long long);
+    unsigned long long choose;
+    NSData *hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
+    [hashData getBytes:&choose length:hashingLength];
+    
+    NSUInteger index = (choose % [self.conversationColorNames count]);
+    return [self.conversationColorNames objectAtIndex:index];
+}
+
++ (NSArray<NSString *> *)conversationColorNames
+{
+    return @[
+             @"red",
+             @"pink",
+             @"purple",
+             @"indigo",
+             @"blue",
+             @"cyan",
+             @"teal",
+             @"green",
+             @"deep_orange",
+             @"grey"
+    ];
+}
+
+- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 thread.conversationColorName = colorName;
+                             }];
 }
 
 @end

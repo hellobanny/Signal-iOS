@@ -24,6 +24,7 @@
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import "WebSocketResources.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -95,6 +96,15 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     self.success = nil;
     self.failure = nil;
+}
+
+- (void)timeoutIfNecessary
+{
+    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
+        NSLocalizedString(
+            @"ERROR_DESCRIPTION_REQUEST_TIMED_OUT", @"Error indicating that a socket request timed out."));
+
+    [self didFailWithStatusCode:0 responseData:nil error:error];
 }
 
 - (void)didFailBeforeSending
@@ -516,11 +526,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
-        OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+        OWSProdLogAndFail(@"%@ could not send socket request: %@", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
-    DDLogVerbose(@"%@ message scheduled: %lld, %@, %@, %zd.",
+    DDLogVerbose(@"%@ message scheduled: %llu, %@, %@, %zd.",
         self.logTag,
         socketMessage.requestId,
         request.HTTPMethod,
@@ -532,13 +542,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
-            DDLogError(@"%@ message timed out: %lld, %@, %@, %zd.",
-                self.logTag,
-                socketMessage.requestId,
-                request.HTTPMethod,
-                requestPath,
-                jsonData.length);
-            [weakSocketMessage didFailBeforeSending];
+            [weakSocketMessage timeoutIfNecessary];
         });
 }
 
@@ -609,24 +613,22 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
         BOOL didSucceed = hasSuccessStatus && hasValidResponse;
         if (didSucceed) {
+            [TSAccountManager.sharedInstance setIsDeregistered:NO];
+
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
+            if (responseStatus == 403) {
+                // This should be redundant with our check for the socket
+                // failing due to 403, but let's be thorough.
+                [TSAccountManager.sharedInstance setIsDeregistered:YES];
+            }
+
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
                 NSLocalizedString(
                     @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
             [socketMessage didFailWithStatusCode:(NSInteger)responseStatus responseData:responseData error:error];
         }
     }
-
-    DDLogVerbose(@"%@ received WebSocket response: %llu, %zd, %@, %zd, %@, %d, %@.",
-        self.logTag,
-        (unsigned long long)requestId,
-        (NSInteger)responseStatus,
-        responseMessage,
-        responseData.length,
-        responseHeaders,
-        socketMessage != nil,
-        responseObject);
 }
 
 - (void)failAllPendingSocketMessagesIfNecessary
@@ -663,6 +665,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     self.state = SocketManagerStateOpen;
+
+    // If socket opens, we know we're not de-registered.
+    [TSAccountManager.sharedInstance setIsDeregistered:NO];
+
+    [OutageDetection.sharedManager reportConnectionSuccess];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -675,6 +682,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     DDLogError(@"Websocket did fail with error: %@", error);
 
+    if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
+        NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
+        if (statusCode.unsignedIntegerValue == 403) {
+            [TSAccountManager.sharedInstance setIsDeregistered:YES];
+        }
+    }
+
     [self handleSocketFailure];
 }
 
@@ -686,6 +700,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Ignore events from obsolete web sockets.
         return;
     }
+
+    // If we receive a response, we know we're not de-registered.
+    [TSAccountManager.sharedInstance setIsDeregistered:NO];
 
     WebSocketResourcesWebSocketMessage *wsMessage;
     @try {
@@ -798,6 +815,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Otherwise clean up and align state.
         [self applyDesiredSocketState];
     }
+
+    [OutageDetection.sharedManager reportConnectionFailure];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket

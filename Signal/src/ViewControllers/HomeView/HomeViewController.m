@@ -11,6 +11,7 @@
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
+#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
@@ -27,11 +28,14 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, HomeViewMode) {
     HomeViewMode_Archive,
@@ -43,7 +47,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
-    UISearchBarDelegate,YBPopupMenuDelegate>
+    UISearchBarDelegate,
+    ConversationSearchViewDelegate,
+    YBPopupMenuDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -73,8 +79,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Views
 
-@property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
-@property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (nonatomic, readonly) UIView *deregisteredView;
+@property (nonatomic, readonly) UIView *outageView;
+@property (nonatomic, readonly) UIView *archiveReminderView;
+@property (nonatomic, readonly) UIView *missingContactsPermissionView;
 
 @property (nonatomic) TSThread *lastThread;
 
@@ -102,7 +110,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     OWSFail(@"Do not load this from the storyboard.");
 
@@ -159,6 +167,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deregistrationStateDidChange:)
+                                                 name:DeregistrationStateDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(outageStateDidChange:)
+                                                 name:OutageDetection.outageStateDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -184,6 +200,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self reloadTableViewData];
 }
 
+- (void)deregistrationStateDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateReminderViews];
+}
+
+- (void)outageStateDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateReminderViews];
+}
+
 #pragma mark - View Life Cycle
 
 - (void)loadView
@@ -197,14 +227,38 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [SignalApp.sharedApp setHomeViewController:self];
     }
 
+    UIStackView *reminderStackView = [UIStackView new];
+    reminderStackView.axis = UILayoutConstraintAxisVertical;
+    reminderStackView.spacing = 0;
+    [self.view addSubview:reminderStackView];
+    [reminderStackView autoPinWidthToSuperview];
+    [reminderStackView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+
+    __weak HomeViewController *weakSelf = self;
+    ReminderView *deregisteredView =
+        [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
+                                      @"Label warning the user that they have been de-registered.")
+                        tapAction:^{
+                            HomeViewController *strongSelf = weakSelf;
+                            if (!strongSelf) {
+                                return;
+                            }
+                            [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
+                        }];
+    _deregisteredView = deregisteredView;
+    [reminderStackView addArrangedSubview:deregisteredView];
+
+    ReminderView *outageView = [ReminderView
+        nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
+          tapAction:nil];
+    _outageView = outageView;
+    [reminderStackView addArrangedSubview:outageView];
+
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
                                               @"Label reminding the user that they are in archive mode.")];
-    [self.view addSubview:archiveReminderView];
-    [archiveReminderView autoPinWidthToSuperview];
-    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
-    self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
+    _archiveReminderView = archiveReminderView;
+    [reminderStackView addArrangedSubview:archiveReminderView];
 
     ReminderView *missingContactsPermissionView = [ReminderView
         nagWithText:NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
@@ -212,12 +266,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
           tapAction:^{
               [[UIApplication sharedApplication] openSystemSettings];
           }];
-    [self.view addSubview:missingContactsPermissionView];
-    [missingContactsPermissionView autoPinWidthToSuperview];
-    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
-    self.hideMissingContactsPermissionViewConstraint =
-        [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
-    self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
+    _missingContactsPermissionView = missingContactsPermissionView;
+    [reminderStackView addArrangedSubview:missingContactsPermissionView];
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
@@ -228,7 +278,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:reminderStackView];
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 60;
 
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
@@ -254,16 +306,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)updateReminderViews
 {
-    BOOL shouldHideArchiveReminderView = self.homeViewMode != HomeViewMode_Archive;
-    BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
-    if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
-        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
-        return;
-    }
-    self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
-    self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
-    [self.view setNeedsLayout];
-    [self.view layoutSubviews];
+    self.archiveReminderView.hidden = self.homeViewMode != HomeViewMode_Archive;
+    self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
+    self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
+    self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 }
 
 - (void)viewDidLoad
@@ -316,13 +362,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.tableHeaderView = self.searchBar;
 
     ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
+    searchResultsController.delegate = self;
     self.searchResultsController = searchResultsController;
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
     [searchResultsController.view autoPinWidthToSuperview];
     [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:searchBar];
     [searchResultsController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.tableView];
-    searchResultsController.view.hidden = self;
+    searchResultsController.view.hidden = YES;
 
     [self updateBarButtonItems];
     //先询问通讯录权限
@@ -445,8 +492,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 }
 
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-              viewControllerForLocation:(CGPoint)location
+- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+                       viewControllerForLocation:(CGPoint)location
 {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
@@ -460,7 +507,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ConversationViewController *vc = [ConversationViewController new];
         TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
-        [vc configureForThread:thread action:ConversationViewActionNone];
+        [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
         [vc peekSetup];
 
         return vc;
@@ -520,18 +567,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     self.isViewVisible = YES;
 
-    // When returning to home view, try to ensure that the "last" thread is still
-    // visible.  The threads often change ordering while in conversation view due
-    // to incoming & outgoing messages.
-    if (self.lastThread) {
+    BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
+    if (isShowingSearchResults) {
+        OWSAssert(self.searchBar.text.ows_stripped.length > 0);
+        self.tableView.contentOffset = CGPointZero;
+    } else if (self.lastThread) {
+        OWSAssert(self.searchBar.text.ows_stripped.length == 0);
+        
+        // When returning to home view, try to ensure that the "last" thread is still
+        // visible.  The threads often change ordering while in conversation view due
+        // to incoming & outgoing messages.
         __block NSIndexPath *indexPathOfLastThread = nil;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             indexPathOfLastThread =
-                [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
-                                                                              inCollection:[TSThread collection]
-                                                                              withMappings:self.threadMappings];
+            [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
+                                                                          inCollection:[TSThread collection]
+                                                                          withMappings:self.threadMappings];
         }];
-
+        
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
@@ -690,15 +743,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
-- (BOOL)shouldShowMissingContactsPermissionView
-{
-    if (!self.contactsManager.systemContactsHaveBeenRequestedAtLeastOnce) {
-        return NO;
-    }
-
-    return !self.contactsManager.isSystemContactsAuthorized;
-}
-
 #pragma mark - Table View Data Source
 
 // Returns YES IFF this value changes.
@@ -821,11 +865,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Constrain to cell margins.
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
 
     return cell;
 }
@@ -839,11 +880,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }];
 
     return thread;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return HomeViewCell.rowHeight;
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
@@ -865,7 +901,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return;
 }
 
-- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+- (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self isIndexPathForArchivedConversations:indexPath]) {
         return @[];
@@ -919,16 +955,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView setContentOffset:CGPointZero animated:NO];
 
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -940,7 +982,17 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     self.searchBar.text = nil;
 
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
+
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)ensureSearchBarCancelButton
+{
+    self.searchBar.showsCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
 }
 
 - (void)updateSearchResultsVisibility
@@ -948,9 +1000,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     NSString *searchText = self.searchBar.text.ows_stripped;
-    [self.searchResultsController updateSearchResultsWithSearchText:searchText];
+    self.searchResultsController.searchText = searchText;
     BOOL isSearching = searchText.length > 0;
     self.searchResultsController.view.hidden = !isSearching;
+
+    if (isSearching) {
+        [self.tableView setContentOffset:CGPointZero animated:NO];
+        self.tableView.scrollEnabled = NO;
+    } else {
+        self.tableView.scrollEnabled = YES;
+    }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
+}
+
+#pragma mark - ConversationSearchViewDelegate
+
+- (void)conversationSearchViewWillBeginDragging
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
@@ -969,8 +1044,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           preferredStyle:UIAlertControllerStyleAlert];
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
-            TSOutgoingMessage *message =
-                [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageQuit];
+            TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
+                                                                   groupMetaMessage:TSGroupMessageQuit
+                                                                   expiresInSeconds:0];
             [self.messageSender enqueueMessage:message
                 success:^{
                     [self dismissViewControllerAnimated:YES
@@ -1024,7 +1100,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DDLogInfo(@"%@ %s %zd %zd", self.logTag, __PRETTY_FUNCTION__, indexPath.row, indexPath.section);
+    DDLogInfo(@"%@ %s %ld %ld", self.logTag, __PRETTY_FUNCTION__, (long)indexPath.row, (long)indexPath.section);
+
+    [self.searchBar resignFirstResponder];
 
     if ([self isIndexPathForArchivedConversations:indexPath]) {
         [self showArchivedConversations];
@@ -1038,6 +1116,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
 {
+    [self presentThread:thread action:action focusMessageId:nil];
+}
+
+- (void)presentThread:(TSThread *)thread
+               action:(ConversationViewAction)action
+       focusMessageId:(nullable NSString *)focusMessageId
+{
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
         return;
@@ -1045,11 +1130,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *mvc = [ConversationViewController new];
-        [mvc configureForThread:thread action:action];
+        ConversationViewController *viewController = [ConversationViewController new];
+        [viewController configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
+        [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
     });
 }
 
@@ -1400,3 +1485,5 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

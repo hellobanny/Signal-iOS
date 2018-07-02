@@ -58,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 - (BOOL)writeDataSource:(DataSource *)dataSource;
 
+- (BOOL)isOversizeText;
+- (nullable NSString *)readOversizeText;
+
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
 
@@ -70,6 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragment;
+
+#pragma mark - Image Validation
+
+- (BOOL)isValidImage;
 
 #pragma mark - Update With... Methods
 

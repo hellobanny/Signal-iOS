@@ -77,7 +77,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // contents.
 //
 // NOTE: the margin values are inverted in RTL layouts.
+//
+// TODO: Remove this in favor of AppContext.isRTL()
 - (BOOL)isRTL;
+
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperviewMargin;
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewMargin;
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewMarginWithInset:(CGFloat)margin;
@@ -102,6 +105,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // Leading and trailing anchors honor layout margins.
 // When using a UIView as a "div" to structure layout, we don't want it to have margins.
 - (void)setHLayoutMargins:(CGFloat)value;
+
+- (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
 
 #pragma mark - Containers
 
@@ -150,9 +155,21 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
 }
 
+CG_INLINE CGSize CGSizeFloor(CGSize size)
+{
+    return CGSizeMake((CGFloat)floor(size.width), (CGFloat)floor(size.height));
+}
+
 CG_INLINE CGSize CGSizeRound(CGSize size)
 {
     return CGSizeMake((CGFloat)round(size.width), (CGFloat)round(size.height));
 }
+
+CG_INLINE CGSize CGSizeMax(CGSize size1, CGSize size2)
+{
+    return CGSizeMake(MAX(size1.width, size2.width), MAX(size1.height, size2.height));
+}
+
+CGFloat CGHairlineWidth();
 
 NS_ASSUME_NONNULL_END

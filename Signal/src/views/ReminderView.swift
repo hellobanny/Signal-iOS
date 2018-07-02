@@ -9,11 +9,9 @@ class ReminderView: UIView {
     let TAG = "[ReminderView]"
     let label = UILabel()
 
-    static let defaultTapAction = {
-        Logger.debug("[ReminderView] tapped.")
-    }
+    typealias Action = () -> Void
 
-    var tapAction: () -> Void
+    var tapAction: Action?
 
     var text: String? {
         get {
@@ -44,7 +42,7 @@ class ReminderView: UIView {
     }
 
     private init(mode: ReminderViewMode,
-         text: String, tapAction: @escaping () -> Void) {
+         text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction
 
@@ -55,12 +53,12 @@ class ReminderView: UIView {
         setupSubviews()
     }
 
-    @objc public class func nag(text: String, tapAction: @escaping () -> Void) -> ReminderView {
+    @objc public class func nag(text: String, tapAction: Action?) -> ReminderView {
         return ReminderView(mode: .nag, text: text, tapAction: tapAction)
     }
 
     @objc public class func explanation(text: String) -> ReminderView {
-        return ReminderView(mode: .explanation, text: text, tapAction: ReminderView.defaultTapAction)
+        return ReminderView(mode: .explanation, text: text, tapAction: nil)
     }
 
     func setupSubviews() {
@@ -75,57 +73,42 @@ class ReminderView: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
         self.addGestureRecognizer(tapGesture)
 
-        let container = UIView()
+        let container = UIStackView()
+        container.axis = .horizontal
+        container.alignment = .center
+        container.isLayoutMarginsRelativeArrangement = true
 
         self.addSubview(container)
-        container.autoPinWidthToSuperview(withMargin: 16)
-        switch (mode) {
-        case .nag:
-            container.autoPinHeightToSuperview(withMargin: 16)
-        case .explanation:
-            container.autoPinHeightToSuperview(withMargin: 12)
-        }
-
-        // Margin: top and bottom 12 left and right 16.
+        container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        container.autoPinToSuperviewEdges()
 
         // Label
-        switch (mode) {
-        case .nag:
-            label.font = UIFont.ows_regularFont(withSize: 14)
-        case .explanation:
-            label.font = UIFont.ows_dynamicTypeSubheadline
-        }
-        container.addSubview(label)
+        label.font = UIFont.ows_dynamicTypeSubheadline
+        container.addArrangedSubview(label)
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.autoPinLeadingToSuperviewMargin()
-        label.autoPinEdge(toSuperviewEdge: .top)
-        label.autoPinEdge(toSuperviewEdge: .bottom)
 
-        guard mode == .nag else {
-            label.autoPinTrailingToSuperviewMargin()
-            return
+        // Show the disclosure indicator if this reminder has a tap action.
+        if tapAction != nil {
+            // Icon
+            let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
+            guard let iconImage = UIImage(named: iconName) else {
+                owsFail("\(logTag) missing icon.")
+                return
+            }
+            let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
+            iconView.contentMode = .scaleAspectFit
+            iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
+            iconView.autoSetDimension(.width, toSize: 13)
+            container.addArrangedSubview(iconView)
         }
-
-        // Icon
-        let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-        guard let iconImage = UIImage(named: iconName) else {
-            owsFail("\(logTag) missing icon.")
-            return
-        }
-        let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
-        iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
-        container.addSubview(iconView)
-
-        iconView.autoPinLeading(toTrailingEdgeOf: label, offset: 28)
-        iconView.autoPinTrailingToSuperviewMargin()
-        iconView.autoVCenterInSuperview()
-        iconView.autoSetDimension(.width, toSize: 13)
     }
 
     @objc func handleTap(gestureRecognizer: UIGestureRecognizer) {
-        tapAction()
+        guard gestureRecognizer.state == .recognized else {
+            return
+        }
+        tapAction?()
     }
 }

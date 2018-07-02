@@ -207,11 +207,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    return nil;
+    // We return self instead of, e.g. nil, to avoid a crash when YapDB enumerates
+    // all old objects when building a DB extension.
+    return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    OWSRaiseException(
+        @"OWSStorageExceptionName_SaveToUnknownCollection", @"Tried to save object from unknown collection");
 }
 
 @end
@@ -230,8 +234,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     cannotDecodeObjectOfClassName:(NSString *)name
                   originalClasses:(NSArray<NSString *> *)classNames
 {
-    DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
-    OWSProdError([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
+    OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
+    OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
 }
 
@@ -458,7 +462,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSProdError([OWSAnalyticsEvents storageErrorDeserialization]);
+            OWSProdLogAndFail(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
+            OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
     };
@@ -542,10 +547,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         YapDatabaseFullTextSearch *fullTextSearch = (YapDatabaseFullTextSearch *)extension;
         
         NSString *versionTag = [self appendSuffixToDatabaseExtensionVersionIfNecessary:fullTextSearch.versionTag extensionName:extensionName];
-        YapDatabaseFullTextSearch *fullTextSearchCopy = [[YapDatabaseFullTextSearch alloc] initWithColumnNames:fullTextSearch->columnNames.array
-                                                                                                       handler:fullTextSearch->handler
-                                                                                                    versionTag:versionTag];
-        
+        YapDatabaseFullTextSearch *fullTextSearchCopy =
+            [[YapDatabaseFullTextSearch alloc] initWithColumnNames:fullTextSearch->columnNames.array
+                                                           options:fullTextSearch->options
+                                                           handler:fullTextSearch->handler
+                                                        ftsVersion:fullTextSearch->ftsVersion
+                                                        versionTag:versionTag];
+
         return fullTextSearchCopy;
     } else if ([extension isKindOfClass:[YapDatabaseCrossProcessNotification class]]) {
         // versionTag doesn't matter for YapDatabaseCrossProcessNotification.
@@ -616,19 +624,19 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage databaseFilePath]];
-}
-
-- (void)deleteDatabaseFile
-{
-    [OWSFileSystem deleteFile:[self databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
 }
 
 - (void)resetStorage
 {
     self.database = nil;
 
-    [self deleteDatabaseFile];
+    [OWSStorage deleteDatabaseFiles];
 }
 
 + (void)resetAllStorage

@@ -24,14 +24,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSAccountManager (DebugUI)
-
-- (void)resetForRegistration;
-
-@end
-
-#pragma mark -
-
 @interface OWSStorage (DebugUI)
 
 - (NSData *)databasePassword;
@@ -75,8 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                                              OWSDisappearingMessagesConfiguration *config =
                                                  [OWSDisappearingMessagesConfiguration
-                                                     fetchOrCreateDefaultWithThreadId:thread.uniqueId
-                                                                          transaction:transaction];
+                                                     fetchOrBuildDefaultWithThreadId:thread.uniqueId
+                                                                         transaction:transaction];
                                              [config removeWithTransaction:transaction];
                                          }];
                                      }]];
@@ -141,13 +133,23 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                         }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Fetch system contacts"
+                                     actionBlock:^() {
+                                         [Environment.current.contactsManager requestSystemContactsOnce];
+                                     }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
 + (void)reregister
 {
     DDLogInfo(@"%@ re-registering.", self.logTag);
-    [[TSAccountManager sharedInstance] resetForRegistration];
+
+    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
+        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
+        return;
+    }
+
     [[Environment current].preferences unsetRecordedAPNSTokens];
 
     RegistrationViewController *viewController = [RegistrationViewController new];

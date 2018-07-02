@@ -14,6 +14,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
+#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -144,19 +145,25 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             UILabel *accessoryLabel = [UILabel new];
             accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            switch ([TSSocketManager sharedManager].state) {
-                case SocketManagerStateClosed:
-                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                    accessoryLabel.textColor = [UIColor ows_redColor];
-                    break;
-                case SocketManagerStateConnecting:
-                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                    accessoryLabel.textColor = [UIColor ows_yellowColor];
-                    break;
-                case SocketManagerStateOpen:
-                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                    accessoryLabel.textColor = [UIColor ows_greenColor];
-                    break;
+            if (TSAccountManager.sharedInstance.isDeregistered) {
+                accessoryLabel.text = NSLocalizedString(
+                    @"NETWORK_STATUS_DEREGISTERED", @"Error indicating that this device is no longer registered.");
+                accessoryLabel.textColor = [UIColor ows_redColor];
+            } else {
+                switch ([TSSocketManager sharedManager].state) {
+                    case SocketManagerStateClosed:
+                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
+                        accessoryLabel.textColor = [UIColor ows_redColor];
+                        break;
+                    case SocketManagerStateConnecting:
+                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
+                        accessoryLabel.textColor = [UIColor ows_yellowColor];
+                        break;
+                    case SocketManagerStateOpen:
+                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
+                        accessoryLabel.textColor = [UIColor ows_greenColor];
+                        break;
+                }
             }
             [accessoryLabel sizeToFit];
             cell.accessoryView = accessoryLabel;
@@ -220,32 +227,51 @@
                                               }]];
 #endif
 
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-        const CGFloat kButtonHeight = 40.f;
-        OWSFlatButton *button = [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
-                                                    titleColor:[UIColor whiteColor]
-                                               backgroundColor:[UIColor ows_destructiveRedColor]
-                                                        target:self
-                                                      selector:@selector(unregisterUser)];
-        [cell.contentView addSubview:button];
-        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-        [button autoVCenterInSuperview];
-        [button autoPinLeadingAndTrailingToSuperviewMargin];
-
-        return cell;
+    if (TSAccountManager.sharedInstance.isDeregistered) {
+        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
+                                                                  @"Label for re-registration button.")
+                                                     selector:@selector(reregisterUser)
+                                                        color:[UIColor ows_materialBlueColor]]];
+        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
+                                                                  @"Label for 'delete data' button.")
+                                                     selector:@selector(deleteUnregisterUserData)
+                                                        color:[UIColor ows_destructiveRedColor]]];
+    } else {
+        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                                     selector:@selector(unregisterUser)
+                                                        color:[UIColor ows_destructiveRedColor]]];
     }
-                                           customRowHeight:90.f
-                                               actionBlock:nil]];
 
     [contents addSection:section];
 
     self.contents = contents;
+}
+
+- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title selector:(SEL)selector color:(UIColor *)color
+{
+    return [OWSTableItem
+        itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.preservesSuperviewLayoutMargins = YES;
+            cell.contentView.preservesSuperviewLayoutMargins = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            const CGFloat kButtonHeight = 40.f;
+            OWSFlatButton *button = [OWSFlatButton buttonWithTitle:title
+                                                              font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                                        titleColor:[UIColor whiteColor]
+                                                   backgroundColor:color
+                                                            target:self
+                                                          selector:selector];
+            [cell.contentView addSubview:button];
+            [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+            [button autoVCenterInSuperview];
+            [button autoPinLeadingAndTrailingToSuperviewMargin];
+
+            return cell;
+        }
+                customRowHeight:90.f
+                    actionBlock:nil];
 }
 
 - (UITableViewCell *)profileHeaderCell
@@ -390,9 +416,19 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Unregister & Re-register
 
 - (void)unregisterUser
+{
+    [self showDeleteAccountUI:YES];
+}
+
+- (void)deleteUnregisterUserData
+{
+    [self showDeleteAccountUI:NO];
+}
+
+- (void)showDeleteAccountUI:(BOOL)isRegistered
 {
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
@@ -401,30 +437,41 @@
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
                                                         style:UIAlertActionStyleDestructive
                                                       handler:^(UIAlertAction *action) {
-                                                          [self proceedToUnregistration];
+                                                          [self deleteAccount:isRegistered];
                                                       }]];
     [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)proceedToUnregistration
+- (void)deleteAccount:(BOOL)isRegistered
 {
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [TSAccountManager unregisterTextSecureWithSuccess:^{
-                          [SignalApp resetAppData];
-                      }
-                          failure:^(NSError *error) {
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
-                                  }];
-                              });
-                          }];
-                  }];
+    if (isRegistered) {
+        [ModalActivityIndicatorViewController
+            presentFromViewController:self
+                            canCancel:NO
+                      backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                          [TSAccountManager
+                              unregisterTextSecureWithSuccess:^{
+                                  [SignalApp resetAppData];
+                              }
+                              failure:^(NSError *error) {
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [modalActivityIndicator dismissWithCompletion:^{
+                                          [OWSAlerts
+                                              showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
+                                      }];
+                                  });
+                              }];
+                      }];
+    } else {
+        [SignalApp resetAppData];
+    }
+}
+
+- (void)reregisterUser
+{
+    [RegistrationUtils showReregistrationUIFromViewController:self];
 }
 
 #pragma mark - Socket Status Notifications

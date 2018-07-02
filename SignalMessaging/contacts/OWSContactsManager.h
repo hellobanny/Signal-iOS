@@ -36,10 +36,12 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
 
 - (void)loadSignalAccountsFromCache;
+
 #pragma mark - System Contact Fetching
 
 // Must call `requestSystemContactsOnce` before accessing this method
 @property (nonatomic, readonly) BOOL isSystemContactsAuthorized;
+@property (nonatomic, readonly) BOOL isSystemContactsDenied;
 @property (nonatomic, readonly) BOOL systemContactsHaveBeenRequestedAtLeastOnce;
 
 @property (nonatomic, readonly) BOOL supportsContactEditing;
@@ -70,7 +72,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  * Used for sorting, respects system contacts name sort order preference.
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right;
 
 // Generally we prefer the formattedProfileName over the raw profileName so as to
 // distinguish a profile name apart from a name pulled from the system's contacts.

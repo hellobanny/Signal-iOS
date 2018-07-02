@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Kas blokeerida %@?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Jätka";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Tehtud";
@@ -647,6 +647,12 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ümbersuunamine GitHubi";
 
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registreeri see telefoninumber uuesti";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signalis mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimati aktiivne: %@";
 
@@ -658,6 +664,9 @@
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Kaduvad sõnumid";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Selle vestluse sõnumid kaovad %@ pärast.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Kui on lubatud, siis kaovad selles vestluses saadetud ja saadud sõnumid pärast seda, kui nad on nähtud.";
@@ -798,7 +807,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Kõne ei õnnestunud.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Puudub juurdepääs kontaktidele.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Sõnumi saatmine ei õnnestunud.";
@@ -819,10 +828,13 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Võrgupäring ei õnnestunud.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Võrgupäring aegus.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Vigane vastus teenuselt.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbri jaoks registreeritud. Sa pead Signali eemaldama ja uuesti paigaldama.";
@@ -986,6 +998,12 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blokeeritud";
 
+/* Placeholder text for search bar which filters conversations. */
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Otsi";
+
+/* Format string when search returns no results. Embeds {{search term}} */
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Otsingule '%@' ei leitud vasteid";
+
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhiiv";
 
@@ -1047,7 +1065,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Kutsu sõpru";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Mitme kasutaja korraga kutsumine saadab grupisõnumi, mille saajad näevad üksteist.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Sõnumid kaovad pärast %@.";
@@ -1196,7 +1214,7 @@
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Loetud";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Vahele jäetud";
 
 /* message status while message is sending. */
@@ -1297,6 +1315,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "Ühendamine";
 
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "Ei ole enam registreeritud";
+
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Võrgu olek";
 
@@ -1346,7 +1367,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Leia kontaktid numbri järgi";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Sa võisid %@'i taaskäivitamise ajal saada sõnumeid.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Sõnumi saatmine kasutajale %@ ei õnnestunud.";
@@ -1383,6 +1404,9 @@
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ määras kaduvate sõnumite ajaks %@.";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signalil on hetkel tehnilisi raskusi. Tegeleme tõsiselt teenuse taastamisega nii kiiresti kui võimalik.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Väljuv kõne";
@@ -1618,6 +1642,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sinu kontot pole võimalik aktiveerida enne kui oled kinnitanud koodi, mille sulle saatsime.";
 
+/* alert body when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Praegu registreerimine keelab Signali kõigis teistes praegu selle telefoninumbriga registreeritud seadmetes.";
+
+/* button text to proceed with registration when on an iPad */
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registreeri see iPad";
+
+/* alert title when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Kas sul juba on Signali konto?";
+
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Tingimused ja privaatsuspoliitika";
 
@@ -1649,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Registreerimisluku PIN-kood pole õige.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Aktiveeri see seade";
+"REGISTRATION_VERIFY_DEVICE" = "Registreeri";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Registreerumiseks sisesta palun kehtiv telefoninumber.";
@@ -1749,6 +1782,15 @@
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Otsi nime või numbri järgi";
+
+/* section header for search results that match a contact who doesn't have an existing conversation */
+"SEARCH_SECTION_CONTACTS" = "Muud kontaktid";
+
+/* section header for search results that match existing conversations (either group or contact conversations) */
+"SEARCH_SECTION_CONVERSATIONS" = "Vestlused";
+
+/* section header for search results that match a message in a conversation */
+"SEARCH_SECTION_MESSAGES" = "Sõnumid";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Turvaseanss lähtestati.";
@@ -1891,6 +1933,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kustuta konto";
 
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "Kustuta kõik andmed";
+
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Kas sa tõesti soovid kustutada kogu ajaloo (sõnumid, manused, kõnede ajalugu ...)? Seda tegevust ei saa tagasi võtta.";
 
@@ -1950,6 +1995,9 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Näe ja jaga, millal sõnumeid loeti. See säte on valikuline ja rakendub kõigile vestlustele.";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "Eemalda registreerimine";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekraaniluku aegumine";

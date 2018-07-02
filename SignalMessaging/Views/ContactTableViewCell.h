@@ -1,20 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
 
-/**
- *
- * ContactTableViewCell displays a contact from a Contact object.
- *
- */
-
 NS_ASSUME_NONNULL_BEGIN
-
-extern NSString *const kContactsTable_CellReuseIdentifier;
-extern const NSUInteger kContactTableViewCellAvatarSize;
-extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
 @class OWSContactsManager;
 @class SignalAccount;
@@ -22,12 +12,7 @@ extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
 @interface ContactTableViewCell : UITableViewCell
 
-@property (nonatomic, nullable) NSString *accessoryMessage;
-@property (nonatomic, readonly) UILabel *subtitle;
-
-+ (nullable NSString *)reuseIdentifier;
-
-+ (CGFloat)rowHeight;
++ (NSString *)reuseIdentifier;
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
@@ -35,7 +20,17 @@ extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 
+// This method should be called _before_ the configure... methods.
+- (void)setAccessoryMessage:(nullable NSString *)accessoryMessage;
+
+// This method should be called _after_ the configure... methods.
+- (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
+
 - (NSAttributedString *)verifiedSubtitle;
+
+- (BOOL)hasAccessoryText;
+
+- (void)ows_setAccessoryView:(UIView *)accessoryView;
 
 @end
 

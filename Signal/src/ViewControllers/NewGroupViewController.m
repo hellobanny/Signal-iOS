@@ -125,6 +125,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
     [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
+    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableViewController.tableView.estimatedRowHeight = 60;
 
     [self updateTableContents];
 }
@@ -216,35 +218,37 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [nonContactMemberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
 
             [nonContactsSection
-                addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                    NewGroupViewController *strongSelf = weakSelf;
-                    OWSCAssert(strongSelf);
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                NewGroupViewController *strongSelf = weakSelf;
+                                OWSCAssert(strongSelf);
 
-                    ContactTableViewCell *cell = [ContactTableViewCell new];
-                    SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
-                    BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                    BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                    if (isCurrentMember) {
-                        // In the "contacts" section, we label members as such when editing an existing group.
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
-                    } else if (isBlocked) {
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                    } else {
-                        OWSAssert(cell.accessoryMessage == nil);
-                    }
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
+                                SignalAccount *signalAccount =
+                                    [contactsViewHelper signalAccountForRecipientId:recipientId];
+                                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
+                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                if (isCurrentMember) {
+                                    // In the "contacts" section, we label members as such when editing an existing
+                                    // group.
+                                    cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
+                                        @"An indicator that a user is a member of the new group.");
+                                } else if (isBlocked) {
+                                    cell.accessoryMessage = NSLocalizedString(
+                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                }
 
-                    if (signalAccount) {
-                        [cell configureWithSignalAccount:signalAccount
-                                         contactsManager:contactsViewHelper.contactsManager];
-                    } else {
-                        [cell configureWithRecipientId:recipientId contactsManager:contactsViewHelper.contactsManager];
-                    }
+                                if (signalAccount) {
+                                    [cell configureWithSignalAccount:signalAccount
+                                                     contactsManager:contactsViewHelper.contactsManager];
+                                } else {
+                                    [cell configureWithRecipientId:recipientId
+                                                   contactsManager:contactsViewHelper.contactsManager];
+                                }
 
-                    return cell;
-                }
-                            customRowHeight:[ContactTableViewCell rowHeight]
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
                                 BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
@@ -309,31 +313,32 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
         for (SignalAccount *signalAccount in signalAccounts) {
             [signalAccountSection
-                addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                    NewGroupViewController *strongSelf = weakSelf;
-                    OWSCAssert(strongSelf);
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                NewGroupViewController *strongSelf = weakSelf;
+                                OWSCAssert(strongSelf);
 
-                    ContactTableViewCell *cell = [ContactTableViewCell new];
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                    NSString *recipientId = signalAccount.recipientId;
-                    BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                    BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                    if (isCurrentMember) {
-                        // In the "contacts" section, we label members as such when editing an existing group.
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
-                    } else if (isBlocked) {
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                    } else {
-                        OWSAssert(cell.accessoryMessage == nil);
-                    }
+                                NSString *recipientId = signalAccount.recipientId;
+                                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
+                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                if (isCurrentMember) {
+                                    // In the "contacts" section, we label members as such when editing an existing
+                                    // group.
+                                    cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
+                                        @"An indicator that a user is a member of the new group.");
+                                } else if (isBlocked) {
+                                    cell.accessoryMessage = NSLocalizedString(
+                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                }
 
-                    [cell configureWithSignalAccount:signalAccount contactsManager:contactsViewHelper.contactsManager];
+                                [cell configureWithSignalAccount:signalAccount
+                                                 contactsManager:contactsViewHelper.contactsManager];
 
-                    return cell;
-                }
-                            customRowHeight:[ContactTableViewCell rowHeight]
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
                                 NSString *recipientId = signalAccount.recipientId;
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
@@ -392,7 +397,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     return [OWSTableItem
         disclosureItemWithText:NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
                                    @"A label for the cell that lets you add a new non-contact member to a group.")
-               customRowHeight:[ContactTableViewCell rowHeight]
+               customRowHeight:UITableViewAutomaticDimension
                    actionBlock:^{
                        AddToGroupViewController *viewController = [AddToGroupViewController new];
                        viewController.addToGroupDelegate = weakSelf;
@@ -482,8 +487,9 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      TSOutgoingMessage *message =
-                          [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew];
+                      TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
+                                                                             groupMetaMessage:TSGroupMessageNew
+                                                                             expiresInSeconds:0];
 
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 

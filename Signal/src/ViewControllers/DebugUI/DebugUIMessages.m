@@ -1297,6 +1297,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                   messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Reserved Color Png ⚠️"]];
     }
+    
+    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
     [actions addObjectsFromArray:@[
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"
@@ -1326,7 +1328,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1334,7 +1336,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1342,7 +1344,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
@@ -1351,7 +1353,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1359,7 +1361,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1367,7 +1369,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
@@ -1376,7 +1378,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1384,7 +1386,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1392,7 +1394,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
@@ -1560,7 +1562,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorIncoming]
+                    backgroundColor:[conversationStyle primaryColor]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1568,7 +1570,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorIncoming]
+                    backgroundColor:[conversationStyle primaryColor]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
@@ -1963,6 +1965,9 @@ NS_ASSUME_NONNULL_BEGIN
         [prepareBlocks addObject:replyAssetLoader.prepareBlock];
     }
 
+    // We don't need to configure ConversationStyle's view width in this case.
+    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
+
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
@@ -1980,7 +1985,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert(messageToQuote);
                 DDLogVerbose(@"%@ %@", self.logTag, label);
                 [DDLog flushLog];
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
+                                                                                     isGroupThread:thread.isGroupThread
+                                                                                       transaction:transaction
+                                                                                 conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
@@ -1994,7 +2002,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
 
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
+                                                                                     isGroupThread:thread.isGroupThread
+                                                                                       transaction:transaction
+                                                                                 conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             }
             OWSAssert(quotedMessage);
@@ -3423,11 +3434,27 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:YES
                                                                durationSeconds:(uint32_t)[durationSeconds intValue]];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
+
+        {
+            NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                       enabled:YES
+                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:nil
+                                  createdInExistingGroup:YES]];
+        }
+
         {
             NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
@@ -3435,10 +3462,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:YES
                                                                durationSeconds:(uint32_t)[durationSeconds intValue]];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
         {
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
@@ -3446,10 +3474,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:NO
                                                                durationSeconds:0];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
 
         [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
@@ -3766,7 +3795,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }];
     OWSAssert(thread);
 
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew];
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew expiresInSeconds:0];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;

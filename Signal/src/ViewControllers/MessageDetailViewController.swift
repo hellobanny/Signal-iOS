@@ -20,7 +20,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     let uiDatabaseConnection: YapDatabaseConnection
 
-    let bubbleFactory = OWSMessagesBubbleImageFactory()
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
@@ -40,6 +39,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
+    var conversationStyle: ConversationStyle
+
     private var contactShareViewHelper: ContactShareViewHelper
 
     // MARK: Initializers
@@ -50,13 +51,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     @objc
-    required init(viewItem: ConversationViewItem, message: TSMessage, mode: MessageMetadataViewMode) {
+    required init(viewItem: ConversationViewItem, message: TSMessage, thread: TSThread, mode: MessageMetadataViewMode) {
         self.contactsManager = Environment.current().contactsManager
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
         self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
+        self.conversationStyle = ConversationStyle(thread: thread)
+
         super.init(nibName: nil, bundle: nil)
 
         contactShareViewHelper.delegate = self
@@ -70,6 +73,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.uiDatabaseConnection.beginLongLivedReadTransaction()
         updateDBConnectionAndMessageToLatest()
 
+        self.conversationStyle.viewWidth = view.width()
+
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
 
@@ -81,6 +86,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
             object: OWSPrimaryStorage.shared().dbNotificationObject)
+    }
+
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        self.conversationStyle.viewWidth = size.width
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -238,20 +251,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                         addDivider()
                     }
 
-                    let cell = ContactTableViewCell()
-                    cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
-                    let statusLabel = UILabel()
+                    // We use ContactCellView, not ContactTableViewCell.
+                    // Table view cells don't layout properly outside the
+                    // context of a table view.
+                    let cellView = ContactCellView()
+                    cellView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
                     // We use the "short" status message to avoid being redundant with the section title.
-                    statusLabel.text = shortStatusMessage
-                    statusLabel.textColor = UIColor.ows_darkGray
-                    statusLabel.font = .ows_dynamicTypeFootnote
-                    statusLabel.adjustsFontSizeToFitWidth = true
-                    statusLabel.sizeToFit()
-                    cell.accessoryView = statusLabel
-                    cell.autoSetDimension(.height, toSize: ContactTableViewCell.rowHeight())
-                    cell.setContentHuggingLow()
-                    cell.isUserInteractionEnabled = false
-                    groupRows.append(cell)
+                    cellView.accessoryMessage = shortStatusMessage
+                    cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    groupRows.append(cellView)
                 }
 
                 if groupRows.count > 0 {
@@ -336,8 +344,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.contentWidth = contentWidth()
-        messageBubbleView.alwaysShowBubbleTail = true
+        messageBubbleView.conversationStyle = conversationStyle
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
 
@@ -579,10 +586,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: - Message Bubble Layout
 
-    private func contentWidth() -> Int32 {
-        return Int32(round(self.view.width() - (2 * bubbleViewHMargin)))
-    }
-
     private func updateMessageBubbleViewLayout() {
         guard let messageBubbleView = messageBubbleView else {
             return
@@ -594,9 +597,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             return
         }
 
-        messageBubbleView.contentWidth = contentWidth()
-
-        let messageBubbleSize = messageBubbleView.size(forContentWidth: contentWidth())
+        let messageBubbleSize = messageBubbleView.measureSize()
         messageBubbleViewWidthLayoutConstraint.constant = messageBubbleSize.width
         messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }

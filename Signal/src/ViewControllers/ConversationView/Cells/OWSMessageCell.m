@@ -3,7 +3,7 @@
 //
 
 #import "OWSMessageCell.h"
-#import "OWSExpirationTimerView.h"
+#import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "Signal-Swift.h"
 
@@ -15,19 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
 
-// The cell's contentView contains:
-//
-// * MessageView (message)
-// * dateHeaderLabel (above message)
-// * footerView (below message)
-// * failedSendBadgeView ("trailing" beside message)
-
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
+@property (nonatomic) UIStackView *dateHeaderView;
+@property (nonatomic) UIView *dateStrokeView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic, nullable) UIImageView *failedSendBadgeView;
-@property (nonatomic) UIView *footerView;
-@property (nonatomic) UILabel *footerLabel;
-@property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
+@property (nonatomic) AvatarImageView *avatarView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;
@@ -51,35 +43,35 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure only called once.
     OWSAssert(!self.messageBubbleView);
 
-    _viewConstraints = [NSMutableArray new];
-
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
+
+    _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     [self.contentView addSubview:self.messageBubbleView];
 
-    self.footerView = [UIView containerView];
-    [self.contentView addSubview:self.footerView];
+    self.dateStrokeView = [UIView new];
+    self.dateStrokeView.backgroundColor = [UIColor ows_light45Color];
+    [self.dateStrokeView autoSetDimension:ALDimensionHeight toSize:self.dateHeaderStrokeThickness];
+    [self.dateStrokeView setContentHuggingHigh];
 
     self.dateHeaderLabel = [UILabel new];
-    self.dateHeaderLabel.font = self.dateHeaderDateFont;
+    self.dateHeaderLabel.font = self.dateHeaderFont;
     self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
-    self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
-    [self.contentView addSubview:self.dateHeaderLabel];
+    self.dateHeaderLabel.textColor = [UIColor ows_light60Color];
 
-    self.footerLabel = [UILabel new];
-    self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
-    self.footerLabel.textColor = [UIColor lightGrayColor];
-    [self.footerView addSubview:self.footerLabel];
+    self.dateHeaderView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.dateStrokeView,
+        self.dateHeaderLabel,
+    ]];
+    self.dateHeaderView.axis = NSTextLayoutOrientationVertical;
 
-    // Hide these views by default.
-    self.dateHeaderLabel.hidden = YES;
-    self.footerLabel.hidden = YES;
+    self.avatarView = [[AvatarImageView alloc] init];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
 
-    [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-
-    [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.messageBubbleView autoPinBottomToSuperviewMarginWithInset:0];
 
     self.contentView.userInteractionEnabled = YES;
 
@@ -97,31 +89,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self addGestureRecognizer:panGesture];
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setConversationStyle:(nullable ConversationStyle *)conversationStyle
+{
+    [super setConversationStyle:conversationStyle];
+
+    self.messageBubbleView.conversationStyle = conversationStyle;
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
-}
-
-- (BOOL)shouldHaveFailedSendBadge
-{
-    if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        return NO;
-    }
-    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
-}
-
-- (UIImage *)failedSendBadge
-{
-    UIImage *image = [UIImage imageNamed:@"message_send_failure"];
-    OWSAssert(image);
-    OWSAssert(image.size.width == self.failedSendBadgeSize && image.size.height == self.failedSendBadgeSize);
-    return image;
-}
-
-- (CGFloat)failedSendBadgeSize
-{
-    return 20.f;
 }
 
 #pragma mark - Convenience Accessors
@@ -152,46 +134,53 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.contentWidth > 0);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
 
     // Update label fonts to honor dynamic type size.
-    self.dateHeaderLabel.font = self.dateHeaderDateFont;
-    self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
+    self.dateHeaderLabel.font = self.dateHeaderFont;
 
-    if (self.shouldHaveFailedSendBadge) {
-        self.failedSendBadgeView = [UIImageView new];
-        self.failedSendBadgeView.image =
-            [self.failedSendBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.failedSendBadgeView.tintColor = [UIColor ows_destructiveRedColor];
-        [self.contentView addSubview:self.failedSendBadgeView];
-
+    if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.failedSendBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoPinTrailingToSuperviewMargin],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                     withInset:self.conversationStyle.gutterLeading],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                     withInset:self.conversationStyle.gutterTrailing
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.messageBubbleView autoPinTrailingToSuperviewMargin],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                     withInset:self.conversationStyle.gutterLeading
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                     withInset:self.conversationStyle.gutterTrailing],
         ]];
     }
 
     [self updateDateHeader];
-    [self updateFooter];
+
+    if ([self updateAvatarView]) {
+        CGFloat avatarBottomMargin = round(self.conversationStyle.lastTextLineAxis - self.avatarSize * 0.5f);
+        [self.viewConstraints addObjectsFromArray:@[
+            // V-align the "group sender" avatar with the
+            // last line of the text (if any, or where it
+            // would be).
+            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
+            [self.messageBubbleView autoPinEdge:ALEdgeBottom
+                                         toEdge:ALEdgeBottom
+                                         ofView:self.avatarView
+                                     withOffset:avatarBottomMargin],
+        ]];
+    }
 }
 
 // * If cell is visible, lazy-load (expensive) view contents.
@@ -209,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateDateHeader
 {
-    OWSAssert(self.contentWidth > 0);
+    OWSAssert(self.conversationStyle);
 
     static NSDateFormatter *dateHeaderDateFormatter = nil;
     static NSDateFormatter *dateHeaderTimeFormatter = nil;
@@ -234,224 +223,173 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
 
         NSAttributedString *attributedText = [NSAttributedString new];
-        attributedText = [attributedText rtlSafeAppend:dateString
+        attributedText = [attributedText rtlSafeAppend:dateString.uppercaseString
                                             attributes:@{
-                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                                NSFontAttributeName : self.dateHeaderFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],
                                             }
                                          referenceView:self];
         attributedText = [attributedText rtlSafeAppend:@" "
                                             attributes:@{
-                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                                NSFontAttributeName : self.dateHeaderFont,
                                             }
                                          referenceView:self];
         attributedText = [attributedText rtlSafeAppend:timeString
                                             attributes:@{
-                                                NSFontAttributeName : self.dateHeaderTimeFont,
+                                                NSFontAttributeName : self.dateHeaderFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],
                                             }
                                          referenceView:self];
 
         self.dateHeaderLabel.attributedText = attributedText;
-        self.dateHeaderLabel.hidden = NO;
 
+        [self.contentView addSubview:self.dateHeaderView];
         [self.viewConstraints addObjectsFromArray:@[
-            // Date headers should be visually centered within the conversation view,
-            // so they need to extend outside the cell's boundaries.
-            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:self.contentWidth],
-            (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
-                             : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
-            [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
+            [self.dateHeaderView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.gutterLeading],
+            [self.dateHeaderView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.gutterTrailing],
+            [self.dateHeaderView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+
+            // DO NOT pin to the bottom of dateHeaderView.
+            //
+            // Being a UIStackView, it doesn't reflect the spacing below the date
+            // header contents.  Instead pin using dateHeaderHeight which includes
+            // the spacing.
+            [self.messageBubbleView autoPinEdge:ALEdgeTop
+                                         toEdge:ALEdgeTop
+                                         ofView:self.dateHeaderView
+                                     withOffset:self.dateHeaderHeight],
         ]];
     } else {
-        self.dateHeaderLabel.hidden = YES;
         [self.viewConstraints addObjectsFromArray:@[
-            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:0],
-            [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         ]];
     }
 }
 
-- (BOOL)shouldShowFooter
-{
-    BOOL shouldShowFooter = NO;
-
-    if (self.message.shouldStartExpireTimer) {
-        shouldShowFooter = YES;
-    } else if (self.isOutgoing) {
-        shouldShowFooter = !self.viewItem.shouldHideRecipientStatus;
-    } else if (self.viewItem.isGroupThread) {
-        shouldShowFooter = YES;
-    } else {
-        shouldShowFooter = NO;
-    }
-
-    return shouldShowFooter;
-}
-
-- (CGFloat)footerHeight
-{
-    if (!self.shouldShowFooter) {
-        return 0.f;
-    }
-
-    return ceil(MAX(kExpirationTimerViewSize, self.footerLabel.font.lineHeight));
-}
-
-- (CGFloat)footerVSpacing
-{
-    return 0.f;
-}
-
-- (void)updateFooter
-{
-    OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
-        || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
-
-    TSMessage *message = self.message;
-    BOOL hasExpirationTimer = message.shouldStartExpireTimer;
-    NSAttributedString *attributedText = nil;
-    if (self.isOutgoing) {
-        if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-            NSString *statusMessage =
-                [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
-            attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
-        }
-    } else if (self.viewItem.isGroupThread) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
-        attributedText = [self.delegate attributedContactOrProfileNameForPhoneIdentifier:incomingMessage.authorId];
-    }
-    
-    if (!hasExpirationTimer &&
-        !attributedText) {
-        self.footerLabel.hidden = YES;
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView],
-            [self.footerView autoSetDimension:ALDimensionHeight toSize:0],
-        ]];
-        return;
-    }
-
-    [self.viewConstraints addObjectsFromArray:@[
-        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:kBubbleThornSideInset]
-                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:kBubbleThornSideInset]),
-        (self.isIncoming ? [self.footerView autoPinTrailingToSuperviewMargin]
-                         : [self.footerView autoPinLeadingToSuperviewMargin]),
-    ]];
-
-    [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
-                                                          toEdge:ALEdgeBottom
-                                                          ofView:self.messageBubbleView
-                                                      withOffset:self.footerVSpacing]];
-
-    if (hasExpirationTimer) {
-        uint64_t expirationTimestamp = message.expiresAt;
-        uint32_t expiresInSeconds = message.expiresInSeconds;
-        self.expirationTimerView = [[OWSExpirationTimerView alloc] initWithExpiration:expirationTimestamp
-                                                               initialDurationSeconds:expiresInSeconds];
-        [self.footerView addSubview:self.expirationTimerView];
-    }
-    if (attributedText) {
-        self.footerLabel.attributedText = attributedText;
-        self.footerLabel.hidden = NO;
-    }
-
-    // Footer labels can extend past the message bubble, but
-    // we want to leave spaces for an expiration timer and
-    // include padding so that they still visually "cling" to the
-    // appropriate incoming/outgoing edge.
-    const CGFloat maxFooterLabelWidth = self.contentWidth - 100;
-    if (hasExpirationTimer &&
-        attributedText) {
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.expirationTimerView autoVCenterInSuperview],
-            [self.footerLabel autoVCenterInSuperview],
-            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperviewMargin]
-                             : [self.expirationTimerView autoPinTrailingToSuperviewMargin]),
-            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingEdgeOfView:self.expirationTimerView]
-                             : [self.footerLabel autoPinTrailingToLeadingEdgeOfView:self.expirationTimerView]),
-            [self.footerLabel autoSetDimension:ALDimensionWidth
-                                        toSize:maxFooterLabelWidth
-                                      relation:NSLayoutRelationLessThanOrEqual],
-            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-        ]];
-    } else if (hasExpirationTimer) {
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.expirationTimerView autoVCenterInSuperview],
-            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperviewMargin]
-                             : [self.expirationTimerView autoPinTrailingToSuperviewMargin]),
-            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-        ]];
-    } else if (attributedText) {
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.footerLabel autoVCenterInSuperview],
-            (self.isIncoming ? [self.footerLabel autoPinLeadingToSuperviewMargin]
-                             : [self.footerLabel autoPinTrailingToSuperviewMargin]),
-            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-            [self.footerLabel autoSetDimension:ALDimensionWidth
-                                        toSize:maxFooterLabelWidth
-                                      relation:NSLayoutRelationLessThanOrEqual],
-        ]];
-    } else {
-        OWSFail(@"%@ Cell unexpectedly has neither expiration timer nor footer text.", self.logTag);
-    }
-}
-
-- (UIFont *)dateHeaderDateFont
-{
-    return UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
-}
-
-- (UIFont *)dateHeaderTimeFont
+- (UIFont *)dateHeaderFont
 {
     return UIFont.ows_dynamicTypeCaption1Font;
 }
 
+#pragma mark - Avatar
+
+// Returns YES IFF the avatar view is appropriate and configured.
+- (BOOL)updateAvatarView
+{
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return NO;
+    }
+    if (!self.viewItem.isGroupThread) {
+        OWSFail(@"%@ not a group thread.", self.logTag);
+        return NO;
+    }
+    if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        OWSFail(@"%@ not an incoming message.", self.logTag);
+        return NO;
+    }
+
+    OWSContactsManager *contactsManager = self.delegate.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        return NO;
+    }
+
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
+    OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                                                  color:self.conversationStyle.primaryColor
+                                                                               diameter:self.avatarSize
+                                                                        contactsManager:contactsManager];
+    self.avatarView.image = [avatarBuilder build];
+    [self.contentView addSubview:self.avatarView];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+
+    return YES;
+}
+
+- (NSUInteger)avatarSize
+{
+    return 24.f;
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return;
+    }
+    if (!self.viewItem.isGroupThread) {
+        OWSFail(@"%@ not a group thread.", self.logTag);
+        return;
+    }
+    if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        OWSFail(@"%@ not an incoming message.", self.logTag);
+        return;
+    }
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    if (recipientId.length == 0) {
+        return;
+    }
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
+
+    if (![incomingMessage.authorId isEqualToString:recipientId]) {
+        return;
+    }
+
+    [self updateAvatarView];
+}
+
 #pragma mark - Measurement
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView sizeForContentWidth:contentWidth];
+    CGSize messageBubbleSize = [self.messageBubbleView measureSize];
 
     CGSize cellSize = messageBubbleSize;
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
     cellSize.height += self.dateHeaderHeight;
-    if (self.shouldShowFooter) {
-        cellSize.height += self.footerVSpacing;
-        cellSize.height += self.footerHeight;
-    }
-
-    if (self.shouldHaveFailedSendBadge) {
-        cellSize.width += self.failedSendBadgeSize;
-    }
 
     cellSize = CGSizeCeil(cellSize);
 
     return cellSize;
 }
 
+- (CGFloat)dateHeaderStrokeThickness
+{
+    return CGHairlineWidth();
+}
+
+- (CGFloat)dateHeaderBottomMargin
+{
+    return 20.f;
+}
+
 - (CGFloat)dateHeaderHeight
 {
     if (self.viewItem.shouldShowDate) {
-        // Add 5pt spacing above and below the date header.
-        return (CGFloat)ceil(MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f);
+        CGFloat textHeight = self.dateHeaderFont.capHeight;
+        return (CGFloat)ceil(self.dateHeaderStrokeThickness + textHeight + self.dateHeaderBottomMargin);
     } else {
         return 0.f;
     }
 }
 
-#pragma mark -
+#pragma mark - Reuse
 
 - (void)prepareForReuse
 {
@@ -463,18 +401,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageBubbleView prepareForReuse];
     [self.messageBubbleView unloadContent];
 
-    self.dateHeaderLabel.text = nil;
-    self.dateHeaderLabel.hidden = YES;
-    [self.failedSendBadgeView removeFromSuperview];
-    self.failedSendBadgeView = nil;
-    self.footerLabel.text = nil;
-    self.footerLabel.hidden = YES;
+    [self.dateHeaderView removeFromSuperview];
 
-    [self.expirationTimerView clearAnimations];
-    [self.expirationTimerView removeFromSuperview];
-    self.expirationTimerView = nil;
+    self.avatarView.image = nil;
+    [self.avatarView removeFromSuperview];
 
     [self hideMenuControllerIfNecessary];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Notifications
@@ -490,15 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self ensureMediaLoadState];
 
-    if (isCellVisible) {
-        if (self.message.shouldStartExpireTimer) {
-            [self.expirationTimerView ensureAnimations];
-        } else {
-            [self.expirationTimerView clearAnimations];
-        }
-    } else {
-        [self.expirationTimerView clearAnimations];
-
+    if (!isCellVisible) {
         [self hideMenuControllerIfNecessary];
     }
 }
@@ -703,11 +629,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
     }
     self.isPresentingMenuController = NO;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

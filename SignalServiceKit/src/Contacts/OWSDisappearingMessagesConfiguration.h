@@ -23,10 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL dictionaryValueDidChange;
 @property (readonly, getter=isNewRecord) BOOL newRecord;
 
-+ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId
-                                     transaction:(YapDatabaseReadTransaction *)transaction;
++ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId
+                                    transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
++ (uint32_t)maxDurationSeconds;
 
 @end
 

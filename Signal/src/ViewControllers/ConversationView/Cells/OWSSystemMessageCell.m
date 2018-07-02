@@ -4,6 +4,7 @@
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
+#import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -22,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UIStackView *stackView;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
 @end
 
@@ -43,19 +46,26 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.imageView);
 
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-    self.backgroundColor = [UIColor whiteColor];
+    self.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.imageView = [UIImageView new];
-    [self.contentView addSubview:self.imageView];
+    [self.imageView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [self.imageView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [self.imageView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-    self.titleLabel.font = [self titleFont];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [self.contentView addSubview:self.titleLabel];
+
+    self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.imageView,
+        self.titleLabel,
+    ]];
+    self.stackView.axis = UILayoutConstraintAxisHorizontal;
+    self.stackView.spacing = self.hSpacing;
+    self.stackView.alignment = UIStackViewAlignmentCenter;
+    [self.contentView addSubview:self.stackView];
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -66,6 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self addGestureRecognizer:longPress];
 }
 
+- (void)configureFonts
+{
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -73,7 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
+    OWSAssert(transaction);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -83,19 +101,34 @@ NS_ASSUME_NONNULL_BEGIN
     self.titleLabel.textColor = [self textColor];
     [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
 
-    [self setNeedsLayout];
+    CGSize titleSize = [self titleSize];
+
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = @[
+        [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
+        // H-center the stack.
+        [self.stackView autoHCenterInSuperview],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                         withInset:self.conversationStyle.fullWidthGutterLeading
+                                          relation:NSLayoutRelationGreaterThanOrEqual],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                         withInset:self.conversationStyle.fullWidthGutterTrailing
+                                          relation:NSLayoutRelationGreaterThanOrEqual],
+    ];
 }
 
 - (UIColor *)textColor
 {
-    return [UIColor colorWithRGBHex:0x303030];
+    return [UIColor ows_light60Color];
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return [UIColor colorWithRGBHex:0x404040];
+    return [UIColor ows_light60Color];
 }
 
 - (UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -166,9 +199,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(interaction);
     OWSAssert(label);
+    OWSAssert(transaction);
 
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = [self titleFont];
+    [self configureFonts];
 
     // TODO: Should we move the copy generation into this view?
 
@@ -210,16 +243,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (UIFont *)titleFont
-{
-    return UIFont.ows_dynamicTypeFootnoteFont;
-}
-
-- (CGFloat)hMargin
-{
-    return 25.f;
-}
-
 - (CGFloat)topVMargin
 {
     return 5.f;
@@ -240,48 +263,31 @@ NS_ASSUME_NONNULL_BEGIN
     return 20.f;
 }
 
-- (void)layoutSubviews
+- (CGSize)titleSize
 {
-    [super layoutSubviews];
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.viewItem);
 
-    CGFloat maxTitleWidth = (self.contentView.width - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
-    CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-
-    CGFloat contentWidth = ([self iconSize] + [self hSpacing] + titleSize.width);
-
-    CGFloat contentLeft = round((self.contentView.width - contentWidth) * 0.5f);
-    CGFloat imageLeft = ([self isRTL] ? round(contentLeft + contentWidth - [self iconSize]) : contentLeft);
-    CGFloat titleLeft = ([self isRTL] ? contentLeft : round(imageLeft + [self iconSize] + [self hSpacing]));
-
-    self.imageView.frame = CGRectMake(
-        imageLeft, round((self.contentView.height - [self iconSize]) * 0.5f), [self iconSize], [self iconSize]);
-
-    self.titleLabel.frame = CGRectMake(titleLeft,
-        round((self.contentView.height - titleSize.height) * 0.5f),
-        ceil(titleSize.width + 1.f),
-        ceil(titleSize.height + 1.f));
+    CGFloat hMargins = (self.conversationStyle.fullWidthGutterLeading + self.conversationStyle.fullWidthGutterTrailing);
+    CGFloat maxTitleWidth
+        = (CGFloat)floor(self.conversationStyle.fullWidthContentWidth - (hMargins + self.iconSize + self.hSpacing));
+    return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
-    CGSize result = CGSizeMake(contentWidth, 0);
-    result.height += self.topVMargin;
-    result.height += self.bottomVMargin;
+    CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
 
-    // FIXME pass in transaction from the uiDBConnection.
-    [[TSYapDatabaseObject dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
-    }];
+    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
 
-    CGFloat maxTitleWidth = (contentWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
-    CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-
+    CGSize titleSize = [self titleSize];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
-    result.height += contentHeight;
+    result.height = (contentHeight + self.topVMargin + self.bottomVMargin);
 
     return result;
 }

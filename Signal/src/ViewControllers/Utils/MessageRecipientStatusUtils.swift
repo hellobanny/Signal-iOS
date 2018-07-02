@@ -105,7 +105,7 @@ public class MessageRecipientStatusUtils: NSObject {
             return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         case .skipped:
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
-                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account.")
+                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")
             return (status:.skipped, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         }
     }
@@ -158,5 +158,25 @@ public class MessageRecipientStatusUtils: NSObject {
         let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage,
                                                               referenceView: referenceView)
         return status
+    }
+
+    @objc
+    public class func description(forMessageReceiptStatus value: MessageReceiptStatus) -> String {
+        switch(value) {
+        case .read:
+            return "read"
+        case .uploading:
+            return "uploading"
+        case .delivered:
+            return "delivered"
+        case .sent:
+            return "sent"
+        case .sending:
+            return "sending"
+        case .failed:
+            return "failed"
+        case .skipped:
+            return "skipped"
+        }
     }
 }

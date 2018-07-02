@@ -4,6 +4,7 @@
 
 #import "OWSUnreadIndicatorCell.h"
 #import "ConversationViewItem.h"
+#import "Signal-Swift.h"
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -15,12 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) TSUnreadIndicatorInteraction *interaction;
 
-@property (nonatomic) UIView *bannerView;
-@property (nonatomic) UIView *bannerTopHighlightView;
-@property (nonatomic) UIView *bannerBottomHighlightView1;
-@property (nonatomic) UIView *bannerBottomHighlightView2;
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UIView *strokeView;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
+@property (nonatomic) UIStackView *stackView;
 
 @end
 
@@ -40,41 +40,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
-    OWSAssert(!self.bannerView);
+    OWSAssert(!self.titleLabel);
 
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor whiteColor];
-
-    self.bannerView = [UIView new];
-    self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
-    [self.contentView addSubview:self.bannerView];
-
-    self.bannerTopHighlightView = [UIView new];
-    self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
-    [self.bannerView addSubview:self.bannerTopHighlightView];
-
-    self.bannerBottomHighlightView1 = [UIView new];
-    self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
-    [self.bannerView addSubview:self.bannerBottomHighlightView1];
-
-    self.bannerBottomHighlightView2 = [UIView new];
-    self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
-    [self.bannerView addSubview:self.bannerBottomHighlightView2];
+    self.strokeView = [UIView new];
+    self.strokeView.backgroundColor = [UIColor ows_light60Color];
+    [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeThickness];
+    [self.strokeView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-    self.titleLabel.font = [self titleFont];
-    [self.bannerView addSubview:self.titleLabel];
+    self.titleLabel.textColor = [UIColor ows_light90Color];
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
 
     self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-    self.subtitleLabel.font = [self subtitleFont];
+    self.subtitleLabel.textColor = [UIColor ows_light90Color];
     // The subtitle may wrap to a second line.
     self.subtitleLabel.numberOfLines = 0;
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.contentView addSubview:self.subtitleLabel];
+
+    self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.strokeView,
+        self.titleLabel,
+        self.subtitleLabel,
+    ]];
+    self.stackView.axis = NSTextLayoutOrientationVertical;
+    [self.contentView addSubview:self.stackView];
+
+    [self configureFonts];
+}
+
+- (void)configureFonts
+{
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+    self.subtitleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -84,31 +86,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
+
+    [self configureFonts];
 
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
 
     self.titleLabel.text = [self titleForInteraction:interaction];
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];
 
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = [self titleFont];
-    self.subtitleLabel.font = [self subtitleFont];
+    self.subtitleLabel.hidden = self.subtitleLabel.text.length < 1;
 
-    self.backgroundColor = [UIColor whiteColor];
-
-    [self setNeedsLayout];
-}
-
-- (UIFont *)titleFont
-{
-    return UIFont.ows_dynamicTypeBodyFont;
-}
-
-- (UIFont *)subtitleFont
-{
-    return UIFont.ows_dynamicTypeCaption1Font;
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = @[
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                         withInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                         withInset:self.conversationStyle.fullWidthGutterTrailing],
+    ];
 }
 
 - (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction
@@ -122,121 +121,38 @@ NS_ASSUME_NONNULL_BEGIN
     if (!interaction.hasMoreUnseenMessages) {
         return nil;
     }
-    NSString *subtitleFormat = (interaction.missingUnseenSafetyNumberChangeCount > 0
-            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT",
-                  @"Messages that indicates that there are more unseen messages that be revealed by tapping the 'load "
-                  @"earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}")
-            : NSLocalizedString(
-                  @"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT",
-                  @"Messages that indicates that there are more unseen messages including safety number changes that "
-                  @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier "
-                  @"messages' button}}."));
-    NSString *loadMoreButtonName = NSLocalizedString(
-        @"load_earlier_messages", @"Label for button that loads more messages in conversation view.");
-    return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
+    return (interaction.missingUnseenSafetyNumberChangeCount > 0
+            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES",
+                  @"Messages that indicates that there are more unseen messages.")
+            : NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES",
+                  @"Messages that indicates that there are more unseen messages including safety number changes."));
 }
 
-- (CGFloat)subtitleHMargin
+- (CGFloat)strokeThickness
 {
-    return 20.f;
+    return CGHairlineWidth();
 }
 
-- (CGFloat)subtitleVSpacing
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return 3.f;
-}
-
-- (CGFloat)titleInnerHMargin
-{
-    return 10.f;
-}
-
-- (CGFloat)titleVMargin
-{
-    return 5.5f;
-}
-
-- (CGFloat)topVMargin
-{
-    return 5.f;
-}
-
-- (CGFloat)bottomVMargin
-{
-    return 5.f;
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    [self.titleLabel sizeToFit];
-
-    // It's a bit of a hack, but we use a view that extends _outside_ the cell's bounds
-    // to draw its background, since we want the background to extend to the edges of the
-    // collection view.
-    //
-    // This layout logic assumes that the cell insets are symmetrical and can be deduced
-    // from the cell frame.
-    CGRect bannerViewFrame = CGRectMake(-self.left,
-        round(self.topVMargin),
-        round(self.width + self.left * 2.f),
-        round(self.titleLabel.height + self.titleVMargin * 2.f));
-    self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
-
-    // The highlights should be 1px (not 1pt), so adapt their thickness to
-    // the device resolution.
-    CGFloat kHighlightThickness = 1.f / [UIScreen mainScreen].scale;
-    self.bannerTopHighlightView.frame = CGRectMake(0, 0, self.bannerView.width, kHighlightThickness);
-    self.bannerBottomHighlightView1.frame
-        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 2.f, self.bannerView.width, kHighlightThickness);
-    self.bannerBottomHighlightView2.frame
-        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 1.f, self.bannerView.width, kHighlightThickness);
-
-    [self.titleLabel centerOnSuperview];
-
-    if (self.subtitleLabel.text.length > 0) {
-        CGSize subtitleSize = [self.subtitleLabel
-            sizeThatFits:CGSizeMake(self.contentView.width - [self subtitleHMargin] * 2.f, CGFLOAT_MAX)];
-        self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
-            round(self.bannerView.bottom + self.subtitleVSpacing),
-            ceil(subtitleSize.width),
-            ceil(subtitleSize.height));
-    }
-}
-
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
-{
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
 
+    [self configureFonts];
+
+    CGSize result = CGSizeMake(
+        self.conversationStyle.fullWidthContentWidth, self.strokeThickness + self.titleLabel.font.lineHeight);
+
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
-
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = [self titleFont];
-    self.subtitleLabel.font = [self subtitleFont];
-
-    // TODO: Should we use viewWidth?
-    CGSize result = CGSizeMake(viewWidth, 0);
-    result.height += self.titleVMargin * 2.f;
-    result.height += self.topVMargin;
-    result.height += self.bottomVMargin;
-
-    NSString *title = [self titleForInteraction:interaction];
-    NSString *subtitle = [self subtitleForInteraction:interaction];
-
-    self.titleLabel.text = title;
-    result.height += ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
-
-    if (subtitle.length > 0) {
-        result.height += self.subtitleVSpacing;
-
-        self.subtitleLabel.text = subtitle;
+    self.subtitleLabel.text = [self subtitleForInteraction:interaction];
+    if (self.subtitleLabel.text.length > 0) {
         result.height += ceil(
-            [self.subtitleLabel sizeThatFits:CGSizeMake(viewWidth - self.subtitleHMargin * 2.f, CGFLOAT_MAX)].height);
+            [self.subtitleLabel sizeThatFits:CGSizeMake(self.conversationStyle.fullWidthContentWidth, CGFLOAT_MAX)]
+                .height);
     }
 
-    return result;
+    return CGSizeCeil(result);
 }
 
 - (void)prepareForReuse

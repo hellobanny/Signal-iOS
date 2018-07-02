@@ -17,12 +17,12 @@ protocol ContactStoreAdaptee {
     var supportsContactEditing: Bool { get }
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
     func fetchContacts() -> Result<[Contact], Error>
+    func fetchCNContact(contactId: String) -> CNContact?
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
 public
-class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
-    let TAG = "[ContactsFrameworkContactStoreAdaptee]"
+class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     private let contactStore = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
@@ -72,7 +72,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
                 return
             }
 
-            Logger.info("\(self.TAG) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
+            Logger.info("\(self.logTag) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
             self.lastSortOrder = currentSortOrder
             self.runChangeHandler()
         }
@@ -81,7 +81,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     @objc
     func runChangeHandler() {
         guard let changeHandler = self.changeHandler else {
-            owsFail("\(TAG) trying to run change handler before it was registered")
+            owsFail("\(self.logTag) trying to run change handler before it was registered")
             return
         }
         changeHandler()
@@ -100,12 +100,34 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
-            owsFail("\(self.TAG) Failed to fetch contacts with error:\(error)")
+            owsFail("\(self.logTag) Failed to fetch contacts with error:\(error)")
             return .error(error)
         }
 
         let contacts = systemContacts.map { Contact(systemContact: $0) }
         return .success(contacts)
+    }
+
+    func fetchCNContact(contactId: String) -> CNContact? {
+        var result: CNContact?
+        do {
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
+            contactFetchRequest.sortOrder = .userDefault
+            contactFetchRequest.predicate = CNContact.predicateForContacts(withIdentifiers: [contactId])
+
+            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                guard result == nil else {
+                    owsFail("\(self.logTag) More than one contact with contact id.")
+                    return
+                }
+                result = contact
+            }
+        } catch let error as NSError {
+            owsFail("\(self.logTag) Failed to fetch contact with error:\(error)")
+            return nil
+        }
+
+        return result
     }
 }
 
@@ -124,8 +146,6 @@ public enum ContactStoreAuthorizationStatus: UInt {
 
 @objc
 public class SystemContactsFetcher: NSObject {
-
-    private let TAG = "[SystemContactsFetcher]"
 
     private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue")
 
@@ -148,6 +168,11 @@ public class SystemContactsFetcher: NSObject {
         }
 
         return self.authorizationStatus == .authorized
+    }
+
+    @objc
+    public var isDenied: Bool {
+        return self.authorizationStatus == .denied
     }
 
     @objc
@@ -175,7 +200,7 @@ public class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil, isUserRequested: false)
+                self?.refreshAfterContactsChange()
             }
         }
     }
@@ -207,21 +232,20 @@ public class SystemContactsFetcher: NSObject {
         switch authorizationStatus {
         case .notDetermined:
             if CurrentAppContext().isInBackground() {
-                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                Logger.error("\(self.logTag) do not request contacts permission when app is in background")
                 completion(nil)
                 return
             }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
-                    Logger.error("\(self.TAG) error fetching contacts: \(error)")
-                    Logger.flush()
+                    Logger.error("\(self.logTag) error fetching contacts: \(error)")
                     completion(error)
                     return
                 }
 
                 guard granted else {
                     // This case should have been caught by the error guard a few lines up.
-                    owsFail("\(self.TAG) declined contact access.")
+                    owsFail("\(self.logTag) declined contact access.")
                     completion(nil)
                     return
                 }
@@ -233,7 +257,7 @@ public class SystemContactsFetcher: NSObject {
         case .authorized:
             self.updateContacts(completion: completion)
         case .denied, .restricted:
-            Logger.debug("\(TAG) contacts were \(self.authorizationStatus)")
+            Logger.debug("\(logTag) contacts were \(self.authorizationStatus)")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             completion(nil)
         }
@@ -256,6 +280,7 @@ public class SystemContactsFetcher: NSObject {
     @objc
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
         SwiftAssertIsOnMainThread(#function)
+
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
@@ -264,6 +289,19 @@ public class SystemContactsFetcher: NSObject {
         }
 
         updateContacts(completion: completion, isUserRequested: true)
+    }
+
+    @objc
+    public func refreshAfterContactsChange() {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard authorizationStatus == .authorized else {
+            Logger.info("\(logTag) ignoring contacts change; no access.")
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
+            return
+        }
+
+        updateContacts(completion: nil, isUserRequested: false)
     }
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
@@ -279,7 +317,7 @@ public class SystemContactsFetcher: NSObject {
             guard let _ = self else {
                 return
             }
-            Logger.error("background task time ran out contacts fetch completed.")
+            Logger.error("background task time ran out before contacts fetch completed.")
         })
 
         // Ensure completion is invoked on main thread.
@@ -297,7 +335,7 @@ public class SystemContactsFetcher: NSObject {
 
         serialQueue.async {
 
-            Logger.info("\(self.TAG) fetching contacts")
+            Logger.info("\(self.logTag) fetching contacts")
 
             var fetchedContacts: [Contact]?
             switch self.contactStoreAdapter.fetchContacts() {
@@ -309,21 +347,21 @@ public class SystemContactsFetcher: NSObject {
             }
 
             guard let contacts = fetchedContacts else {
-                owsFail("\(self.TAG) contacts was unexpectedly not set.")
+                owsFail("\(self.logTag) contacts was unexpectedly not set.")
                 completion(nil)
             }
 
-            Logger.info("\(self.TAG) fetched \(contacts.count) contacts.")
+            Logger.info("\(self.logTag) fetched \(contacts.count) contacts.")
             let contactsHash  = HashableArray(contacts).hashValue
 
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
 
                 if self.lastContactUpdateHash != contactsHash {
-                    Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
+                    Logger.info("\(self.logTag) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
                 } else if isUserRequested {
-                    Logger.info("\(self.TAG) ignoring debounce due to user request")
+                    Logger.info("\(self.logTag) ignoring debounce due to user request")
                     shouldNotifyDelegate = true
                 } else {
 
@@ -333,19 +371,19 @@ public class SystemContactsFetcher: NSObject {
 
                         let expiresAtDate = Date(timeInterval: kDebounceInterval, since: lastDelegateNotificationDate)
                         if  Date() > expiresAtDate {
-                            Logger.info("\(self.TAG) debounce interval expired at: \(expiresAtDate)")
+                            Logger.info("\(self.logTag) debounce interval expired at: \(expiresAtDate)")
                             shouldNotifyDelegate = true
                         } else {
-                            Logger.info("\(self.TAG) ignoring since debounce interval hasn't expired")
+                            Logger.info("\(self.logTag) ignoring since debounce interval hasn't expired")
                         }
                     } else {
-                        Logger.info("\(self.TAG) first contact fetch. contactsHash: \(contactsHash)")
+                        Logger.info("\(self.logTag) first contact fetch. contactsHash: \(contactsHash)")
                         shouldNotifyDelegate = true
                     }
                 }
 
                 guard shouldNotifyDelegate else {
-                    Logger.info("\(self.TAG) no reason to notify delegate.")
+                    Logger.info("\(self.logTag) no reason to notify delegate.")
 
                     completion(nil)
 
@@ -359,6 +397,16 @@ public class SystemContactsFetcher: NSObject {
                 completion(nil)
             }
         }
+    }
+
+    @objc
+    public func fetchCNContact(contactId: String) -> CNContact? {
+        guard authorizationStatus == .authorized else {
+            Logger.error("\(logTag) contact fetch failed; no access.")
+            return nil
+        }
+
+        return contactStoreAdapter.fetchCNContact(contactId: contactId)
     }
 }
 
