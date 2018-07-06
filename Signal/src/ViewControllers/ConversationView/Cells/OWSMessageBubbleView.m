@@ -236,6 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
+        case OWSMessageCellType_Operation:
             // Is there a caption?
             return self.hasBodyText;
         case OWSMessageCellType_ContactShare:
@@ -326,6 +327,9 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
+            break;
+        case OWSMessageCellType_Operation:
+            bodyMediaView = [self loadViewForOperation];
             break;
     }
 
@@ -525,6 +529,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_Operation:
             return NO;
     }
 }
@@ -816,6 +821,22 @@ NS_ASSUME_NONNULL_BEGIN
     return animatedImageView;
 }
 
+- (UIView *)loadViewForOperation{
+    BBOperationView * view = [[BBOperationView alloc] initWithFrame:CGRectMake(0, 0, 360, 60)];
+    [view configWithOperation:self.viewItem.operationMessage];
+    
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+    
+    return view;
+    
+    
+}
+
 - (UIView *)loadViewForAudio
 {
     OWSAssert(self.attachmentStream);
@@ -1068,6 +1089,9 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_Audio:
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
+        case OWSMessageCellType_Operation:
+            result = CGSizeMake(maxMessageWidth, 80.0);
+            break;
         case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.viewItem.attachmentStream);
             OWSGenericAttachmentView *attachmentView =
@@ -1257,6 +1281,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
         return NO;
     }
+    if (self.cellType == OWSMessageCellType_Operation) {
+        return NO;
+    }
     if (self.cellType == OWSMessageCellType_ContactShare) {
         // TODO: Handle this case.
         return NO;
@@ -1426,6 +1453,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
+            break;
+        case OWSMessageCellType_Operation:
+            [self.delegate didTapOperationMessageViewItem:self.viewItem];
             break;
     }
 }

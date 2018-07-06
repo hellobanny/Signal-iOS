@@ -16,10 +16,21 @@ class TransferResultVC: UIViewController {
     @IBOutlet weak var valueLabel: UILabel!
     @IBOutlet weak var buttonDone: UIButton!
     
+    var name:String!
+    var value:String!
+    
+    @objc
+    convenience init(name:String,value:String){
+        self.init()
+        self.name = name
+        self.value = value
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.resultLabel.text = "待\(name)确认收币"
+        self.valueLabel.text = value
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,14 +42,4 @@ class TransferResultVC: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

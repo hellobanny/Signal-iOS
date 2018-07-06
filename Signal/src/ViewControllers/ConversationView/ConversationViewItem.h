@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
+    OWSMessageCellType_Operation,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -33,6 +34,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class TSAttachmentStream;
 @class TSInteraction;
 @class YapDatabaseReadTransaction;
+@class OperationMessage;
 
 // This is a ViewModel for cells in the conversation view.
 //
@@ -94,6 +96,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable DisplayableText *)displayableQuotedText;
 - (nullable NSString *)quotedAttachmentMimetype;
 - (nullable NSString *)quotedRecipientId;
+- (nullable OperationMessage *)operationMessage;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.

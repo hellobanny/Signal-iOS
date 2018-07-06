@@ -142,5 +142,26 @@ class BBRequestFactory: NSObject {
         let param:[String:Any] = ["name":name]
         return TSRequest(url: URL(string: path), method: "POST", parameters: param)
     }
+    
+    //会话中给用户转账或发红包
+    func transferFromSession(to:String,cid:String,type:String,value:String,note:String,payword:String) -> TSRequest{
+        let path = PATH + "/member/transfer/fromSession"
+        let param:[String:Any] = ["transferTo":to,"cid":cid,"type":type,"volume":value,"note":note,"authorizeToken":payword]
+        return TSRequest(url: URL(string: path), method: "POST", parameters: param)
+    }
+    
+    //确认收款
+    func transferConfirm(tid:String) -> TSRequest{
+        let path = PATH + "/member/transfer/confirm"
+        let param:[String:Any] = ["transferId":tid]
+        return TSRequest(url: URL(string: path), method: "POST", parameters: param)
+    }
+    
+    //查看转账状态
+    func transferStatus(tid:String) -> TSRequest{
+        let path = PATH + "/member/transfer/status/get"
+        let param:[String:Any] = ["transferId":tid]
+        return TSRequest(url: URL(string: path), method: "POST", parameters: param)
+    }
    
 }

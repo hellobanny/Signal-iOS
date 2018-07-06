@@ -15,10 +15,29 @@ class ReceiverRedPackageDetailVC: UIViewController {
     @IBOutlet weak var labelMessage: UILabel!
     @IBOutlet weak var labelValue: UILabel!
     @IBOutlet weak var labelHint: UILabel!
+    
+    var contact:BBContact!
+    var operation:OperationMessage!
+    
+    convenience init(contact:BBContact,operation:OperationMessage){
+        self.init()
+        self.contact = contact
+        self.operation = operation
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        labelName.toMiddleLabel()
+        labelMessage.toMiddleLabel()
+        labelValue.toLargeLabel()
+        
+        self.imageViewAvatar.image = contact.avatar
+        self.labelName.text = contact.name
+        self.labelMessage.text = operation.message
+        self.labelValue.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
+        self.title = "红包"
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(ReceiverRedPackageDetailVC.close))
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,15 +45,7 @@ class ReceiverRedPackageDetailVC: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @objc func close(){
+        self.dismiss(animated: true, completion: nil)
     }
-    */
-
 }

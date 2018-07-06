@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
 - (void)didTapContactShareViewItem:(ConversationViewItem *)viewItem;
+- (void)didTapOperationMessageViewItem:(ConversationViewItem *)viewItem;
 
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapSendMessage(toContactShare:));

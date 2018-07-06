@@ -43,6 +43,7 @@ target 'Signal' do
   pod 'YBPopupMenu', :inhibit_warnings => true
   pod 'SwiftyJSON', :inhibit_warnings => true
   pod 'MJRefresh', :inhibit_warnings => true
+  pod 'SnapKit', '~> 4.0.0'
   target 'SignalTests' do
     inherit! :search_paths
   end

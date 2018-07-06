@@ -698,6 +698,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     func didTapConversationItem(_ viewItem: ConversationViewItem, quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // no - op
     }
+    
+    func didTapOperationMessageViewItem(_ viewItem: ConversationViewItem) {
+        //ZZTODO 如果没有正常工作就可以要检查这里
+    }
 
     // MediaGalleryDataSourceDelegate
 

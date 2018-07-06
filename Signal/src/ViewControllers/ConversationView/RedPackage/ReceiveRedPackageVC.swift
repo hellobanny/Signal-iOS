@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PopupDialog
 
 class ReceiveRedPackageVC: UIViewController {
     
@@ -18,10 +19,26 @@ class ReceiveRedPackageVC: UIViewController {
     
     @IBOutlet weak var buttonOpen: UIButton!
     
+    var contact:BBContact!
+    var operation:OperationMessage!
+    
+    var delegate:TransferAcceptDelegate?
+    
+    @objc
+    convenience init(contact:BBContact,operation:OperationMessage){
+        self.init()
+        self.contact = contact
+        self.operation = operation
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.labelName.text = contact.name
+        self.labelAction.text = "给你发了一个红包"
+        self.labelMessage.text = operation.message
+        self.imageViewAvator.image = contact.avatar
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,20 +48,20 @@ class ReceiveRedPackageVC: UIViewController {
     
 
     @IBAction func dialogClose(_ sender: Any) {
-        
+        self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func openRedPackage(_ sender: Any) {
-        
+        self.dismiss(animated: true) {
+            self.delegate?.userAccept(operation: self.operation)
+        }
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    static func displayRedPocket(home: UIViewController, delegate: TransferAcceptDelegate, contact: BBContact, operation: OperationMessage){
+        let vc = ReceiveRedPackageVC(contact: contact, operation: operation)
+        vc.delegate = delegate
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
+        home.present(pd, animated: true, completion: nil)
     }
-    */
-
+    
 }

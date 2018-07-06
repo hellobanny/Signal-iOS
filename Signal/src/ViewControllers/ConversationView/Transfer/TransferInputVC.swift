@@ -8,6 +8,11 @@
 
 import UIKit
 
+protocol TransferInputDelegate {
+    func userSend(operation:OperationMessage)
+}
+
+@objc
 class TransferInputVC: UIViewController {
     @IBOutlet weak var bigBGView: UIView!
     @IBOutlet weak var smallBGView: UIView!
@@ -19,9 +24,8 @@ class TransferInputVC: UIViewController {
     @IBOutlet weak var memoLabel: UILabel!
     @IBOutlet weak var buttonTransfer: UIButton!
     
-    var uid:String!
-    var name:String!
-    var photo:UIImage!
+    var contact:BBContact!
+    var delegate:TransferInputDelegate?
     
     var currency:BBCurrency?{
         didSet{
@@ -48,19 +52,18 @@ class TransferInputVC: UIViewController {
         }
     }
     
-    convenience init(uid:String,name:String,photo:UIImage){
+    @objc
+    convenience init(contact:BBContact){
         self.init()
-        self.uid = uid
-        self.name = name
-        self.photo = photo
+        self.contact = contact
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.photoImageView.image = photo
-        self.nameLabel.text = name
+        self.photoImageView.image = contact.avatar
+        self.nameLabel.text = contact.name
         
         nameLabel.toMiddleLabel()
         numberTitleLabel.toSmallLabel()
@@ -69,10 +72,19 @@ class TransferInputVC: UIViewController {
         
         memoLabel.isUserInteractionEnabled = true
         memoLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TransferInputVC.changeMemo)))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(TransferInputVC.close))
+        self.title = "转账给朋友"
+        
+        self.currency = BBCurrencyCache.shared.allCurrencys().first
+    }
+    
+    @objc func close(){
+        self.dismiss(animated: true, completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        textFieldValue.text = ""
         textFieldValue.becomeFirstResponder()
     }
 
@@ -119,7 +131,7 @@ class TransferInputVC: UIViewController {
         let cancel = UIAlertAction(title: "取消", style: .cancel) { (_) in }
         
         ac.addTextField { (textField) in
-            textField.text = "收币方可见，最多20个字"
+            textField.placeholder = "收币方可见，最多20个字"
             NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
                 if let txt = textField.text {
                     save.isEnabled = !(txt.isEmpty) && txt.lengthOfBytes(using: String.Encoding.utf8) <= 20
@@ -137,7 +149,47 @@ class TransferInputVC: UIViewController {
 
 extension TransferInputVC: InputPaywordDelegate{
     func passwordInputed(password: String) {
-        //TODO 用户输入了密码，开始调用协议
+        //用户输入了密码，开始调用协议
+        //类型，目标用户，币种，数量，附言和密码
+        guard let txt = textFieldValue.text else {
+            textFieldValue.layer.shake()
+            return
+        }
+        let (ok,_) = NumberChecker.isGoodNumber(string: txt)
+        if !ok {
+            textFieldValue.layer.shake()
+            return
+        }
+        let cid = self.currency!.cid
+        let request = BBRequestFactory.shared.transferFromSession(to: contact.uid, cid: cid, type: OperationType.transfer.rawValue, value: txt, note: self.memo ?? "", payword: password)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    if let tid = cus["transferId"].string {//正确获得了transferId
+                        let op = OperationMessage()
+                        op.type = .transfer
+                        op.currencyType = cid
+                        op.value = txt
+                        op.message = self.memo ?? ""
+                        op.transferID = tid
+                        op.time = Date()
+                        op.picked = false
+                        self.delegate?.userSend(operation: op)
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                }
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
+    }
+    
+    func send(operation:OperationMessage){
+        self.delegate?.userSend(operation: operation)
+        let value = "\(operation.value) \(currency!.name)"
+        let resultVC = TransferResultVC(name: contact.name, value: value)
+        self.navigationController?.pushViewController(resultVC, animated: true)
     }
 }
 

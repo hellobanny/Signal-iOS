@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define SHOW_LEGAL_TERMS_LINK
 
 //#ifndef DEBUG
-//10.35.11.134
+//10.35.11.134  8080  8001 8080
 #define textSecureWebSocketAPI @"ws://10.35.11.134/v1/websocket/"
 #define textSecureServerURL @"http://10.35.11.134/"
 #define textSecureCDNServerURL @"http://10.35.11.134"

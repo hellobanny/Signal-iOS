@@ -8,10 +8,11 @@
 
 import UIKit
 
+@objc
 class BBCurrencyCache: NSObject {
     
     var currencyDic = [String:BBCurrency]()
-    
+    @objc
     static let shared : BBCurrencyCache = {
         let instance = BBCurrencyCache()
         return instance
@@ -21,7 +22,8 @@ class BBCurrencyCache: NSObject {
         super.init()
     }
     
-    func loadCurrency(){
+    @objc
+    public func loadCurrency(){
         let request = BBRequestFactory.shared.platformCurrency()
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
@@ -45,6 +47,13 @@ class BBCurrencyCache: NSObject {
     
     func getCurrencyby(cid:String) -> BBCurrency? {
         return currencyDic[cid]
+    }
+    
+    func getValueString(cid:String,value:String) -> String{
+        if let c = currencyDic[cid] {
+            return value + " " + c.name
+        }
+        return value
     }
     
     func update(currency:BBCurrency){

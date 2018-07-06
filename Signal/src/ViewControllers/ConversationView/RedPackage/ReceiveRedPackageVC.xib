@@ -32,21 +32,6 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eBQ-5M-GeF">
                             <rect key="frame" x="0.0" y="0.0" width="280" height="272"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4ug-N5-PgN">
-                                    <rect key="frame" x="104" y="236" width="72" height="72"/>
-                                    <color key="backgroundColor" red="0.92156862745098034" green="0.80392156862745101" blue="0.60784313725490191" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="72" id="QjM-3W-I9w"/>
-                                        <constraint firstAttribute="height" constant="72" id="dve-8w-XcC"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="32"/>
-                                    <state key="normal" title="開">
-                                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="openRedPackage:" destination="-1" eventType="touchUpInside" id="ycT-Hu-F5W"/>
-                                    </connections>
-                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L2D-gg-OKw">
                                     <rect key="frame" x="8" y="8" width="32" height="32"/>
                                     <constraints>
@@ -101,8 +86,6 @@
                                 <constraint firstItem="ehN-YL-TUR" firstAttribute="top" secondItem="eBQ-5M-GeF" secondAttribute="top" constant="16" id="HWh-Vx-fbY"/>
                                 <constraint firstItem="5fX-oA-hx4" firstAttribute="top" secondItem="ehN-YL-TUR" secondAttribute="bottom" constant="16" id="HYl-kn-GGU"/>
                                 <constraint firstAttribute="trailing" secondItem="mXm-1t-Byt" secondAttribute="trailing" constant="16" id="HuL-jO-gou"/>
-                                <constraint firstItem="4ug-N5-PgN" firstAttribute="centerX" secondItem="eBQ-5M-GeF" secondAttribute="centerX" id="I1W-Vo-vyb"/>
-                                <constraint firstItem="4ug-N5-PgN" firstAttribute="top" secondItem="mXm-1t-Byt" secondAttribute="bottom" constant="40" id="Sgs-ff-nfq"/>
                                 <constraint firstAttribute="height" constant="272" id="XYS-sg-Mda"/>
                                 <constraint firstItem="L2D-gg-OKw" firstAttribute="leading" secondItem="eBQ-5M-GeF" secondAttribute="leading" constant="8" id="fFM-X5-fDY"/>
                                 <constraint firstItem="ehN-YL-TUR" firstAttribute="centerX" secondItem="eBQ-5M-GeF" secondAttribute="centerX" id="fSN-mu-320"/>
@@ -113,9 +96,26 @@
                                 <constraint firstItem="6UD-He-4J1" firstAttribute="leading" secondItem="eBQ-5M-GeF" secondAttribute="leading" constant="16" id="rE1-pK-yve"/>
                             </constraints>
                         </view>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4ug-N5-PgN">
+                            <rect key="frame" x="104" y="238" width="72" height="72"/>
+                            <color key="backgroundColor" red="0.92156862745098034" green="0.80392156862745101" blue="0.60784313725490191" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="72" id="QjM-3W-I9w"/>
+                                <constraint firstAttribute="height" constant="72" id="dve-8w-XcC"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                            <state key="normal" title="開">
+                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                            </state>
+                            <connections>
+                                <action selector="openRedPackage:" destination="-1" eventType="touchUpInside" id="ycT-Hu-F5W"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" red="1" green="0.065431795060000006" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
+                        <constraint firstItem="4ug-N5-PgN" firstAttribute="centerX" secondItem="oLU-VQ-gIJ" secondAttribute="centerX" id="8Em-ro-Z4i"/>
+                        <constraint firstAttribute="bottom" secondItem="4ug-N5-PgN" secondAttribute="bottom" constant="50" id="Hz4-4R-PCb"/>
                         <constraint firstAttribute="height" constant="360" id="QnQ-1i-j1D"/>
                         <constraint firstAttribute="trailing" secondItem="eBQ-5M-GeF" secondAttribute="trailing" id="TOy-AP-NIU"/>
                         <constraint firstAttribute="width" constant="280" id="b3c-mH-0uz"/>

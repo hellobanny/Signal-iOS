@@ -39,6 +39,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_Unknown";
         case OWSMessageCellType_ContactShare:
             return @"OWSMessageCellType_ContactShare";
+        case OWSMessageCellType_Operation:
+            return @"OWSMessageCellType_Operation";
     }
 }
 
@@ -66,6 +68,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
+@property (nonatomic, nullable) OperationMessage *operationMessage;
 @property (nonatomic) CGSize mediaSize;
 
 @end
@@ -500,21 +503,37 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ Unknown attachment type", self.logTag);
         }
     }
+    
+    //判断是不是JSON结构，如果是命令类型，这处理之
+    
 
     // Ignore message body for oversize text attachments.
     if (message.body.length > 0) {
-        if (self.hasBodyText) {
-            OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
+        OperationMessage * operation = [OperationMessage loadFromString:message.body];
+        if (operation != NULL) {
+            if (self.messageCellType == OWSMessageCellType_Unknown) {
+                OWSAssert(message.attachmentIds.count == 0);
+                self.messageCellType = OWSMessageCellType_Operation;
+            }
+            self.operationMessage = operation;
+            //self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
+            self.displayableBodyText = [self displayableBodyTextForText: [operation operationDes] interactionId:message.uniqueId];
+            OWSAssert(self.displayableBodyText);
         }
+        else{
+            if (self.hasBodyText) {
+                OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
+            }
 
-        // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
-        // it's a stand-alone text message.
-        if (self.messageCellType == OWSMessageCellType_Unknown) {
-            OWSAssert(message.attachmentIds.count == 0);
-            self.messageCellType = OWSMessageCellType_TextMessage;
+            // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
+            // it's a stand-alone text message.
+            if (self.messageCellType == OWSMessageCellType_Unknown) {
+                OWSAssert(message.attachmentIds.count == 0);
+                self.messageCellType = OWSMessageCellType_TextMessage;
+            }
+            self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
+            OWSAssert(self.displayableBodyText);
         }
-        self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
-        OWSAssert(self.displayableBodyText);
     }
 
     if (self.messageCellType == OWSMessageCellType_Unknown) {
@@ -754,6 +773,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
+        case OWSMessageCellType_Operation:
         case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.displayableBodyText);
             [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
@@ -781,6 +801,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_Operation:
         case OWSMessageCellType_ContactShare: {
             OWSFail(@"%@ No media to copy", self.logTag);
             break;
@@ -820,6 +841,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
+        case OWSMessageCellType_Operation:
         case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.displayableBodyText);
             [AttachmentSharing showShareUIForText:self.displayableBodyText.fullText];
@@ -847,6 +869,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_Operation:
             OWSFail(@"No media to share.");
             break;
         case OWSMessageCellType_StillImage:
@@ -870,6 +893,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_Operation:
             return NO;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -893,6 +917,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_Operation:
             OWSFail(@"%@ Cannot save text data.", self.logTag);
             break;
         case OWSMessageCellType_StillImage:
@@ -949,6 +974,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_Operation:
             return NO;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:

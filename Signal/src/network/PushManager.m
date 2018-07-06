@@ -134,7 +134,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     DDLogInfo(@"%@ received content-available push", self.logTag);
 
     // If we want to re-introduce silent pushes we can remove this assert.
-    OWSFail(@"Unexpected content-available push.");
+    //OWSFail(@"Unexpected content-available push.");
 
     [AppReadiness runNowOrWhenAppIsReady:^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

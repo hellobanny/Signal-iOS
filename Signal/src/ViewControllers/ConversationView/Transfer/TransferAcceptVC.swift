@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol TransferAcceptDelegate {
+    func userAccept(operation:OperationMessage)
+}
+
 class TransferAcceptVC: UIViewController {
     
     @IBOutlet weak var statusImageView: UIImageView!
@@ -17,28 +21,32 @@ class TransferAcceptVC: UIViewController {
     @IBOutlet weak var timeLabel: UILabel!
     
     @IBOutlet weak var hintLabel: UILabel!
+    
+    var operation:OperationMessage!
+    var delegate:TransferAcceptDelegate?
+    
+    convenience init(operation:OperationMessage){
+        self.init()
+        self.operation = operation
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        self.title = "确认转账"
+        valueLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
+        let df = DateFormatter()
+        df.timeStyle = .short
+        df.dateStyle = .short
+        self.timeLabel.text = "转账时间: " + df.string(from: operation.time)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @IBAction func accept(_ sender: Any) {
+        self.delegate?.userAccept(operation: self.operation)
+        self.navigationController?.popViewController(animated: true)
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

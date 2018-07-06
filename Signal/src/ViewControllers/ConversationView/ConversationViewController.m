@@ -529,6 +529,7 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
+    [[BBCurrencyCache shared] loadCurrency];
 }
 
 - (void)loadView
@@ -2242,6 +2243,13 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
+- (void)didTapOperationMessageViewItem:(ConversationViewItem *)conversationItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(conversationItem);
+    [self userClickOperationMessageWithItem:conversationItem];
+}
+
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
@@ -2284,6 +2292,26 @@ typedef enum : NSUInteger {
     OWSAssert(message);
 
     [self handleUnsentMessageTap:message];
+}
+
+- (void)makeConversationItemPicked:(ConversationViewItem *)viewItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(viewItem);
+    OWSAssert(viewItem.operationMessage);
+    
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    if (![message isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"%@ in %s message had unexpected class: %@", self.logTag, __PRETTY_FUNCTION__, message.class);
+        return;
+    }
+    
+    [self.editingDatabaseConnection
+     asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+         OperationMessage * op = viewItem.operationMessage;
+         op.picked = YES;
+         [message setNewBody:[viewItem.operationMessage getMessageString]];
+     }];
 }
 
 - (void)didTapConversationItem:(ConversationViewItem *)viewItem
@@ -2739,12 +2767,12 @@ typedef enum : NSUInteger {
 #pragma mark - 转账和红包
 - (void)showStartTransfer
 {
-    
+    [self startTransfer];
 }
 
 - (void)showStartRedPocket
 {
-    
+    [self startSendRedPocket];
 }
 
 #pragma mark - Attachment Picking: GIFs
@@ -4401,6 +4429,66 @@ typedef enum : NSUInteger {
 - (CGFloat)layoutHeaderHeight
 {
     return (self.showLoadMoreHeader ? kLoadMoreHeaderHeight : 0.f);
+}
+
+#pragma mark - 发起转账或红包
+- (void)tryToSendOperationText:(NSString *) opText
+{
+    __weak ConversationViewController *weakSelf = self;
+    if ([self isBlockedContactConversation]) {
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf tryToSendTextMessage:opText updateKeyboardState:NO];
+            }
+        }];
+        return;
+    }
+    
+    BOOL didShowSNAlert =
+    [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
+                                                           completion:^(BOOL didConfirmIdentity) {
+                                                               if (didConfirmIdentity) {
+                                                                   [weakSelf tryToSendTextMessage:opText
+                                                                              updateKeyboardState:NO];
+                                                               }
+                                                           }];
+    if (didShowSNAlert) {
+        return;
+    }
+    
+    // Limit outgoing text messages to 16kb.
+    //
+    // We convert large text messages to attachments
+    // which are presented as normal text messages.
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message;
+    
+    if ([opText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        //ZZTODO 数据太长也是不允许的
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:opText];
+        SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        // TODO we should redundantly send the first n chars in the body field so it can be viewed
+        // on clients that don't support oversized text messgaes, (and potentially generate a preview
+        // before the attachment is downloaded)
+        message = [ThreadUtil sendMessageWithAttachment:attachment
+                                               inThread:self.thread
+                                       quotedReplyModel:self.inputToolbar.quotedReply
+                                          messageSender:self.messageSender
+                                             completion:nil];
+    } else {
+        message = [ThreadUtil sendMessageWithText:opText
+                                         inThread:self.thread
+                                 quotedReplyModel:self.inputToolbar.quotedReply
+                                    messageSender:self.messageSender];
+    }
+    
+    [self messageWasSent:message];
+    
+    [self clearDraft];
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
+    }
 }
 
 #pragma mark - ConversationInputToolbarDelegate

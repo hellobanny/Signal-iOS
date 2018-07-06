@@ -16,11 +16,24 @@ class TransferDetailVC: UIViewController {
     @IBOutlet weak var hintLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     
+    var operation:OperationMessage!
+    
+    convenience init(operation:OperationMessage){
+        self.init()
+        self.operation = operation
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        self.title = "转账详情"
+        valueLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
+        let df = DateFormatter()
+        df.timeStyle = .short
+        df.dateStyle = .short
+        self.timeLabel.text = "时间: " + df.string(from: operation.time)
+        queryTransferStatus()
+        hintLabel.text = ""
+        statusLabel.text = ""
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,15 +41,28 @@ class TransferDetailVC: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func queryTransferStatus(){
+        let request = BBRequestFactory.shared.transferStatus(tid: operation.transferID)
+        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+            if let result = obj{
+                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                if let cus = res {
+                    if let st = cus["status"].int {//正确获得了transferId
+                        if st == 1{
+                            self.statusLabel.text = "待确认"
+                        }
+                        else if st == 10{
+                            self.statusLabel.text = "已确认"
+                        }
+                        else if st == 20{
+                            self.statusLabel.text = "已过期"
+                        }
+                    }
+                }
+            }
+        }) { (task, error) in
+            BBRequestHelper.showError(error: error)
+        }
     }
-    */
 
 }

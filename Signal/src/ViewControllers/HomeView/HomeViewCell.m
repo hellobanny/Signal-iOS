@@ -318,6 +318,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
         NSString *displayableText = thread.lastMessageText;
         if (displayableText) {
+            OperationMessage * op = [OperationMessage loadFromString:displayableText];
+            if (op != NULL) {
+                displayableText = [op operationDes];
+            }
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText
                                                         attributes:@{
@@ -328,6 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 (hasUnreadMessages ? [UIColor ows_blackColor]
                                                                                    : [UIColor lightGrayColor]),
                                                         }]];
+            
         }
     }
 

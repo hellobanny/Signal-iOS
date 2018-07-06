@@ -166,6 +166,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
 }
 
+- (void)setNewBody:(NSString *)body{
+    _body = body;
+}
+
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
     if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {

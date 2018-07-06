@@ -458,6 +458,10 @@
 		5158E16720E9D06A001DCA4E /* ReceiveRedPackageVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E16520E9D06A001DCA4E /* ReceiveRedPackageVC.xib */; };
 		5158E16A20E9D08C001DCA4E /* ReceiverRedPackageDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E16820E9D08C001DCA4E /* ReceiverRedPackageDetailVC.swift */; };
 		5158E16B20E9D08C001DCA4E /* ReceiverRedPackageDetailVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E16920E9D08C001DCA4E /* ReceiverRedPackageDetailVC.xib */; };
+		5158E17020EB6A59001DCA4E /* OperationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E16F20EB6A59001DCA4E /* OperationMessage.swift */; };
+		5158E17720EC7242001DCA4E /* BBOperationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17620EC7242001DCA4E /* BBOperationView.swift */; };
+		5158E17920ECE68D001DCA4E /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17820ECE68D001DCA4E /* ConversationViewController.swift */; };
+		5158E17D20EF43DD001DCA4E /* BBContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17C20EF43DD001DCA4E /* BBContact.swift */; };
 		518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CED20D9083F0020B353 /* BBDepositHistory.swift */; };
 		518D4CF020D908520020B353 /* BBWithdrawHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */; };
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
@@ -1184,6 +1188,10 @@
 		5158E16520E9D06A001DCA4E /* ReceiveRedPackageVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveRedPackageVC.xib; sourceTree = "<group>"; };
 		5158E16820E9D08C001DCA4E /* ReceiverRedPackageDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverRedPackageDetailVC.swift; sourceTree = "<group>"; };
 		5158E16920E9D08C001DCA4E /* ReceiverRedPackageDetailVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiverRedPackageDetailVC.xib; sourceTree = "<group>"; };
+		5158E16F20EB6A59001DCA4E /* OperationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationMessage.swift; sourceTree = "<group>"; };
+		5158E17620EC7242001DCA4E /* BBOperationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBOperationView.swift; sourceTree = "<group>"; };
+		5158E17820ECE68D001DCA4E /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		5158E17C20EF43DD001DCA4E /* BBContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBContact.swift; sourceTree = "<group>"; };
 		518D4CED20D9083F0020B353 /* BBDepositHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBDepositHistory.swift; sourceTree = "<group>"; };
 		518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBWithdrawHistory.swift; sourceTree = "<group>"; };
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
@@ -1644,6 +1652,7 @@
 				5158E15B20E9CF96001DCA4E /* RedPackage */,
 				51F1002F20E5D87800FCB2E7 /* Transfer */,
 				34D1F0951F867BFC0066283D /* Cells */,
+				5158E16C20EA11B2001DCA4E /* BBCells */,
 				34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */,
 				34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
@@ -1655,6 +1664,7 @@
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
+				5158E17820ECE68D001DCA4E /* ConversationViewController.swift */,
 				34D1F06F1F8678AA0066283D /* ConversationViewItem.h */,
 				34D1F0701F8678AA0066283D /* ConversationViewItem.m */,
 				34D1F0711F8678AA0066283D /* ConversationViewLayout.h */,
@@ -2123,6 +2133,7 @@
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
 				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
 				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
+				5158E17C20EF43DD001DCA4E /* BBContact.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2256,6 +2267,15 @@
 				5158E16920E9D08C001DCA4E /* ReceiverRedPackageDetailVC.xib */,
 			);
 			path = RedPackage;
+			sourceTree = "<group>";
+		};
+		5158E16C20EA11B2001DCA4E /* BBCells */ = {
+			isa = PBXGroup;
+			children = (
+				5158E16F20EB6A59001DCA4E /* OperationMessage.swift */,
+				5158E17620EC7242001DCA4E /* BBOperationView.swift */,
+			);
+			path = BBCells;
 			sourceTree = "<group>";
 		};
 		5197D5A220E21B7300B7D51A /* WRNavigationBar */ = {
@@ -3235,6 +3255,7 @@
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
@@ -3268,6 +3289,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
@@ -3539,6 +3561,7 @@
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
 				5144C9C220D3B87900319062 /* BBRequestHelper.swift in Sources */,
 				5144C9B020CFEA0B00319062 /* CurrencyHistoryTC.swift in Sources */,
+				5158E17720EC7242001DCA4E /* BBOperationView.swift in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
@@ -3550,6 +3573,7 @@
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
+				5158E17020EB6A59001DCA4E /* OperationMessage.swift in Sources */,
 				5144C9C420D3BCC300319062 /* BBCurrency.swift in Sources */,
 				5120A1AC20DA27EE00190B1E /* BBCommon.swift in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
@@ -3567,6 +3591,7 @@
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				5197D5AB20E2598500B7D51A /* HistoryCell.swift in Sources */,
 				34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */,
+				5158E17920ECE68D001DCA4E /* ConversationViewController.swift in Sources */,
 				51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */,
 				5144C9A420CFBE7800319062 /* DepositVC.swift in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
@@ -3654,6 +3679,7 @@
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				5144C99C20CF9D6B00319062 /* CurrencyListTC.swift in Sources */,
+				5158E17D20EF43DD001DCA4E /* BBContact.swift in Sources */,
 				51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,

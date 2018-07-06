@@ -82,7 +82,7 @@
                                 <constraint firstAttribute="height" constant="1" id="ZJg-qc-BSo"/>
                             </constraints>
                         </view>
-                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="11.2244" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sRX-fY-06B">
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sRX-fY-06B">
                             <rect key="frame" x="16" y="215" width="311" height="44"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="44" id="3zM-YX-PB5"/>

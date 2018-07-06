@@ -38,11 +38,7 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
     func prepareAndShow(){
         let title = "输入交易密码"
         let hint = "转账"
-        var unit = " "
-        if let cur = BBCurrencyCache.shared.getCurrencyby(cid: cid){
-            unit.append(cur.name)
-        }
-        InputPaywordVC.displayInputPayword(home: baseVC, delegate: self,title: title,hint: hint,value: balance + unit)
+        InputPaywordVC.displayInputPayword(home: baseVC, delegate: self,title: title,hint: hint,value: BBCurrencyCache.shared.getValueString(cid: cid, value: balance))
     }
 
     func passwordInputed(password: String) {

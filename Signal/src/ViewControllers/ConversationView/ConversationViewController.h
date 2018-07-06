@@ -14,6 +14,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 };
 
 @class TSThread;
+@class ConversationViewItem;
 
 @interface ConversationViewController : OWSViewController
 
@@ -24,6 +25,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
             focusMessageId:(nullable NSString *)focusMessageId;
 
 - (void)popKeyBoard;
+- (void)tryToSendOperationText:(NSString *) opText;
+- (void)makeConversationItemPicked:(ConversationViewItem *)viewItem;
 
 #pragma mark 3D Touch Methods
 
