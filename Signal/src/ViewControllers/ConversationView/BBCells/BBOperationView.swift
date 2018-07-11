@@ -25,19 +25,19 @@ class BBOperationView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let iv = UIImageView(frame: CGRect(x: 8, y: 8, width: 44, height: 44))
+        let iv = UIImageView(frame: CGRect(x: 8, y: 8, width: 48, height: 48))
         self.addSubview(iv)
         iv.snp.makeConstraints { (make) in
-            make.width.height.equalTo(44)
+            make.width.height.equalTo(48)
             make.left.equalTo(self).offset(8)
             make.top.equalTo(self).offset(8)
         }
         self.iconImageView = iv
         
-        let title = UILabel(frame: CGRect(x: 60, y: 8, width: 200, height: 24))
+        let title = UILabel(frame: CGRect(x: 72, y: 8, width: 200, height: 24))
         self.addSubview(title)
         title.snp.makeConstraints { (make) in
-            make.left.equalTo(self).offset(60)
+            make.left.equalTo(self).offset(72)
             make.top.equalTo(self).offset(8)
             make.height.equalTo(24)
             make.right.equalTo(self).offset(8)
@@ -46,11 +46,11 @@ class BBOperationView: UIView {
         title.font = UIFont.systemFont(ofSize: 16)
         self.titleLabel = title
         
-        let detail = UILabel(frame: CGRect(x: 60, y: 36, width: 200, height: 20))
+        let detail = UILabel(frame: CGRect(x: 72, y: 36, width: 200, height: 20))
         self.addSubview(detail)
         detail.snp.makeConstraints { (make) in
-            make.left.equalTo(self).offset(60)
-            make.bottom.equalTo(self).offset(-28)
+            make.left.equalTo(self).offset(72)
+            make.bottom.equalTo(self).offset(-8)
             make.height.equalTo(20)
             make.right.equalTo(self).offset(8)
         }
@@ -66,8 +66,22 @@ class BBOperationView: UIView {
     @objc
     func config(operation:OperationMessage){
         self.iconImageView.image = UIImage(named: "testRed")
-        self.titleLabel.text = "红包"
-        self.detailLabel.text = operation.message
+        if operation.type == .transfer {
+            self.titleLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
+            self.detailLabel.text = (operation.picked ? "已被领取-" : "") + operation.message
+        }
+        else if operation.type == .transferDone{
+            self.titleLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
+            self.detailLabel.text = "已收钱"
+        }
+        else if operation.type == .redPocket {
+            self.titleLabel.text = operation.message
+            self.detailLabel.text = operation.picked ? "红包已领取" : "查看红包"
+        }
+        else if operation.type == .redPocketDone{
+            self.titleLabel.text = operation.message
+            self.detailLabel.text = "红包已领取"
+        }
     }
     
 }

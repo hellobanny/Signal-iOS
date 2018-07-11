@@ -236,9 +236,9 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
-        case OWSMessageCellType_Operation:
             // Is there a caption?
             return self.hasBodyText;
+        case OWSMessageCellType_Operation:
         case OWSMessageCellType_ContactShare:
             return NO;
     }
@@ -414,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
-    if (self.hasBodyText || !bodyMediaView) {
+    if ((self.hasBodyText || !bodyMediaView) && self.cellType != OWSMessageCellType_Operation ) {
         [self configureBodyTextView];
         [textViews addObject:self.bodyTextView];
 
@@ -822,7 +822,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (UIView *)loadViewForOperation{
-    BBOperationView * view = [[BBOperationView alloc] initWithFrame:CGRectMake(0, 0, 360, 60)];
+    BBOperationView * view = [[BBOperationView alloc] initWithFrame:CGRectMake(0, 0, 360, 64)];
     [view configWithOperation:self.viewItem.operationMessage];
     
     self.loadCellContentBlock = ^{
@@ -1090,7 +1090,7 @@ NS_ASSUME_NONNULL_BEGIN
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_Operation:
-            result = CGSizeMake(maxMessageWidth, 80.0);
+            result = CGSizeMake(maxMessageWidth, 64.0);
             break;
         case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.viewItem.attachmentStream);
@@ -1205,7 +1205,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSValue *_Nullable bodyTextSize = [self bodyTextSize];
-    if (bodyTextSize) {
+    if (bodyTextSize && self.cellType != OWSMessageCellType_Operation) {
         [textViewSizes addObject:bodyTextSize];
     }
 

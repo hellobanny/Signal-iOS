@@ -29,6 +29,13 @@ extension ConversationViewController{
         self.present(nav, animated: true, completion: nil)
     }
     
+    @objc func startSendGroupPocket(){
+        let inputVC = SendGroupPackageVC(thread: self.thread)
+        inputVC.delegate = self
+        let nav = UINavigationController(rootViewController: inputVC)
+        self.present(nav, animated: true, completion: nil)
+    }
+    
     @objc func userClickOperationMessage(item:ConversationViewItem){
         if let op = item.operationMessage(){
             let type = item.interaction.interactionType()
@@ -52,6 +59,9 @@ extension ConversationViewController{
                         openRedPocket(item: item)
                     }
                 }
+                else if op.type == .redPocketDone{
+                    viewRedPocketDetail(item: item)
+                }
                 else if op.type == .groupRedP {
                     
                 }
@@ -64,6 +74,9 @@ extension ConversationViewController{
                     viewTransferDetail(item: item)
                 }
                 else if op.type == .redPocket {//查看红包
+                    viewRedPocketDetail(item: item)
+                }
+                else if op.type == .redPocketDone{
                     viewRedPocketDetail(item: item)
                 }
                 else if op.type == .groupRedP {
@@ -154,6 +167,16 @@ extension ConversationViewController : TransferAcceptDelegate {
                     let code = BBRequestHelper.parseCodeOnly(object: result)
                     if code == BBCommon.NetCodeSuccess {
                         //ZZTODO  要发一条回执消息
+                        let echo = OperationMessage()
+                        echo.type = .redPocketDone
+                        echo.currencyType = operation.currencyType
+                        echo.value = operation.value
+                        echo.message = operation.message
+                        echo.transferID = operation.transferID
+                        echo.totalNumber = operation.totalNumber
+                        echo.time = Date()
+                        echo.picked = true
+                        self.try(toSendOperationText: echo.getMessageString())
                         self.makeOperationDone()
                         let contact = BBContact(thread: self.thread)
                         let detail = ReceiverRedPackageDetailVC(contact: contact, operation: operation)

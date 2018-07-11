@@ -31,7 +31,7 @@ class TransferInputVC: UIViewController {
         didSet{
             if let c = currency{
                 if let b = c.balance {
-                    buttonChooseCurrency.setTitle("\(c.name)(\(BBNumberFT.shared.goodNumber(value: b)))", for: .normal)
+                    buttonChooseCurrency.setTitle("\(c.name) (\(BBNumberFT.shared.goodNumber(value: b)))", for: .normal)
                 }
             }
         }

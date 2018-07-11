@@ -14,6 +14,7 @@ enum OperationType:String {
     case redPocket = "3"
     case groupRedP = "4"
     case transferDone = "102"
+    case redPocketDone = "103"
     
     func typeName() -> String{
         switch self {
@@ -23,6 +24,8 @@ enum OperationType:String {
             return "群红包"
         case .transferDone:
             return "确认转账"
+        case .redPocketDone:
+            return "红包已领取"
         default:
             return "转账"
         }

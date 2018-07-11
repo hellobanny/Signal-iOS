@@ -28,7 +28,19 @@ class SenderRedPackageDetailVC: UIViewController {
         self.title = "红包详情"
         labelTitle.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
         labelDetail.text = operation.message
-        labelStatus.text = ""
+        
+        labelComment.toSmallLabel()
+        if operation.picked {
+            labelStatus.text = "已领取"
+            let df = DateFormatter()
+            df.timeStyle = .short
+            df.dateStyle = .short
+            self.labelComment.text = "发送时间: " + df.string(from: operation.time)
+        }
+        else {
+            labelStatus.text = "未领取"
+            labelComment.text = "未领取的红包，将于24小时后发起退款"
+        }
     }
     
     override func didReceiveMemoryWarning() {

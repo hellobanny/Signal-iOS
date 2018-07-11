@@ -19,7 +19,7 @@ class ChooseCurrencyTC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.title = "选择币种"
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(ChooseCurrencyTC.close))
         
         currencys = BBCurrencyCache.shared.allCurrencys()
@@ -50,7 +50,7 @@ class ChooseCurrencyTC: UITableViewController {
         let url = URL(string: currency.iconURL)
         cell.imageView?.kf.setImage(with: url)
         cell.textLabel?.text = currency.name
-        cell.detailTextLabel?.text = "总量" + BBNumberFT.shared.goodNumber(value: currency.balance ?? 0.0)
+        cell.detailTextLabel?.text = "总量: " + BBNumberFT.shared.goodNumber(value: currency.balance ?? 0.0)
         return cell
     }
     
@@ -60,4 +60,7 @@ class ChooseCurrencyTC: UITableViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60.0
+    }
 }

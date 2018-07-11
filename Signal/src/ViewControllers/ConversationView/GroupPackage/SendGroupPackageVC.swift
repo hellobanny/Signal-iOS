@@ -1,22 +1,24 @@
 //
-//  SendRedPackageVC.swift
+//  SendGroupPackageVC.swift
 //  Signal
 //
-//  Created by 张忠 on 2018/7/2.
+//  Created by 张忠 on 2018/7/11.
 //  Copyright © 2018年 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 
-class SendRedPackageVC: UIViewController {
+class SendGroupPackageVC: UIViewController {
     
-    static let defaultMsg = "恭喜发财，大吉大利"
-
     @IBOutlet weak var buttonChooseCur: UIButton!
     
     @IBOutlet weak var valueBackground: UIView!
     @IBOutlet weak var valueTitle: UILabel!
     @IBOutlet weak var valueTextField: UITextField!
+    
+    @IBOutlet weak var numberBackground: UIView!
+    @IBOutlet weak var numberTitle: UILabel!
+    @IBOutlet weak var numberTextField: UITextField!
     
     @IBOutlet weak var memoTextView: UITextView!
     
@@ -24,7 +26,7 @@ class SendRedPackageVC: UIViewController {
     
     @IBOutlet weak var buttonSend: UIButton!
     
-    var contact:BBContact!
+    var thread:TSThread!
     var delegate:TransferInputDelegate?
     
     var currency:BBCurrency?{
@@ -38,15 +40,15 @@ class SendRedPackageVC: UIViewController {
     }
     
     @objc
-    convenience init(contact:BBContact){
+    convenience init(thread:TSThread){
         self.init()
-        self.contact = contact
+        self.thread = thread
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configViewsRadius(views: [buttonSend,buttonChooseCur,valueBackground,memoTextView])
+        
+        configViewsRadius(views: [buttonSend,buttonChooseCur,valueBackground,numberBackground,memoTextView])
         
         valueLabel.toLargeLabel()
         memoTextView.text = SendRedPackageVC.defaultMsg
@@ -61,6 +63,7 @@ class SendRedPackageVC: UIViewController {
     @objc func userTapBgView(){
         self.valueTextField.resignFirstResponder()
         self.memoTextView.resignFirstResponder()
+        numberTextField.resignFirstResponder()
     }
     
     func configViewsRadius(views:[UIView]){
@@ -79,12 +82,12 @@ class SendRedPackageVC: UIViewController {
         valueTextField.text = ""
         valueTextField.becomeFirstResponder()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     @IBAction func editingChanged(_ sender: Any) {
         self.valueLabel.text = self.valueTextField.text
     }
@@ -118,7 +121,7 @@ class SendRedPackageVC: UIViewController {
     
 }
 
-extension SendRedPackageVC: InputPaywordDelegate{
+extension SendGroupPackageVC: InputPaywordDelegate{
     func passwordInputed(password: String) {
         //用户输入了密码，开始调用协议
         //类型，目标用户，币种，数量，附言和密码
@@ -133,7 +136,8 @@ extension SendRedPackageVC: InputPaywordDelegate{
         }
         let cid = self.currency!.cid
         let msg = self.memoTextView.text ?? ""
-        let request = BBRequestFactory.shared.transferFromSession(to: self.contact.uid, cid: cid, type: OperationType.redPocket.rawValue, value: txt, note: msg, payword: password)
+        //ZZTODO 群红包的协议
+        /*let request = BBRequestFactory.shared.transferFromSession(to: self.contact.uid, cid: cid, type: OperationType.redPocket.rawValue, value: txt, note: msg, payword: password)
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
                 let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
@@ -154,7 +158,7 @@ extension SendRedPackageVC: InputPaywordDelegate{
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)
-        }
+        }*/
     }
     
     func send(operation:OperationMessage){
@@ -164,13 +168,13 @@ extension SendRedPackageVC: InputPaywordDelegate{
     }
 }
 
-extension SendRedPackageVC: ChooseCurrencyDelegate{
+extension SendGroupPackageVC: ChooseCurrencyDelegate{
     func userChoose(currency: BBCurrency) {
         self.currency = currency
     }
 }
 
-extension SendRedPackageVC: UITextFieldDelegate {
+extension SendGroupPackageVC: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return NumberChecker.checkInputNumber(textField: textField, string: string)
     }

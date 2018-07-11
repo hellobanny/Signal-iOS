@@ -3789,28 +3789,41 @@ typedef enum : NSUInteger {
 
     [actionSheetController addAction:[OWSAlerts cancelAction]];
     
-    UIAlertAction *transAction = [UIAlertAction
-                                      actionWithTitle:@"转账"
-                                      style:UIAlertActionStyleDefault
-                                      handler:^(UIAlertAction *_Nonnull action) {
-                                          [self showStartTransfer];
-                                      }];
-    UIImage *zzImage = [UIImage imageNamed:@"actionsheet_camera_black"];
-    OWSAssert(zzImage);
-    [transAction setValue:zzImage forKey:@"image"];
-    [actionSheetController addAction:transAction];
-    
-    
-    UIAlertAction * redPocketAction = [UIAlertAction
-                                      actionWithTitle:@"红包"
-                                      style:UIAlertActionStyleDefault
-                                      handler:^(UIAlertAction *_Nonnull action) {
-                                          [self showStartRedPocket];
-                                      }];
-    UIImage *rpImage = [UIImage imageNamed:@"actionsheet_camera_black"];
-    OWSAssert(rpImage);
-    [redPocketAction setValue:rpImage forKey:@"image"];
-    [actionSheetController addAction:redPocketAction];
+    if(!self.thread.isGroupThread){
+        UIAlertAction *transAction = [UIAlertAction
+                                          actionWithTitle:@"转账"
+                                          style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction *_Nonnull action) {
+                                              [self showStartTransfer];
+                                          }];
+        UIImage *zzImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+        OWSAssert(zzImage);
+        [transAction setValue:zzImage forKey:@"image"];
+        [actionSheetController addAction:transAction];
+        
+        UIAlertAction * redPocketAction = [UIAlertAction
+                                          actionWithTitle:@"红包"
+                                          style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction *_Nonnull action) {
+                                              [self showStartRedPocket];
+                                          }];
+        UIImage *rpImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+        OWSAssert(rpImage);
+        [redPocketAction setValue:rpImage forKey:@"image"];
+        [actionSheetController addAction:redPocketAction];
+    }
+    else {
+        UIAlertAction * redPocketAction = [UIAlertAction
+                                           actionWithTitle:@"群红包"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *_Nonnull action) {
+                                               [self startSendGroupPocket];
+                                           }];
+        UIImage *rpImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+        OWSAssert(rpImage);
+        [redPocketAction setValue:rpImage forKey:@"image"];
+        [actionSheetController addAction:redPocketAction];
+    }
 
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")

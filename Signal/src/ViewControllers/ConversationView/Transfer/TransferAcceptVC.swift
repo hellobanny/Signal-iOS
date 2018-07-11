@@ -37,6 +37,7 @@ class TransferAcceptVC: UIViewController {
         let df = DateFormatter()
         df.timeStyle = .short
         df.dateStyle = .short
+        timeLabel.toSmallLabel()
         self.timeLabel.text = "转账时间: " + df.string(from: operation.time)
     }
 

@@ -26,7 +26,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TAt-XX-afr">
-                    <rect key="frame" x="16" y="614" width="343" height="21"/>
+                    <rect key="frame" x="16" y="630" width="343" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="Vz6-TH-yAo"/>
                     </constraints>
@@ -73,7 +73,7 @@
             <constraints>
                 <constraint firstItem="Ciw-lH-Lx0" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="7B5-Xr-CYF"/>
                 <constraint firstItem="fai-k8-iml" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="AJh-6S-XJX"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="TAt-XX-afr" secondAttribute="bottom" constant="32" id="C4z-kC-g7h"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="TAt-XX-afr" secondAttribute="bottom" constant="16" id="C4z-kC-g7h"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="fai-k8-iml" secondAttribute="trailing" constant="16" id="GMX-LC-1NT"/>
                 <constraint firstItem="Ciw-lH-Lx0" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="64" id="Lwo-9S-40k"/>
                 <constraint firstItem="7x2-C2-xUi" firstAttribute="top" secondItem="fai-k8-iml" secondAttribute="bottom" constant="16" id="MqF-qN-1a8"/>

@@ -462,6 +462,8 @@
 		5158E17720EC7242001DCA4E /* BBOperationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17620EC7242001DCA4E /* BBOperationView.swift */; };
 		5158E17920ECE68D001DCA4E /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17820ECE68D001DCA4E /* ConversationViewController.swift */; };
 		5158E17D20EF43DD001DCA4E /* BBContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17C20EF43DD001DCA4E /* BBContact.swift */; };
+		5158E1D120F5D593001DCA4E /* SendGroupPackageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */; };
+		5158E1D220F5D593001DCA4E /* SendGroupPackageVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */; };
 		518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CED20D9083F0020B353 /* BBDepositHistory.swift */; };
 		518D4CF020D908520020B353 /* BBWithdrawHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */; };
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
@@ -1192,6 +1194,8 @@
 		5158E17620EC7242001DCA4E /* BBOperationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBOperationView.swift; sourceTree = "<group>"; };
 		5158E17820ECE68D001DCA4E /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		5158E17C20EF43DD001DCA4E /* BBContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBContact.swift; sourceTree = "<group>"; };
+		5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGroupPackageVC.swift; sourceTree = "<group>"; };
+		5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendGroupPackageVC.xib; sourceTree = "<group>"; };
 		518D4CED20D9083F0020B353 /* BBDepositHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBDepositHistory.swift; sourceTree = "<group>"; };
 		518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBWithdrawHistory.swift; sourceTree = "<group>"; };
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
@@ -1649,6 +1653,7 @@
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
+				5158E1CE20F5D55A001DCA4E /* GroupPackage */,
 				5158E15B20E9CF96001DCA4E /* RedPackage */,
 				51F1002F20E5D87800FCB2E7 /* Transfer */,
 				34D1F0951F867BFC0066283D /* Cells */,
@@ -2276,6 +2281,15 @@
 				5158E17620EC7242001DCA4E /* BBOperationView.swift */,
 			);
 			path = BBCells;
+			sourceTree = "<group>";
+		};
+		5158E1CE20F5D55A001DCA4E /* GroupPackage */ = {
+			isa = PBXGroup;
+			children = (
+				5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */,
+				5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */,
+			);
+			path = GroupPackage;
 			sourceTree = "<group>";
 		};
 		5197D5A220E21B7300B7D51A /* WRNavigationBar */ = {
@@ -3078,6 +3092,7 @@
 				5158E15F20E9CFFA001DCA4E /* SendRedPackageVC.xib in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
+				5158E1D220F5D593001DCA4E /* SendGroupPackageVC.xib in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
@@ -3636,6 +3651,7 @@
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
+				5158E1D120F5D593001DCA4E /* SendGroupPackageVC.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				5120A1B020DA2F0500190B1E /* BBHistoryType.swift in Sources */,

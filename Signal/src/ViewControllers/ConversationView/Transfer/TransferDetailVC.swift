@@ -21,6 +21,7 @@ class TransferDetailVC: UIViewController {
     convenience init(operation:OperationMessage){
         self.init()
         self.operation = operation
+        timeLabel.toSmallLabel()
     }
     
     override func viewDidLoad() {
