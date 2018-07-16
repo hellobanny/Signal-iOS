@@ -95,21 +95,21 @@ class CurrencyHistoryTC: UITableViewController {
         if type == .all {
             if let h = his as? BBCommonHistory{
                 cell.labelTitle?.text = h.abstract
-                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                cell.labelDate?.text = BBTimeFT.shared.goodTimeString(time: h.time)
                 cell.labelValue.text = ""
             }
         }
         else if type == .deposit {
             if let h = his as? BBDepositHistory{
                 cell.labelTitle?.text = "充值"
-                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                cell.labelDate?.text = BBTimeFT.shared.goodTimeString(time: h.time)
                 cell.setValue(value: h.amt)
             }
         }
         else if type == .withdraw {
             if let h = his as? BBWithdrawHistory{
                 cell.labelTitle?.text = h.statusDes
-                cell.labelDate?.text = BBNumberFT.shared.goodTimeString(time: h.time)
+                cell.labelDate?.text = BBTimeFT.shared.goodTimeString(time: h.time)
                 cell.setValue(value: h.amt)
             }
         }

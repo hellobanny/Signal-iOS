@@ -16,8 +16,6 @@ class BBNumberFT: NSObject {
     // < 0.01 4位有效数字
     var smallFT = NumberFormatter()
     
-    var dateFormatter = DateFormatter()
-    
     static let shared : BBNumberFT = {
         let instance = BBNumberFT()
         return instance
@@ -40,9 +38,6 @@ class BBNumberFT: NSObject {
         smallFT.usesSignificantDigits = true
         smallFT.minimumSignificantDigits = 2
         smallFT.maximumSignificantDigits = 4
-        
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
     }
     
     //返回一个合适的显示价格，至少两个有效数字
@@ -61,9 +56,5 @@ class BBNumberFT: NSObject {
         else {
             return smallFT.string(from: num) ?? "ERROR"
         }
-    }
-    
-    func goodTimeString(time:Date) -> String {
-        return dateFormatter.string(from:time)
     }
 }

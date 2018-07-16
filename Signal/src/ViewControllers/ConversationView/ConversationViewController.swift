@@ -30,10 +30,12 @@ extension ConversationViewController{
     }
     
     @objc func startSendGroupPocket(){
-        let inputVC = SendGroupPackageVC(thread: self.thread)
-        inputVC.delegate = self
-        let nav = UINavigationController(rootViewController: inputVC)
-        self.present(nav, animated: true, completion: nil)
+        if let gthread = self.thread as? TSGroupThread {
+            let inputVC = SendGroupPackageVC(thread: gthread)
+            inputVC.delegate = self
+            let nav = UINavigationController(rootViewController: inputVC)
+            self.present(nav, animated: true, completion: nil)
+        }
     }
     
     @objc func userClickOperationMessage(item:ConversationViewItem){
@@ -63,7 +65,7 @@ extension ConversationViewController{
                     viewRedPocketDetail(item: item)
                 }
                 else if op.type == .groupRedP {
-                    
+                    self.robOrViewGroupPocket(item: item)
                 }
             }
             else if type == OWSInteractionType.outgoingMessage {//自己发的
@@ -80,7 +82,7 @@ extension ConversationViewController{
                     viewRedPocketDetail(item: item)
                 }
                 else if op.type == .groupRedP {
-                    
+                    self.robOrViewGroupPocket(item: item)
                 }
             }
         }
@@ -104,7 +106,7 @@ extension ConversationViewController{
     
     func openRedPocket(item:ConversationViewItem){
         if let op = item.operationMessage(){
-             ConversationViewController.lastOperationItem = item
+            ConversationViewController.lastOperationItem = item
             let contact = BBContact(thread: self.thread)
             ReceiveRedPackageVC.displayRedPocket(home: self, delegate: self, contact: contact, operation: op)
         }
@@ -120,6 +122,42 @@ extension ConversationViewController{
     func makeOperationDone(){
         if let item = ConversationViewController.lastOperationItem{
             self.makeConversationItemPicked(item)
+        }
+    }
+    
+    func robOrViewGroupPocket(item:ConversationViewItem){
+        //已经抢过的显示详情页面，没有抢过的有两种情况，一种还有剩余，一种没有剩余了。
+        if let op = item.operationMessage() {
+            if op.picked {
+                let vd = ReceiveGroupPocketDetailVC(operation: op)
+                self.navigationController?.pushViewController(vd, animated: true)
+            }
+            else {
+                //需要先查询红包的情况
+                let request = BBRequestFactory.shared.envelopeInfoGet(eid: op.transferID)
+                TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                    if let result = obj{
+                        let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                        if let cus = res {
+                            let status = cus["status"].intValue
+                            let name = cus["senderName"].stringValue
+                            let phone = cus["senderPhone"].stringValue
+                            let avatar = cus["senderAvatar"].stringValue
+                            //ZZTODO 头像获取可能还有问题
+                            let contact = BBContact(phone: phone, namep: name, photo: UIImage(contentsOfFile: avatar))
+                            if status == 1 {
+                                ConversationViewController.lastOperationItem = item
+                                ReceiveRedPackageVC.displayRedPocket(home: self, delegate: self, contact: contact, operation: op)
+                            }
+                            else {
+                                RobToLateVC.displayRobToLate(home: self, contact: contact, operation: op)
+                            }
+                        }
+                    }
+                }) { (task, error) in
+                    BBRequestHelper.showError(error: error)
+                }
+            }
         }
     }
 }
@@ -185,6 +223,39 @@ extension ConversationViewController : TransferAcceptDelegate {
                     }
                     else {
                         BBCommon.notice(title: "确认收币失败，请重试！")
+                    }
+                }
+            }) { (task, error) in
+                BBRequestHelper.showError(error: error)
+            }
+        }
+        else if operation.type == .groupRedP {
+            let request = BBRequestFactory.shared.envelopeRob(eid: operation.transferID)
+            TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                if let result = obj{
+                    let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                    if let cus = res {
+                        //ZZTODO  要发一条回执消息
+                        let amount = cus["amount"].stringValue
+                        let echo = OperationMessage()
+                        echo.type = .redPocketDone
+                        echo.currencyType = operation.currencyType
+                        echo.value = operation.value
+                        echo.message = operation.message
+                        echo.transferID = operation.transferID
+                        echo.totalNumber = operation.totalNumber
+                        echo.time = Date()
+                        echo.picked = true
+                        self.try(toSendOperationText: echo.getMessageString())
+                        self.makeOperationDone()
+                        BBCommon.notice(title: "抢到了 \(amount)")
+                        /*let contact = BBContact(thread: self.thread)
+                        let detail = ReceiverRedPackageDetailVC(contact: contact, operation: operation)
+                        let nav = UINavigationController(rootViewController: detail)
+                        self.present(nav, animated: true, completion: nil)*/
+                    }
+                    else {
+                        BBCommon.notice(title: "抢红包失败")
                     }
                 }
             }) { (task, error) in

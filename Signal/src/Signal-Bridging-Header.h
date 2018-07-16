@@ -47,6 +47,7 @@
 #import "AppDelegate.h"
 #import "NewContactThreadViewController.h"
 #import "WRNavigationBar.h"
+#import "NewGroupViewController.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>

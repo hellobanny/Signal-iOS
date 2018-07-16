@@ -15,6 +15,7 @@ class SendGroupPackageVC: UIViewController {
     @IBOutlet weak var valueBackground: UIView!
     @IBOutlet weak var valueTitle: UILabel!
     @IBOutlet weak var valueTextField: UITextField!
+    @IBOutlet weak var changeTypeLabel:UILabel!
     
     @IBOutlet weak var numberBackground: UIView!
     @IBOutlet weak var numberTitle: UILabel!
@@ -26,8 +27,19 @@ class SendGroupPackageVC: UIViewController {
     
     @IBOutlet weak var buttonSend: UIButton!
     
-    var thread:TSThread!
+    var thread:TSGroupThread!
     var delegate:TransferInputDelegate?
+    var isRandomRP:Bool = true{
+        didSet{
+            let s1 = isRandomRP ? "当前为拼手气红包，" : "当前为普通红包，"
+            let s2 = isRandomRP ? "改为普通红包" : "改为拼手气红包"
+            let att1 = NSMutableAttributedString(string: s1, attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorLightText])
+            let att2 = NSAttributedString(string: s2, attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorClickText])
+            att1.append(att2)
+            changeTypeLabel.attributedText = att1
+            valueTitle.text = isRandomRP ? "🎲总金额" : "单个金额"
+        }
+    }
     
     var currency:BBCurrency?{
         didSet{
@@ -40,7 +52,7 @@ class SendGroupPackageVC: UIViewController {
     }
     
     @objc
-    convenience init(thread:TSThread){
+    convenience init(thread:TSGroupThread){
         self.init()
         self.thread = thread
     }
@@ -58,12 +70,19 @@ class SendGroupPackageVC: UIViewController {
         
         self.currency = BBCurrencyCache.shared.allCurrencys().first
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SendRedPackageVC.userTapBgView)))
+        isRandomRP = true
+        changeTypeLabel.isUserInteractionEnabled = true
+        changeTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SendGroupPackageVC.userTapChangeType)))
     }
     
     @objc func userTapBgView(){
         self.valueTextField.resignFirstResponder()
         self.memoTextView.resignFirstResponder()
         numberTextField.resignFirstResponder()
+    }
+    
+    @objc func userTapChangeType(){
+        isRandomRP = !isRandomRP
     }
     
     func configViewsRadius(views:[UIView]){
@@ -134,21 +153,31 @@ extension SendGroupPackageVC: InputPaywordDelegate{
             valueTextField.layer.shake()
             return
         }
+        guard let cs = numberTextField.text else {
+            numberTextField.layer.shake()
+            return
+        }
+        guard let count = Int(cs) else {
+            numberTextField.layer.shake()
+            return
+        }
         let cid = self.currency!.cid
         let msg = self.memoTextView.text ?? ""
-        //ZZTODO 群红包的协议
-        /*let request = BBRequestFactory.shared.transferFromSession(to: self.contact.uid, cid: cid, type: OperationType.redPocket.rawValue, value: txt, note: msg, payword: password)
+        //群红包的协议
+        print(thread.groupModel.groupId)
+        let gid = String(data: thread.groupModel.groupId, encoding: .utf8)
+        let request = BBRequestFactory.shared.envelopeAdd(groupId: gid! , cid: cid, random: isRandomRP, amount: txt, count: count, note: msg, payword: password)
         TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
             if let result = obj{
                 let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
                 if let cus = res {
-                    if let tid = cus["transferId"].string {//正确获得了transferId
+                    if let eid = cus["envelopeId"].string {//正确获得了envelopeId
                         let op = OperationMessage()
-                        op.type = .redPocket
+                        op.type = OperationType.groupRedP
                         op.currencyType = cid
                         op.value = txt
                         op.message = msg
-                        op.transferID = tid
+                        op.transferID = eid
                         op.time = Date()
                         op.picked = false
                         self.delegate?.userSend(operation: op)
@@ -158,7 +187,7 @@ extension SendGroupPackageVC: InputPaywordDelegate{
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)
-        }*/
+        }
     }
     
     func send(operation:OperationMessage){

@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> delegate;
 
+- (void)createGroup:(TSGroupModel *)model;
+
 @end
 
 NS_ASSUME_NONNULL_END

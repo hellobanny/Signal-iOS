@@ -464,6 +464,17 @@
 		5158E17D20EF43DD001DCA4E /* BBContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E17C20EF43DD001DCA4E /* BBContact.swift */; };
 		5158E1D120F5D593001DCA4E /* SendGroupPackageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */; };
 		5158E1D220F5D593001DCA4E /* SendGroupPackageVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */; };
+		5158E1D520F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1D320F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift */; };
+		5158E1D620F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1D420F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib */; };
+		5158E1D920F75555001DCA4E /* RobToLateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1D720F75555001DCA4E /* RobToLateVC.swift */; };
+		5158E1DA20F75555001DCA4E /* RobToLateVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1D820F75555001DCA4E /* RobToLateVC.xib */; };
+		5158E1DC20F842B8001DCA4E /* GroupPocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DB20F842B8001DCA4E /* GroupPocket.swift */; };
+		5158E1DE20F84F09001DCA4E /* GPResultHeadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */; };
+		5158E1E120F854C4001DCA4E /* LuckyGuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */; };
+		5158E1E220F854C4001DCA4E /* LuckyGuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */; };
+		5158E1E620F87E0E001DCA4E /* BBTimeFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */; };
+		5158E1E820F892BA001DCA4E /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1E720F892BA001DCA4E /* NewGroupViewController.swift */; };
+		5158E1EA20FC3E34001DCA4E /* RedPocketAck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1E920FC3E34001DCA4E /* RedPocketAck.swift */; };
 		518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CED20D9083F0020B353 /* BBDepositHistory.swift */; };
 		518D4CF020D908520020B353 /* BBWithdrawHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */; };
 		518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518D4CF120D908840020B353 /* BBCommonHistory.swift */; };
@@ -1196,6 +1207,17 @@
 		5158E17C20EF43DD001DCA4E /* BBContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBContact.swift; sourceTree = "<group>"; };
 		5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGroupPackageVC.swift; sourceTree = "<group>"; };
 		5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendGroupPackageVC.xib; sourceTree = "<group>"; };
+		5158E1D320F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveGroupPocketDetailVC.swift; sourceTree = "<group>"; };
+		5158E1D420F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveGroupPocketDetailVC.xib; sourceTree = "<group>"; };
+		5158E1D720F75555001DCA4E /* RobToLateVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobToLateVC.swift; sourceTree = "<group>"; };
+		5158E1D820F75555001DCA4E /* RobToLateVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobToLateVC.xib; sourceTree = "<group>"; };
+		5158E1DB20F842B8001DCA4E /* GroupPocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPocket.swift; sourceTree = "<group>"; };
+		5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPResultHeadView.swift; sourceTree = "<group>"; };
+		5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LuckyGuyCell.swift; sourceTree = "<group>"; };
+		5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LuckyGuyCell.xib; sourceTree = "<group>"; };
+		5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTimeFT.swift; sourceTree = "<group>"; };
+		5158E1E720F892BA001DCA4E /* NewGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
+		5158E1E920FC3E34001DCA4E /* RedPocketAck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedPocketAck.swift; sourceTree = "<group>"; };
 		518D4CED20D9083F0020B353 /* BBDepositHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBDepositHistory.swift; sourceTree = "<group>"; };
 		518D4CEF20D908520020B353 /* BBWithdrawHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBWithdrawHistory.swift; sourceTree = "<group>"; };
 		518D4CF120D908840020B353 /* BBCommonHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommonHistory.swift; sourceTree = "<group>"; };
@@ -1842,6 +1864,7 @@
 				34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */,
 				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
 				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
+				5158E1E720F892BA001DCA4E /* NewGroupViewController.swift */,
 				34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */,
 				34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */,
 				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
@@ -2279,6 +2302,7 @@
 			children = (
 				5158E16F20EB6A59001DCA4E /* OperationMessage.swift */,
 				5158E17620EC7242001DCA4E /* BBOperationView.swift */,
+				5158E1E920FC3E34001DCA4E /* RedPocketAck.swift */,
 			);
 			path = BBCells;
 			sourceTree = "<group>";
@@ -2288,6 +2312,14 @@
 			children = (
 				5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */,
 				5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */,
+				5158E1D720F75555001DCA4E /* RobToLateVC.swift */,
+				5158E1D820F75555001DCA4E /* RobToLateVC.xib */,
+				5158E1D320F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift */,
+				5158E1D420F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib */,
+				5158E1DB20F842B8001DCA4E /* GroupPocket.swift */,
+				5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */,
+				5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */,
+				5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */,
 			);
 			path = GroupPackage;
 			sourceTree = "<group>";
@@ -2311,6 +2343,7 @@
 				51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */,
 				51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */,
 				51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */,
+				5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */,
 				51F1004020E6283800FCB2E7 /* LabelConfig.swift */,
 			);
 			name = Config;
@@ -3083,6 +3116,7 @@
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				5144C99420CF695300319062 /* CurrencyCell.xib in Resources */,
+				5158E1E220F854C4001DCA4E /* LuckyGuyCell.xib in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
@@ -3105,11 +3139,13 @@
 				51F1003B20E5D98800FCB2E7 /* TransferDetailVC.xib in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
+				5158E1DA20F75555001DCA4E /* RobToLateVC.xib in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				5197D5AC20E2598500B7D51A /* HistoryCell.xib in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				5144C98A20CF66AB00319062 /* eth.png in Resources */,
 				5144C99620CF695300319062 /* CurrencyDetailVC.xib in Resources */,
+				5158E1D620F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
@@ -3272,6 +3308,7 @@
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
 				"${BUILT_PRODUCTS_DIR}/UIColor_Hex_Swift/UIColor_Hex_Swift.framework",
@@ -3306,6 +3343,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIColor_Hex_Swift.framework",
@@ -3554,6 +3592,7 @@
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
 				5144C99520CF695300319062 /* CurrencyCell.swift in Sources */,
 				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
+				5158E1DC20F842B8001DCA4E /* GroupPocket.swift in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
@@ -3566,6 +3605,7 @@
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				518D4CF220D908840020B353 /* BBCommonHistory.swift in Sources */,
+				5158E1D520F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				51F1003A20E5D98800FCB2E7 /* TransferDetailVC.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
@@ -3579,7 +3619,9 @@
 				5158E17720EC7242001DCA4E /* BBOperationView.swift in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
+				5158E1E820F892BA001DCA4E /* NewGroupViewController.swift in Sources */,
 				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
+				5158E1DE20F84F09001DCA4E /* GPResultHeadView.swift in Sources */,
 				34D1F0A91F867BFC0066283D /* ConversationViewCell.m in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */,
@@ -3625,12 +3667,15 @@
 				340FC8CD20518C77007AEB0F /* OWSBackupJob.m in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
 				451686AB1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift in Sources */,
+				5158E1E620F87E0E001DCA4E /* BBTimeFT.swift in Sources */,
 				5144C9A020CF9F3500319062 /* ScanAndQRCodeVC.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */,
+				5158E1D920F75555001DCA4E /* RobToLateVC.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				5158E1E120F854C4001DCA4E /* LuckyGuyCell.swift in Sources */,
 				5197D5A820E21B7300B7D51A /* WRCustomNavigationBar.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
@@ -3762,6 +3807,7 @@
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
+				5158E1EA20FC3E34001DCA4E /* RedPocketAck.swift in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
 			);

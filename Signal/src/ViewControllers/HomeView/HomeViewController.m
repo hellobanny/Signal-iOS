@@ -422,7 +422,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
     // The contents of the navigation bar are cramped in this view.
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *image = [UIImage imageNamed:@"add-conversation"];
+    UIImage *image = [UIImage imageNamed:@"home-new"];
     [button setImage:image forState:UIControlStateNormal];
     UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
     // We normally would want to use left and right insets that ensure the button

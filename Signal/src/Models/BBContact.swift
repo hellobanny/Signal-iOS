@@ -26,4 +26,11 @@ class BBContact: NSObject {
         }
         super.init()
     }
+    
+    init(phone:String,namep:String,photo:UIImage?){
+        uid = phone
+        name = namep
+        avatar = photo
+        super.init()
+    }
 }

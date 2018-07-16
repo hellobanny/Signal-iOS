@@ -106,7 +106,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
         initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
                 style:UIBarButtonItemStylePlain
                target:self
-               action:@selector(createGroup)];
+               action:@selector(makeGroup)];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
         = NSLocalizedString(@"FINISH_GROUP_CREATION_LABEL", @"Accessibility label for finishing new group");
@@ -437,12 +437,18 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - Actions
 
-- (void)createGroup
+- (void)makeGroup
+{
+    NSString *groupName = [self.groupNameTextField.text ows_stripped];
+    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
+    [recipientIds addObject:[self.contactsViewHelper localNumber]];
+    //从服务器获得group的ID，然后再近些后续的动作
+    [self createGroupModelWithName:groupName phones:recipientIds image:self.groupAvatar];
+}
+
+- (void)createGroup:(TSGroupModel *)model
 {
     OWSAssertIsOnMainThread();
-
-    TSGroupModel *model = [self makeGroup];
-
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -511,14 +517,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                   }];
 }
 
-- (TSGroupModel *)makeGroup
-{
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
-    [recipientIds addObject:[self.contactsViewHelper localNumber]];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-    return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
-}
+
 
 #pragma mark - Group Avatar
 
