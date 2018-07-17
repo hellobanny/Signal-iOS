@@ -82,6 +82,10 @@ class BBOperationView: UIView {
             self.titleLabel.text = operation.message
             self.detailLabel.text = "红包已领取"
         }
+        else if operation.type == .groupRedP {
+            self.titleLabel.text = operation.message
+            self.detailLabel.text = operation.picked ? "红包已领取" : "查看红包"
+        }
     }
     
 }

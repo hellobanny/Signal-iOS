@@ -12,6 +12,7 @@ class BBContact: NSObject {
     var uid:String //phone
     var name:String
     var avatar:UIImage?
+    var avatarRef:String?
     
     init(thread:TSThread) {
         
@@ -27,10 +28,10 @@ class BBContact: NSObject {
         super.init()
     }
     
-    init(phone:String,namep:String,photo:UIImage?){
+    init(phone:String,namep:String,ref:String){
         uid = phone
         name = namep
-        avatar = photo
+        avatarRef = ref
         super.init()
     }
 }

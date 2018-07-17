@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 
+@objc
 class RedPocketAck: NSObject {
     static let kID = "tID"
     static let kSender = "sender"
@@ -40,26 +41,28 @@ class RedPocketAck: NSObject {
     }
     
     @objc
-    func redPocketDes(my:String) -> String?{
+    func redPocketDes() -> String?{
         //你领取了自己发的红包
         //你领取了XX的红包
         //XX领取了你的红包
-        if my == sender && my == receiver {
-            return "你领取了自己发的红包"
-        }
-        else if my == sender {
-            var name = receiver
-            if let cm = Environment.current().contactsManager{
-                name = cm.contactOrProfileName(forPhoneIdentifier: receiver)
+        if let my = TSAccountManager.localNumber(){
+            if my == sender && my == receiver {
+                return "你领取了自己发的红包"
             }
-            return String(format:"%s领取了你的红包",name)
-        }
-        else if my == receiver {
-            var name = sender
-            if let cm = Environment.current().contactsManager{
-                name = cm.contactOrProfileName(forPhoneIdentifier: sender)
+            else if my == sender {
+                var name = receiver
+                if let cm = Environment.current().contactsManager{
+                    name = cm.contactOrProfileName(forPhoneIdentifier: receiver)
+                }
+                return String(format:"%s领取了你的红包",name!)
             }
-            return String(format:"你领取了%s的红包",name)
+            else if my == receiver {
+                var name = sender
+                if let cm = Environment.current().contactsManager{
+                    name = cm.contactOrProfileName(forPhoneIdentifier: sender)
+                }
+                return String(format:"你领取了%s的红包",name!)
+            }
         }
         return nil
     }

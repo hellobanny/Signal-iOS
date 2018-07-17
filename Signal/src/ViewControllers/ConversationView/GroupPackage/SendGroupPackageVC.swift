@@ -178,6 +178,7 @@ extension SendGroupPackageVC: InputPaywordDelegate{
                         op.value = txt
                         op.message = msg
                         op.transferID = eid
+                        op.sender = TSAccountManager.localNumber()
                         op.time = Date()
                         op.picked = false
                         self.delegate?.userSend(operation: op)

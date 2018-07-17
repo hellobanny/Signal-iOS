@@ -469,7 +469,6 @@
 		5158E1D920F75555001DCA4E /* RobToLateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1D720F75555001DCA4E /* RobToLateVC.swift */; };
 		5158E1DA20F75555001DCA4E /* RobToLateVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1D820F75555001DCA4E /* RobToLateVC.xib */; };
 		5158E1DC20F842B8001DCA4E /* GroupPocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DB20F842B8001DCA4E /* GroupPocket.swift */; };
-		5158E1DE20F84F09001DCA4E /* GPResultHeadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */; };
 		5158E1E120F854C4001DCA4E /* LuckyGuyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */; };
 		5158E1E220F854C4001DCA4E /* LuckyGuyCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */; };
 		5158E1E620F87E0E001DCA4E /* BBTimeFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */; };
@@ -488,6 +487,8 @@
 		5197D5B020E2612C00B7D51A /* WebVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5197D5AE20E2612C00B7D51A /* WebVC.xib */; };
 		51A9649020DB3CE60058B4F4 /* NumberChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */; };
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
+		51EA8C9320FDD6EC003AF038 /* HeadViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA8C9120FDD6EC003AF038 /* HeadViewCell.swift */; };
+		51EA8C9420FDD6EC003AF038 /* HeadViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51EA8C9220FDD6EC003AF038 /* HeadViewCell.xib */; };
 		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
 		51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */; };
 		51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */; };
@@ -1212,7 +1213,6 @@
 		5158E1D720F75555001DCA4E /* RobToLateVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobToLateVC.swift; sourceTree = "<group>"; };
 		5158E1D820F75555001DCA4E /* RobToLateVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RobToLateVC.xib; sourceTree = "<group>"; };
 		5158E1DB20F842B8001DCA4E /* GroupPocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPocket.swift; sourceTree = "<group>"; };
-		5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPResultHeadView.swift; sourceTree = "<group>"; };
 		5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LuckyGuyCell.swift; sourceTree = "<group>"; };
 		5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LuckyGuyCell.xib; sourceTree = "<group>"; };
 		5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTimeFT.swift; sourceTree = "<group>"; };
@@ -1233,6 +1233,8 @@
 		5197D5AE20E2612C00B7D51A /* WebVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WebVC.xib; sourceTree = "<group>"; };
 		51A9648F20DB3CE60058B4F4 /* NumberChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberChecker.swift; sourceTree = "<group>"; };
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
+		51EA8C9120FDD6EC003AF038 /* HeadViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadViewCell.swift; sourceTree = "<group>"; };
+		51EA8C9220FDD6EC003AF038 /* HeadViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeadViewCell.xib; sourceTree = "<group>"; };
 		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
 		51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNumberFT.swift; sourceTree = "<group>"; };
 		51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywordHelper.swift; sourceTree = "<group>"; };
@@ -2312,12 +2314,13 @@
 			children = (
 				5158E1CF20F5D593001DCA4E /* SendGroupPackageVC.swift */,
 				5158E1D020F5D593001DCA4E /* SendGroupPackageVC.xib */,
-				5158E1D720F75555001DCA4E /* RobToLateVC.swift */,
-				5158E1D820F75555001DCA4E /* RobToLateVC.xib */,
 				5158E1D320F75488001DCA4E /* ReceiveGroupPocketDetailVC.swift */,
 				5158E1D420F75488001DCA4E /* ReceiveGroupPocketDetailVC.xib */,
+				5158E1D720F75555001DCA4E /* RobToLateVC.swift */,
+				5158E1D820F75555001DCA4E /* RobToLateVC.xib */,
 				5158E1DB20F842B8001DCA4E /* GroupPocket.swift */,
-				5158E1DD20F84F09001DCA4E /* GPResultHeadView.swift */,
+				51EA8C9120FDD6EC003AF038 /* HeadViewCell.swift */,
+				51EA8C9220FDD6EC003AF038 /* HeadViewCell.xib */,
 				5158E1DF20F854C4001DCA4E /* LuckyGuyCell.swift */,
 				5158E1E020F854C4001DCA4E /* LuckyGuyCell.xib */,
 			);
@@ -3100,6 +3103,7 @@
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				5197D5A120E10FAB00B7D51A /* TotalCell.xib in Resources */,
+				51EA8C9420FDD6EC003AF038 /* HeadViewCell.xib in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
@@ -3621,7 +3625,6 @@
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				5158E1E820F892BA001DCA4E /* NewGroupViewController.swift in Sources */,
 				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
-				5158E1DE20F84F09001DCA4E /* GPResultHeadView.swift in Sources */,
 				34D1F0A91F867BFC0066283D /* ConversationViewCell.m in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */,
@@ -3753,6 +3756,7 @@
 				4523149E1F7E916B003A428C /* SlideOffAnimatedTransition.swift in Sources */,
 				340FC8C0204DB7D2007AEB0F /* OWSBackupExportJob.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
+				51EA8C9320FDD6EC003AF038 /* HeadViewCell.swift in Sources */,
 				3466087420E5649700AFFE73 /* OWSLayerView.swift in Sources */,
 				340FC8A7204DAC8D007AEB0F /* RegistrationViewController.m in Sources */,
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,

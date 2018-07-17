@@ -128,35 +128,29 @@ extension ConversationViewController{
     func robOrViewGroupPocket(item:ConversationViewItem){
         //已经抢过的显示详情页面，没有抢过的有两种情况，一种还有剩余，一种没有剩余了。
         if let op = item.operationMessage() {
-            if op.picked {
-                let vd = ReceiveGroupPocketDetailVC(operation: op)
-                self.navigationController?.pushViewController(vd, animated: true)
-            }
-            else {
-                //需要先查询红包的情况
-                let request = BBRequestFactory.shared.envelopeInfoGet(eid: op.transferID)
-                TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
-                    if let result = obj{
-                        let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
-                        if let cus = res {
-                            let status = cus["status"].intValue
-                            let name = cus["senderName"].stringValue
-                            let phone = cus["senderPhone"].stringValue
-                            let avatar = cus["senderAvatar"].stringValue
-                            //ZZTODO 头像获取可能还有问题
-                            let contact = BBContact(phone: phone, namep: name, photo: UIImage(contentsOfFile: avatar))
-                            if status == 1 {
-                                ConversationViewController.lastOperationItem = item
-                                ReceiveRedPackageVC.displayRedPocket(home: self, delegate: self, contact: contact, operation: op)
-                            }
-                            else {
-                                RobToLateVC.displayRobToLate(home: self, contact: contact, operation: op)
-                            }
+            //需要先查询红包的情况
+            let request = BBRequestFactory.shared.envelopeInfoGet(eid: op.transferID)
+            TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                if let result = obj{
+                    let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                    if let cus = res {
+                        let info = GroupPocket.loadFrom(json: cus)
+                        if info.status == 1 && info.robed.isEmpty{//还没抢
+                            ConversationViewController.lastOperationItem = item
+                            ReceiveRedPackageVC.displayRedPocket(home: self, delegate: self, contact: info.sender, operation: op)
+                        }
+                        else if info.status == 1 {//已经抢过了
+                            let rv = ReceiveGroupPocketDetailVC(groupPocket: info)
+                            let nav = UINavigationController(rootViewController: rv)
+                            self.present(nav, animated: true, completion: nil)
+                        }
+                        else {
+                            RobToLateVC.displayRobToLate(home: self, groupPocket: info, operation: op)
                         }
                     }
-                }) { (task, error) in
-                    BBRequestHelper.showError(error: error)
                 }
+            }) { (task, error) in
+                BBRequestHelper.showError(error: error)
             }
         }
     }
@@ -178,15 +172,7 @@ extension ConversationViewController : TransferAcceptDelegate {
                     let code = BBRequestHelper.parseCodeOnly(object: result)
                     if code == BBCommon.NetCodeSuccess {
                         //发确认消息
-                        let echo = OperationMessage()
-                        echo.type = .transferDone
-                        echo.currencyType = operation.currencyType
-                        echo.value = operation.value
-                        echo.message = operation.message
-                        echo.transferID = operation.transferID
-                        echo.totalNumber = operation.totalNumber
-                        echo.time = Date()
-                        echo.picked = true
+                        let echo = operation.copyAck()
                         self.try(toSendOperationText: echo.getMessageString())
                         self.makeOperationDone()
                     }
@@ -205,15 +191,7 @@ extension ConversationViewController : TransferAcceptDelegate {
                     let code = BBRequestHelper.parseCodeOnly(object: result)
                     if code == BBCommon.NetCodeSuccess {
                         //ZZTODO  要发一条回执消息
-                        let echo = OperationMessage()
-                        echo.type = .redPocketDone
-                        echo.currencyType = operation.currencyType
-                        echo.value = operation.value
-                        echo.message = operation.message
-                        echo.transferID = operation.transferID
-                        echo.totalNumber = operation.totalNumber
-                        echo.time = Date()
-                        echo.picked = true
+                        let echo = operation.copyAck()
                         self.try(toSendOperationText: echo.getMessageString())
                         self.makeOperationDone()
                         let contact = BBContact(thread: self.thread)
@@ -235,24 +213,25 @@ extension ConversationViewController : TransferAcceptDelegate {
                 if let result = obj{
                     let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
                     if let cus = res {
-                        //ZZTODO  要发一条回执消息
+                        //群发红包先只本地记录抢到，不回复给发送者抢的消息
                         let amount = cus["amount"].stringValue
-                        let echo = OperationMessage()
-                        echo.type = .redPocketDone
-                        echo.currencyType = operation.currencyType
-                        echo.value = operation.value
-                        echo.message = operation.message
-                        echo.transferID = operation.transferID
-                        echo.totalNumber = operation.totalNumber
-                        echo.time = Date()
-                        echo.picked = true
-                        self.try(toSendOperationText: echo.getMessageString())
                         self.makeOperationDone()
-                        BBCommon.notice(title: "抢到了 \(amount)")
-                        /*let contact = BBContact(thread: self.thread)
-                        let detail = ReceiverRedPackageDetailVC(contact: contact, operation: operation)
-                        let nav = UINavigationController(rootViewController: detail)
-                        self.present(nav, animated: true, completion: nil)*/
+                        self.sendRedPocketAck(tID: operation.transferID, sender: operation.sender)
+                        
+                        let request = BBRequestFactory.shared.envelopeInfoGet(eid: operation.transferID)
+                        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                            if let result = obj{
+                                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                                if let cus = res {
+                                    let info = GroupPocket.loadFrom(json: cus)
+                                    let rv = ReceiveGroupPocketDetailVC(groupPocket: info)
+                                    let nav = UINavigationController(rootViewController: rv)
+                                    self.present(nav, animated: true, completion: nil)
+                                }
+                            }
+                        }) { (task, error) in
+                            BBRequestHelper.showError(error: error)
+                        }
                     }
                     else {
                         BBCommon.notice(title: "抢红包失败")
@@ -261,6 +240,17 @@ extension ConversationViewController : TransferAcceptDelegate {
             }) { (task, error) in
                 BBRequestHelper.showError(error: error)
             }
+        }
+    }
+    
+    func sendRedPocketAck(tID:String,sender:String){
+        let ack = RedPocketAck()
+        ack.tID = tID
+        ack.sender = sender
+        ack.receiver = TSAccountManager.localNumber()
+        let msg = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread, messageType: .redPocketAck, customMessage: ack.getJsonString())
+        OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite { (trans) in
+            msg.save(with: trans)
         }
     }
 }

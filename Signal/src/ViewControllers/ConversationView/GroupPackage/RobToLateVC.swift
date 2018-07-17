@@ -18,13 +18,13 @@ class RobToLateVC: UIViewController {
     
     @IBOutlet weak var buttonOpenDetail: UIButton!
     
-    var contact:BBContact!
+    var groupPocket:GroupPocket!
     var operation:OperationMessage!
+    var baseVC:UIViewController?
     
-    @objc
-    convenience init(contact:BBContact,operation:OperationMessage){
+    convenience init(groupPocket:GroupPocket,operation:OperationMessage){
         self.init()
-        self.contact = contact
+        self.groupPocket = groupPocket
         self.operation = operation
     }
     
@@ -32,9 +32,12 @@ class RobToLateVC: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        self.labelName.text = contact.name
+        self.labelName.text = groupPocket.sender.name
         self.labelMessage.text = "手慢了，红包派完了"
-        self.imageViewAvator.image = contact.avatar
+        if let ref = groupPocket.sender.avatarRef {
+            let url = URL(string: ref)
+            self.imageViewAvator.kf.setImage(with: url)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -49,12 +52,15 @@ class RobToLateVC: UIViewController {
     
     @IBAction func viewGroupPackageDetail(_ sender: Any) {
         self.dismiss(animated: true) {
-            //TODO
+            let rv = ReceiveGroupPocketDetailVC(groupPocket: self.groupPocket)
+            let nav = UINavigationController(rootViewController: rv)
+            self.baseVC?.present(nav, animated: true, completion: nil)
         }
     }
     
-    static func displayRobToLate(home: UIViewController, contact: BBContact, operation: OperationMessage){
-        let vc = ReceiveRedPackageVC(contact: contact, operation: operation)
+    static func displayRobToLate(home: UIViewController, groupPocket: GroupPocket, operation: OperationMessage){
+        let vc = RobToLateVC(groupPocket: groupPocket, operation: operation)
+        vc.baseVC = home
         let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
         home.present(pd, animated: true, completion: nil)
     }

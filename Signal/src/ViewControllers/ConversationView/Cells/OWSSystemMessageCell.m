@@ -128,6 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
+    if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        if (((TSInfoMessage *)interaction).messageType == TSInfoMessageRedPocketAck) {
+            return nil;
+        }
+    }
     return [UIColor ows_light60Color];
 }
 
@@ -162,6 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
             case TSInfoMessageAddUserToProfileWhitelistOffer:
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
                 result = [UIImage imageNamed:@"system_message_info"];
+                break;
+            case TSInfoMessageRedPocketAck:
+                result = [UIImage imageNamed:@"redPocketS"];
                 break;
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
@@ -232,7 +240,13 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"another device. Embeds {{user's name or phone number}}.")));
             label.text = [NSString stringWithFormat:titleFormat, displayName];
         } else {
-            label.text = [infoMessage previewTextWithTransaction:transaction];
+            RedPocketAck * ack = [RedPocketAck loadFromString:infoMessage.customMessage];
+            if(ack != nil){
+                label.text = [ack redPocketDes];
+            }
+            else {
+                label.text = [infoMessage previewTextWithTransaction:transaction];
+            }
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         TSCall *call = (TSCall *)interaction;

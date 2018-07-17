@@ -37,6 +37,7 @@ class OperationMessage: NSObject {
     static let kType = "type"
     static let kCurrency = "cType"
     static let kValue = "value"
+    static let kSender = "sender"
     static let kMessage = "msg"
     static let kTransferID = "tID"
     static let kTotalNumber = "num"
@@ -46,6 +47,7 @@ class OperationMessage: NSObject {
     var type:OperationType = .transfer //类型，
     var currencyType:String! //币种ID
     var value:String! //数量
+    var sender:String! //发送者的ID
     var message:String! //附言
     var transferID:String! //红包ID
     var totalNumber:Int = 1
@@ -61,6 +63,7 @@ class OperationMessage: NSObject {
             op.type = OperationType(rawValue: json[kType].stringValue) ?? .transfer
             op.currencyType = json[kCurrency].stringValue
             op.value = json[kValue].stringValue
+            op.sender = json[kSender].stringValue
             op.message = json[kMessage].stringValue
             op.transferID = json[kTransferID].stringValue
             op.totalNumber = json[kTotalNumber].intValue
@@ -76,6 +79,7 @@ class OperationMessage: NSObject {
         json[OperationMessage.kType].string = type.rawValue
         json[OperationMessage.kCurrency].string = currencyType
         json[OperationMessage.kValue].string = value
+        json[OperationMessage.kSender].string = sender
         json[OperationMessage.kMessage].string = message
         json[OperationMessage.kTransferID].string = transferID
         json[OperationMessage.kTotalNumber].string = "\(totalNumber)"
@@ -85,6 +89,19 @@ class OperationMessage: NSObject {
         return json.rawString() ?? json.stringValue
     }
     
+    @objc func copyAck() -> OperationMessage{
+        let ack = OperationMessage()
+        ack.type = self.type == .transfer ? .transferDone : .redPocketDone
+        ack.currencyType = self.currencyType
+        ack.value = self.value
+        ack.message = self.message
+        ack.transferID = self.transferID
+        ack.totalNumber = self.totalNumber
+        ack.time = Date()
+        ack.picked = true
+        return ack
+    }
+
     @objc
     static let exampleMessage = "{ \"type\":\"2\",\"cType\":\"100\",\"value\":\"100.0\",\"msg\":\"hello world\",\"tID\":\"29394\",\"num\":\"1\"}"
     

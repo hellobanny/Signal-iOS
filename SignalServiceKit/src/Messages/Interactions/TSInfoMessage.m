@@ -145,6 +145,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
             return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
                 @"Message shown in conversation view that offers to share your profile with a group.");
+        case TSInfoMessageRedPocketAck:
+            return @"领取了红包";
         default:
             break;
     }

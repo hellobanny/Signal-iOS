@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 - (void)popKeyBoard;
 - (void)tryToSendOperationText:(NSString *) opText;
+- (void)tryToSendRedPocketAck:(NSString *) ackText;
 - (void)makeConversationItemPicked:(ConversationViewItem *)viewItem;
 
 #pragma mark 3D Touch Methods

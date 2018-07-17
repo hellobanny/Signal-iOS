@@ -1925,6 +1925,8 @@ typedef enum : NSUInteger {
         case TSInfoMessageVerificationStateChange:
             [self showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message).recipientId];
             break;
+        case TSInfoMessageRedPocketAck:
+            break;
     }
 
     DDLogInfo(@"%@ Unhandled tap for info message:%@", self.logTag, message);
@@ -4502,6 +4504,21 @@ typedef enum : NSUInteger {
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
     }
+}
+
+- (void)tryToSendRedPocketAck:(NSString *) ackText{
+    /*TSMessage * message = [[TSMessage alloc] initMessageWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:self.thread messageBody:ackText attachmentIds:@[] expiresInSeconds:0 expireStartedAt:0 quotedMessage:nil contactShare:nil];
+    [self.messageSender enqueueMessage:message
+                               success:^{
+                                   DDLogDebug(@"%@ Successfully sent group update", self.logTag);
+                                   if (successCompletion) {
+                                       successCompletion();
+                                   }
+                               }
+                               failure:^(NSError *error) {
+                                   DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
+                               }];*/
+    
 }
 
 #pragma mark - ConversationInputToolbarDelegate

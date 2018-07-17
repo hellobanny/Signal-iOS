@@ -27,8 +27,9 @@ class LuckyGuyCell: UITableViewCell {
     }
     
     func config(guy:LuckyGuy,cid:String){
-        avatarIV.image = guy.contact.avatar
-        nameLabel.text = guy.contact.name
+        let url = URL(string: guy.avatarRef)
+        avatarIV.kf.setImage(with: url)
+        nameLabel.text = guy.name
         valueLabel.text = BBCurrencyCache.shared.getValueString(cid: cid, value: guy.amount)
         noteLabel.text = guy.thanks
         timeLabel.text = BBTimeFT.shared.shortTimeString(time: guy.robTime)

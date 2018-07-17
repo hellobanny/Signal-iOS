@@ -171,6 +171,7 @@ extension TransferInputVC: InputPaywordDelegate{
                         op.type = .transfer
                         op.currencyType = cid
                         op.value = txt
+                        op.sender = TSAccountManager.localNumber()
                         op.message = self.memo ?? ""
                         op.transferID = tid
                         op.time = Date()

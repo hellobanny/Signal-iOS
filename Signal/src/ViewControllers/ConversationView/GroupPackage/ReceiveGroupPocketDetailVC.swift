@@ -9,12 +9,16 @@
 import UIKit
 
 class ReceiveGroupPocketDetailVC: UIViewController {
+    let BigHeight:CGFloat = 240
+    let SmallHeight:CGFloat = 160
     
-    var operation:OperationMessage!
+    @IBOutlet weak var tableView:UITableView!
     
-    convenience init(operation:OperationMessage){
+    var groupPocket:GroupPocket!
+    
+    convenience init(groupPocket:GroupPocket){
         self.init()
-        self.operation = operation
+        self.groupPocket = groupPocket
     }
     
     override func viewDidLoad() {
@@ -28,20 +32,6 @@ class ReceiveGroupPocketDetailVC: UIViewController {
     @objc func close(){
         self.dismiss(animated: true, completion: nil)
     }
-
-    func loadEnvelopeInfoGet(){
-        let request = BBRequestFactory.shared.envelopeInfoGet(eid: operation.transferID)
-        TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
-            if let result = obj{
-                let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
-                if let cus = res {
-                    
-                }
-            }
-        }) { (task, error) in
-            BBRequestHelper.showError(error: error)
-        }
-    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -51,13 +41,52 @@ class ReceiveGroupPocketDetailVC: UIViewController {
 }
 
 extension ReceiveGroupPocketDetailVC: UITableViewDelegate,UITableViewDataSource{
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        if section == 0 {
+            return 1
+        }
+        return groupPocket.luckyGuys.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "FriendCell")
-        return cell
+        let sec = indexPath.section
+        let row = indexPath.row
+        if sec == 0 {
+            let cellnib = Bundle.main.loadNibNamed("HeadViewCell", owner: self, options: nil)
+            let cell = cellnib?.first! as! HeadViewCell
+            cell.update(sender: groupPocket.sender, message: groupPocket.message, cid: groupPocket.currency.cid, robed: groupPocket.robed)
+            return cell
+        }
+        else {
+            let cellnib = Bundle.main.loadNibNamed("LuckyGuyCell", owner: self, options: nil)
+            let cell = cellnib?.first! as! LuckyGuyCell
+            if let gp = self.groupPocket {
+                let guy = gp.luckyGuys[row]
+                cell.config(guy: guy, cid: gp.currency.cid)
+            }
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return nil
+        }
+        else {
+            return "1/5"
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let sec = indexPath.section
+        if sec == 0 {
+            return groupPocket.robed.isEmpty ? SmallHeight : BigHeight
+        }
+        return 68.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

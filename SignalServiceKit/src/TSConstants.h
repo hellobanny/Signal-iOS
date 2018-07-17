@@ -30,11 +30,11 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 /*
 //47.96.76.141
-#define textSecureWebSocketAPI @"ws://47.96.76.141/v1/websocket/"
-#define textSecureServerURL @"http://47.96.76.141/"
-#define textSecureCDNServerURL @"http://47.96.76.141"
-#define textSecureServiceReflectorHost @"textsecure-service-reflected.47.96.76.141"
-#define textSecureCDNReflectorHost @"textsecure-service-reflected.47.96.76.141"
+#define textSecureWebSocketAPI @"ws://52.194.115.31/v1/websocket/"
+#define textSecureServerURL @"http://52.194.115.31/"
+#define textSecureCDNServerURL @"http://52.194.115.31"
+#define textSecureServiceReflectorHost @"textsecure-service-reflected.52.194.115.31"
+#define textSecureCDNReflectorHost @"textsecure-service-reflected.52.194.115.31"
  */
 // Production
 /*#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"

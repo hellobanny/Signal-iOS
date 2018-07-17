@@ -143,6 +143,7 @@ extension SendRedPackageVC: InputPaywordDelegate{
                         op.type = .redPocket
                         op.currencyType = cid
                         op.value = txt
+                        op.sender = TSAccountManager.localNumber()
                         op.message = msg
                         op.transferID = tid
                         op.time = Date()
