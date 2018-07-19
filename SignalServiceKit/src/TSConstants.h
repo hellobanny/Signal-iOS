@@ -19,7 +19,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 #define kLegalTermsUrlString @"https://signal.org/legal/"
 #define SHOW_LEGAL_TERMS_LINK
-
+/*
 //#ifndef DEBUG
 //10.35.11.134  8080  8001 8080
 #define textSecureWebSocketAPI @"ws://10.35.11.134/v1/websocket/"
@@ -27,15 +27,15 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureCDNServerURL @"http://10.35.11.134"
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.10.35.11.134"
 #define textSecureCDNReflectorHost @"textsecure-service-reflected.10.35.11.134"
+*/
 
-/*
 //47.96.76.141
 #define textSecureWebSocketAPI @"ws://52.194.115.31/v1/websocket/"
 #define textSecureServerURL @"http://52.194.115.31/"
 #define textSecureCDNServerURL @"http://52.194.115.31"
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.52.194.115.31"
 #define textSecureCDNReflectorHost @"textsecure-service-reflected.52.194.115.31"
- */
+
 // Production
 /*#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
 #define textSecureServerURL @"https://textsecure-service.whispersystems.org/"

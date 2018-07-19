@@ -489,6 +489,7 @@
 		51A9649220DB408C0058B4F4 /* CALayer+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */; };
 		51EA8C9320FDD6EC003AF038 /* HeadViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA8C9120FDD6EC003AF038 /* HeadViewCell.swift */; };
 		51EA8C9420FDD6EC003AF038 /* HeadViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51EA8C9220FDD6EC003AF038 /* HeadViewCell.xib */; };
+		51EA8C9620FF1160003AF038 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA8C9520FF1160003AF038 /* HomeViewController.swift */; };
 		51EFE9A620DBAC210068CEED /* BBCurrencyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */; };
 		51EFE9A820DCCDF80068CEED /* BBNumberFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */; };
 		51EFE9AA20DCDBD90068CEED /* PaywordHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */; };
@@ -1235,6 +1236,7 @@
 		51A9649120DB408C0058B4F4 /* CALayer+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Animation.swift"; sourceTree = "<group>"; };
 		51EA8C9120FDD6EC003AF038 /* HeadViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadViewCell.swift; sourceTree = "<group>"; };
 		51EA8C9220FDD6EC003AF038 /* HeadViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeadViewCell.xib; sourceTree = "<group>"; };
+		51EA8C9520FF1160003AF038 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		51EFE9A520DBAC210068CEED /* BBCurrencyCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCurrencyCache.swift; sourceTree = "<group>"; };
 		51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNumberFT.swift; sourceTree = "<group>"; };
 		51EFE9A920DCDBD90068CEED /* PaywordHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywordHelper.swift; sourceTree = "<group>"; };
@@ -1593,6 +1595,7 @@
 				34386A50207D0C01009F5D9C /* HomeViewCell.m */,
 				34386A4F207D0C01009F5D9C /* HomeViewController.h */,
 				34386A4D207D0C01009F5D9C /* HomeViewController.m */,
+				51EA8C9520FF1160003AF038 /* HomeViewController.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 			);
 			path = HomeView;
@@ -3640,6 +3643,7 @@
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				5158E15E20E9CFFA001DCA4E /* SendRedPackageVC.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
+				51EA8C9620FF1160003AF038 /* HomeViewController.swift in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				5158E16220E9D037001DCA4E /* SenderRedPackageDetailVC.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,

@@ -378,6 +378,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             DDLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
         }
     }];
+    
+    [[BBCurrencyCache shared] loadCurrency];
 }
 
 - (void)applyDefaultBackButton
@@ -479,16 +481,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     else if (index == 1){
         
     }
-    else if (index == 2){
-        /*ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
-        saq.isScan = TRUE;
-        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
-        [self presentViewController:nav animated:TRUE completion:NULL];*/
-    }
-    else if (index == 3){
-        /*ScanAndQRCodeVC * saq = [[ScanAndQRCodeVC alloc] initWithNibName:@"ScanAndQRCodeVC" bundle:NULL];
-        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:saq];
-        [self presentViewController:nav animated:TRUE completion:NULL];*/
+    else if (index == 2 || index == 3){
+        [self loadQRcodeScanVCWithScan:index == 2];
     }
 }
 

@@ -21,7 +21,6 @@ class TransferDetailVC: UIViewController {
     convenience init(operation:OperationMessage){
         self.init()
         self.operation = operation
-        timeLabel.toSmallLabel()
     }
     
     override func viewDidLoad() {
@@ -32,6 +31,7 @@ class TransferDetailVC: UIViewController {
         df.timeStyle = .short
         df.dateStyle = .short
         self.timeLabel.text = "时间: " + df.string(from: operation.time)
+        timeLabel.toSmallLabel()
         queryTransferStatus()
         hintLabel.text = ""
         statusLabel.text = ""

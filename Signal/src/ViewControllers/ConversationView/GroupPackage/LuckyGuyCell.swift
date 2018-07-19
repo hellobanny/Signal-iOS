@@ -31,7 +31,14 @@ class LuckyGuyCell: UITableViewCell {
         avatarIV.kf.setImage(with: url)
         nameLabel.text = guy.name
         valueLabel.text = BBCurrencyCache.shared.getValueString(cid: cid, value: guy.amount)
-        noteLabel.text = guy.thanks
+        if guy.thanks.isEmpty && guy.name == OWSProfileManager.shared().localProfileName() {
+            noteLabel.text = "留言"
+            noteLabel.textColor = UIColor.blue
+        }
+        else {
+            noteLabel.text = guy.thanks
+            noteLabel.textColor = UIColor.gray
+        }
         timeLabel.text = BBTimeFT.shared.shortTimeString(time: guy.robTime)
     }
 }

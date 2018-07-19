@@ -10,7 +10,7 @@ import UIKit
 import ZXingObjC
 
 protocol ScanAddressDelegate {
-    func didFinishScan(viewController:UIViewController,text:String)
+    func didFinishScan(viewController:ScanAndQRCodeVC,text:String)
 }
 
 @objc(ScanAndQRCodeVC)
@@ -32,24 +32,30 @@ class ScanAndQRCodeVC: UIViewController {
     var isCaptureEnabled = false
     var maskingView:UIView?
     
-    var myaddress = "0x7913d361B2eF28195b99726E930f163BE3801ac4"
-    var cid:String!
+    var currency:BBCurrency!
     
-    convenience init(cid:String,address:String,isScan:Bool){
+    convenience init(currency:BBCurrency,isScan:Bool){
         self.init()
-        self.cid = cid
-        self.myaddress = address
+        self.currency = currency
+        self.checkCurrencyAddress()
         self.isScan = isScan
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(ScanAndQRCodeVC.close))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: currency.name, style: .done, target: self, action: #selector(ScanAndQRCodeVC.switchCurrency))
         self.viewQRCode.backgroundColor = BBCommon.ColorBlack
     }
     
     @objc func close(){
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func switchCurrency(){
+        let cc = ChooseCurrencyTC()
+        cc.delegate = self
+        self.navigationController?.pushViewController(cc, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,32 +73,62 @@ class ScanAndQRCodeVC: UIViewController {
         capture?.layer.removeFromSuperlayer()
     }
     
+    @discardableResult func checkCurrencyAddress() -> Bool{
+        if currency.waddress?.isEmpty ?? true {
+            let request = BBRequestFactory.shared.memberAsset(cid: currency.cid)
+            TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
+                if let result = obj{
+                    let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
+                    if let detail = res{
+                        if let cur = BBCurrency.currencyFrom(json: detail) {
+                            self.currency = cur
+                            BBCurrencyCache.shared.update(currency: cur)
+                            self.changeMode(scan: self.isScan)
+                        }
+                    }
+                }
+            }) { (task, error) in
+                BBRequestHelper.showError(error: error)
+            }
+            return false
+        }
+        else {
+            return true
+        }
+    }
+    
     func changeMode(scan:Bool)
     {
         isScan = scan
         viewQRCode.isHidden = isScan
         viewScan.isHidden = !isScan
         self.title = isScan ? "扫一扫" : "我的二维码"
-        if isScan{
-            loadScanVC()
-        }
-        else{
-            loadQRCodeImage()
+        if isViewLoaded {
+            if isScan{
+                loadScanVC()
+            }
+            else{
+                loadQRCodeImage()
+            }
         }
     }
     
     func loadQRCodeImage() {
-        do {
-            let writer = ZXMultiFormatWriter()
-            let result = try writer.encode(myaddress, format: kBarcodeFormatQRCode, width: 480, height: 480)
-            imageViewQR.image = UIImage(cgImage: ZXImage(matrix: result).cgimage)
-            if let cur = BBCurrencyCache.shared.getCurrencyby(cid: self.cid) {
-                self.labelIconTitle.text = cur.name
-                let url = URL(string: cur.iconURL)
-                self.imageIcon.kf.setImage(with: url)
+        if let address = currency.waddress {
+            if !address.isEmpty {
+                do {
+                    let writer = ZXMultiFormatWriter()
+                    let result = try writer.encode(address, format: kBarcodeFormatQRCode, width: 480, height: 480)
+                    imageViewQR.image = UIImage(cgImage: ZXImage(matrix: result).cgimage)
+                    if let cur = BBCurrencyCache.shared.getCurrencyby(cid: currency.cid) {
+                        self.labelIconTitle.text = cur.name
+                        let url = URL(string: cur.iconURL)
+                        self.imageIcon.kf.setImage(with: url)
+                    }
+                } catch {
+                    
+                }
             }
-        } catch {
-            
         }
     }
     
@@ -158,6 +194,16 @@ class ScanAndQRCodeVC: UIViewController {
         changeMode(scan: false)
     }
     
+}
+
+extension ScanAndQRCodeVC: ChooseCurrencyDelegate{
+    func userChoose(currency: BBCurrency) {
+        self.currency = currency
+        if self.checkCurrencyAddress() {
+            changeMode(scan: isScan)
+        }
+        self.navigationItem.rightBarButtonItem?.title = currency.name
+    }
 }
 
 extension ScanAndQRCodeVC:ZXCaptureDelegate{

@@ -529,7 +529,6 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
-    [[BBCurrencyCache shared] loadCurrency];
 }
 
 - (void)loadView

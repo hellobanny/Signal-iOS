@@ -116,8 +116,8 @@ class CurrencyDetailVC: UIViewController {
     }
     
     func loadScanAndQRCodeVC(scan:Bool) {
-        if let address = self.currency?.waddress {
-            let sqv = ScanAndQRCodeVC(cid: cid, address: address, isScan: scan)
+        if let _ = self.currency?.waddress {
+            let sqv = ScanAndQRCodeVC(currency: self.currency!, isScan: scan)
             sqv.scanAddressDelegate = self
             let nav = UINavigationController(rootViewController: sqv)
             self.present(nav, animated: true, completion: nil)
@@ -153,7 +153,7 @@ class CurrencyDetailVC: UIViewController {
 }
 
 extension CurrencyDetailVC:ScanAddressDelegate{
-    func didFinishScan(viewController: UIViewController, text: String) {
+    func didFinishScan(viewController: ScanAndQRCodeVC, text: String) {
         print("Scan result: \(text)")
         viewController.dismiss(animated: false, completion: nil)
         let request = BBRequestFactory.shared.qrcodeAttr(address: text)
