@@ -45,14 +45,14 @@
                                 <action selector="showMyQRCode:" destination="-1" eventType="touchUpInside" id="3fh-po-1C7"/>
                             </connections>
                         </button>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="eth.png" translatesAutoresizingMaskIntoConstraints="NO" id="Flc-mK-76q">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Flc-mK-76q">
                             <rect key="frame" x="147" y="64" width="80" height="80"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="80" id="NSf-Du-H2C"/>
                                 <constraint firstAttribute="height" constant="80" id="UPN-EZ-O9b"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="我的ETH" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gjh-eS-l8b">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="---" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gjh-eS-l8b">
                             <rect key="frame" x="127" y="160" width="120" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="21" id="ERx-W5-t6P"/>
@@ -61,7 +61,7 @@
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10.1234" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="BfY-xZ-mBY">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--.--" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="BfY-xZ-mBY">
                             <rect key="frame" x="37" y="189" width="300" height="50"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="300" id="2r1-eI-Ghf"/>
@@ -71,7 +71,7 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="价值：￥40000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z8y-5Q-wub">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="----" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z8y-5Q-wub">
                             <rect key="frame" x="197.5" y="274" width="160" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="160" id="5pl-lg-YrM"/>
@@ -91,7 +91,7 @@
                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="行情价：￥4000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ekw-9Z-mmb">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="----" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ekw-9Z-mmb">
                             <rect key="frame" x="17.5" y="274" width="160" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="160" id="gxO-Zy-VFX"/>
@@ -195,6 +195,5 @@
     <resources>
         <image name="QRCode" width="92" height="38"/>
         <image name="Scan" width="92" height="38"/>
-        <image name="eth.png" width="225" height="225"/>
     </resources>
 </document>
