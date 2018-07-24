@@ -479,7 +479,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [self.navigationController pushViewController:newGroupViewController animated:YES];
     }
     else if (index == 1){
-        
+        TestConversationVC *newGroupViewController = [TestConversationVC new];
+        [self.navigationController pushViewController:newGroupViewController animated:YES];
     }
     else if (index == 2 || index == 3){
         [self loadQRcodeScanVCWithScan:index == 2];

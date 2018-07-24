@@ -214,7 +214,6 @@ extension ConversationViewController : TransferAcceptDelegate {
                     let (res,_) = BBRequestHelper.parseSuccessResult(object: result)
                     if let cus = res {
                         //群发红包先只本地记录抢到，不回复给发送者抢的消息
-                        let amount = cus["amount"].stringValue
                         self.makeOperationDone()
                         self.sendRedPocketAck(tID: operation.transferID, sender: operation.sender)
                         

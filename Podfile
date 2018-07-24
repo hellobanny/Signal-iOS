@@ -45,6 +45,12 @@ target 'Signal' do
   pod 'MJRefresh', :inhibit_warnings => true
   pod 'SnapKit', '~> 4.0.0'
   pod 'SwiftDate'
+  pod 'Dollar', '7.1.0'
+  pod 'RxSwift', '~> 4.0'
+  pod 'RxCocoa', '~> 4.0'
+  pod 'RxBlocking', '~> 4.0'
+  pod 'Cent', '7.0.0'
+  pod 'TimedSilver', '1.1.0'
   target 'SignalTests' do
     inherit! :search_paths
   end
