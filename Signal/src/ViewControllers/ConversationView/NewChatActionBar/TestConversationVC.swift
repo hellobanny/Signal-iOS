@@ -569,6 +569,10 @@ extension TestConversationVC: TSChatActionBarViewDelegate {
 
 extension TestConversationVC: ChatShareMoreViewDelegate {
     
+    func userClickShareViewAt(index: IndexPath) {
+        
+    }
+    
     //选择打开相册
     func chatShareMoreViewPhotoTaped() {
        

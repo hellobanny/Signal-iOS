@@ -16,6 +16,7 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
+#import <YYText/YYText.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *senderNameLabel;
 
-@property (nonatomic) OWSMessageTextView *bodyTextView;
+@property (nonatomic) YYTextView *bodyTextView;
 
 @property (nonatomic, nullable) UIView *quotedMessageView;
 
@@ -103,16 +104,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerView = [OWSMessageFooterView new];
 }
 
-- (OWSMessageTextView *)newTextView
+- (YYTextView *)newTextView
 {
-    OWSMessageTextView *textView = [OWSMessageTextView new];
+    YYTextView *textView = [YYTextView new];
     textView.backgroundColor = [UIColor clearColor];
     textView.opaque = NO;
     textView.editable = NO;
     textView.selectable = YES;
     textView.textContainerInset = UIEdgeInsetsZero;
     textView.contentInset = UIEdgeInsetsZero;
-    textView.textContainer.lineFragmentPadding = 0;
+    //textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
     return textView;
 }
@@ -657,7 +658,7 @@ NS_ASSUME_NONNULL_BEGIN
                 shouldIgnoreEvents:shouldIgnoreEvents];
 }
 
-+ (void)loadForTextDisplay:(OWSMessageTextView *)textView
++ (void)loadForTextDisplay:(YYTextView *)textView
                       text:(NSString *)text
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
@@ -672,10 +673,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSForegroundColorAttributeName : textColor,
         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
     };
-    textView.shouldIgnoreEvents = shouldIgnoreEvents;
+    //textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
     // For perf, set text last. Otherwise changing font/color is more expensive.
-    textView.text = text;
+    //textView.text = text;
+    textView.attributedText = [ConversationViewController parseTextWithText:text font:font];
 }
 
 - (BOOL)shouldShowSenderName

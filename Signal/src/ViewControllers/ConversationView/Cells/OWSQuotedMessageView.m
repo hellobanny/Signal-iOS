@@ -14,6 +14,7 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
+#import <YYText/YYText.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isOutgoing;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
-@property (nonatomic, readonly) UILabel *quotedTextLabel;
+@property (nonatomic, readonly) YYLabel *quotedTextLabel;
 
 @end
 
@@ -89,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isOutgoing = isOutgoing;
 
     _quotedAuthorLabel = [UILabel new];
-    _quotedTextLabel = [UILabel new];
+    _quotedTextLabel = [YYLabel new];
 
     return self;
 }
@@ -207,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     [quotedAuthorLabel setContentHuggingHorizontalLow];
     [quotedAuthorLabel setCompressionResistanceHorizontalLow];
 
-    UILabel *quotedTextLabel = [self configureQuotedTextLabel];
+    YYLabel *quotedTextLabel = [self configureQuotedTextLabel];
     [vStackView addArrangedSubview:quotedTextLabel];
     [quotedTextLabel setContentHuggingLow];
     [quotedTextLabel setCompressionResistanceLow];
@@ -320,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
     return imageView;
 }
 
-- (UILabel *)configureQuotedTextLabel
+- (YYLabel *)configureQuotedTextLabel
 {
     OWSAssert(self.quotedTextLabel);
 
@@ -352,9 +353,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.quotedTextLabel.text = text;
+    self.quotedTextLabel.attributedText = [ConversationViewController parseTextWithText:text font:font];
+    //self.quotedTextLabel.text = text;
     self.quotedTextLabel.textColor = textColor;
-    self.quotedTextLabel.font = font;
+    //self.quotedTextLabel.font = font;
 
     return self.quotedTextLabel;
 }
@@ -472,7 +474,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     {
-        UILabel *quotedTextLabel = [self configureQuotedTextLabel];
+        YYLabel *quotedTextLabel = [self configureQuotedTextLabel];
 
         CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
         textWidth = MAX(textWidth, textSize.width);

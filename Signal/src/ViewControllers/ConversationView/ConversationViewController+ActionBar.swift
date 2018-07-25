@@ -12,50 +12,157 @@ import RxSwift
 import RxCocoa
 import MobileCoreServices
 
-@objc
-class ConversationViewController: UIViewController {
+private var chatABVKey: UInt8 = 0
+private var actionBPBCKey: UInt8 = 1
+private var keyboardHCKey: UInt8 = 2
+private var emotionIVKey:  UInt8 = 3
+private var shareMVKey:    UInt8 = 4
+private var voiceIVKey:    UInt8 = 5
+private var disposeKey:    UInt8 = 5
+private var replyModelKey:    UInt8 = 6
+
+let ReplyKeyword = "[回复]"
+
+func associatedObject<ValueType: AnyObject>(
+    base: AnyObject,
+    key: UnsafePointer<UInt8>,
+    initialiser: () -> ValueType)
+    -> ValueType {
+        if let associated = objc_getAssociatedObject(base, key)
+            as? ValueType { return associated }
+        let associated = initialiser()
+        objc_setAssociatedObject(base, key, associated,
+                                 .OBJC_ASSOCIATION_RETAIN)
+        return associated
+}
+
+func associateObject<ValueType: AnyObject>(
+    base: AnyObject,
+    key: UnsafePointer<UInt8>,
+    value: ValueType) {
+    objc_setAssociatedObject(base, key, value,
+                             .OBJC_ASSOCIATION_RETAIN)
+}
+
+func associatedNullableObject<ValueType: AnyObject>(
+    base: AnyObject,
+    key: UnsafePointer<UInt8>,
+    initialiser: () -> ValueType?)
+    -> ValueType? {
+        if let associated = objc_getAssociatedObject(base, key)
+            as? ValueType { return associated }
+        let associated = initialiser()
+        objc_setAssociatedObject(base, key, associated,
+                                 .OBJC_ASSOCIATION_RETAIN)
+        return associated
+}
+
+func associateNullableObject<ValueType: AnyObject>(
+    base: AnyObject,
+    key: UnsafePointer<UInt8>,
+    value: ValueType?) {
+    objc_setAssociatedObject(base, key, value,
+                             .OBJC_ASSOCIATION_RETAIN)
+}
+
+//MARK: 定义变量和向OC暴露的接口
+extension ConversationViewController {
+
+    var chatActionBarView: TSChatActionBarView! { //action bar
+        get {
+            return associatedObject(base: self, key: &chatABVKey, initialiser: {
+                return TSChatActionBarView()
+            })
+        }
+        set { associateObject(base: self, key: &chatABVKey, value: newValue) }
+    }
+    var actionBarPaddingBottomConstranit: Constraint?{ //action bar 的 bottom Constraint
+        get {
+            return associatedNullableObject(base: self, key: &actionBPBCKey, initialiser: {
+                return nil
+            })
+        }
+        set { associateNullableObject(base: self, key: &actionBPBCKey, value: newValue) }
+    }
+    var keyboardHeightConstraint: NSLayoutConstraint?{  //键盘高度的 Constraint
+        get {
+            return associatedNullableObject(base: self, key: &keyboardHCKey, initialiser: {
+                return nil
+            })
+        }
+        set { associateNullableObject(base: self, key: &keyboardHCKey, value: newValue) }
+    }
+    var emotionInputView: TSChatEmotionInputView!{ //表情键盘
+        get {
+            return associatedObject(base: self, key: &emotionIVKey, initialiser: {
+                return UIView.ts_viewFromNib(TSChatEmotionInputView.self)
+            })
+        }
+        set { associateObject(base: self, key: &emotionIVKey, value: newValue) }
+    }
+    var shareMoreView: TSChatShareMoreView!{    //分享键盘
+        get {
+            return associatedObject(base: self, key: &shareMVKey, initialiser: {
+                return TSChatShareMoreView()
+            })
+        }
+        set { associateObject(base: self, key: &shareMVKey, value: newValue) }
+    }
     
-    var chatActionBarView: TSChatActionBarView!  //action bar
-    var actionBarPaddingBottomConstranit: Constraint? //action bar 的 bottom Constraint
-    var keyboardHeightConstraint: NSLayoutConstraint?  //键盘高度的 Constraint
-    var emotionInputView: TSChatEmotionInputView! //表情键盘
-    var shareMoreView: TSChatShareMoreView!    //分享键盘
-    var voiceIndicatorView: TSChatVoiceIndicatorView! //声音的显示 View
-    let disposeBag = DisposeBag()
+    var voiceIndicatorView: TSChatVoiceIndicatorView!{ //声音的显示 View
+        get {
+            return associatedObject(base: self, key: &voiceIVKey, initialiser: {
+                return TSChatVoiceIndicatorView()
+            })
+        }
+        set { associateObject(base: self, key: &voiceIVKey, value: newValue) }
+    }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
+    var disposeBag: DisposeBag!{ //声音的显示 View
+        get {
+            return associatedObject(base: self, key: &disposeKey, initialiser: {
+                return DisposeBag()
+            })
+        }
+        set { associateObject(base: self, key: &disposeKey, value: newValue) }
+    }
+    
+    var quotedReply: OWSQuotedReplyModel?{  //引用的回复消息
+        get {
+            return associatedNullableObject(base: self, key: &replyModelKey, initialiser: {
+                return nil
+            })
+        }
+        set { associateNullableObject(base: self, key: &replyModelKey, value: newValue) }
+    }
+    
+    @objc func callAfterViewDidLoad(){
         setupSubviews(self)
         keyboardControl()
         setupActionBarButtonInterAction()
+    }
+    
+    //设置回复的标识，在输入的文字前面加入 ReplyKeyword [回复] ,不重复插入
+    @objc func setReplyModel(replyModel:OWSQuotedReplyModel){
+        self.quotedReply = replyModel
+        if !self.chatActionBarView.inputTextView.text.hasPrefix(ReplyKeyword){
+            let text = ReplyKeyword + chatActionBarView.inputTextView.text
+            self.chatActionBarView.inputTextView.text = text
+        }
+        chatActionBarView.inputTextView.becomeFirstResponder()
+    }
+    
+    @objc func getQuotedReplyModel() -> OWSQuotedReplyModel? {
+        return self.quotedReply
+    }
+
+    @objc class func parseText(text:String,font:UIFont) -> NSMutableAttributedString?{
         
-        // Do any additional setup after loading the view.
+        return TSChatTextParser.parseText(text, font: font)
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = true
-        
-    }
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
 }
 
+//MARK: 控件初始化
 extension ConversationViewController {
     /**
      初始化操作栏的 button 事件。包括 声音按钮，录音按钮，表情按钮，分享按钮 等各种事件的交互
@@ -94,6 +201,7 @@ extension ConversationViewController {
             if longTap.state == .began { //长按开始
                 finishRecording = true
                 strongSelf.voiceIndicatorView.recording()
+                strongSelf.voiceMemoGestureDidStart()
                 //ZZTODO AudioRecordInstance.startRecord()
                 recordButton.replaceRecordButtonUI(isRecording: true)
             } else if longTap.state == .changed { //长按平移
@@ -108,8 +216,10 @@ extension ConversationViewController {
             } else if longTap.state == .ended { //长按结束
                 if finishRecording {
                     //ZZTODO AudioRecordInstance.stopRecord()
+                    strongSelf.voiceMemoGestureDidEnd()
                 } else {
                     //ZZTODO AudioRecordInstance.cancelRrcord()
+                    strongSelf.voiceMemoGestureDidCancel()
                 }
                 strongSelf.voiceIndicatorView.endRecord()
                 recordButton.replaceRecordButtonUI(isRecording: false)
@@ -195,16 +305,21 @@ extension ConversationViewController {
                 return
             }
             
-            let text = textView.text.trimmingCharacters(in: CharacterSet.whitespaces)
+            var text = textView.text.trimmingCharacters(in: CharacterSet.whitespaces)
             if text.length == 0 {
                 BBCommon.notice(title: "不能发送空白消息")
                 return
             }
             
-            let string = strongSelf.chatActionBarView.inputTextView.text
-            //ZZTODO 发送文字内容
-            
+            if text.hasPrefix(ReplyKeyword) && self?.quotedReply != nil {
+                text.removeFirst(ReplyKeyword.count)
+            }
+            else {
+                self?.quotedReply = nil
+            }
+            self?.try(toSendTextMessage: text, updateKeyboardState: true)
             textView.text = "" //发送完毕后清空
+            self?.quotedReply = nil
             
             strongSelf.textViewDidChange(strongSelf.chatActionBarView.inputTextView)
         })
@@ -232,7 +347,7 @@ extension ConversationViewController: ChatEmotionInputViewDelegate {
 
 // MARK: - @protocol UITextViewDelegate
 extension ConversationViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             //点击发送文字，包含表情
             self.chatSendText()
@@ -241,7 +356,7 @@ extension ConversationViewController: UITextViewDelegate {
         return true
     }
     
-    func textViewDidChange(_ textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
         let contentHeight = textView.contentSize.height
         guard contentHeight < kChatActionBarTextViewMaxHeight else {
             return
@@ -251,7 +366,7 @@ extension ConversationViewController: UITextViewDelegate {
         self.controlExpandableInputView(showExpandable: true)
     }
     
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         //设置键盘类型，响应 UIKeyboardWillShowNotification 事件
         self.chatActionBarView.inputTextViewCallKeyboard()
         
@@ -313,6 +428,9 @@ extension ConversationViewController {
         
         //shareMoreView init
         self.shareMoreView = UIView.ts_viewFromNib(TSChatShareMoreView.self)
+        if self.thread.isGroupThread(){
+            shareMoreView.changeToGroupShareView()
+        }
         self.shareMoreView!.delegate = self
         self.view.addSubview(self.shareMoreView)
         self.shareMoreView.snp.makeConstraints {[weak self] (make) -> Void in
@@ -344,7 +462,7 @@ extension ConversationViewController {
 
 // MARK: - UIGestureRecognizerDelegate
 extension ConversationViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         //弹出键盘后，避免按钮的点击事件被listTableView的手势拦截而不执行，例如播放语音
         if touch.view is UIButton {
             return false
@@ -571,6 +689,29 @@ extension ConversationViewController: TSChatActionBarViewDelegate {
 }
 
 extension ConversationViewController: ChatShareMoreViewDelegate {
+    
+    func userClickShareViewAt(index: IndexPath) {
+        let row = index.row
+        if row == 0 {//照片
+            self.chooseFromLibraryAsMedia()
+        }
+        else if row == 1 {//拍照
+            self.takePictureOrVideo()
+        }
+        if self.thread.isGroupThread(){
+            if row == 2 {
+                self.startSendGroupPocket()
+            }
+        }
+        else {
+            if row == 2{
+                self.startSendRedPocket()
+            }
+            else if row == 3{
+                self.startTransfer()
+            }
+        }
+    }
     
     //选择打开相册
     func chatShareMoreViewPhotoTaped() {

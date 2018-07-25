@@ -29,6 +29,15 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)tryToSendRedPocketAck:(NSString *) ackText;
 - (void)makeConversationItemPicked:(ConversationViewItem *)viewItem;
 
+#pragma mark Open access
+
+- (void)takePictureOrVideo;
+- (void)chooseFromLibraryAsMedia;
+- (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState;
+- (void)voiceMemoGestureDidStart;
+- (void)voiceMemoGestureDidEnd;
+- (void)voiceMemoGestureDidCancel;
+
 #pragma mark 3D Touch Methods
 
 - (void)peekSetup;

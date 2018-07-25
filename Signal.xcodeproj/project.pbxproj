@@ -415,6 +415,8 @@
 		4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */; };
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
 		510C59652106BAED0009E1B5 /* ConversationViewController+ActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C59642106BAED0009E1B5 /* ConversationViewController+ActionBar.swift */; };
+		510C5989210744480009E1B5 /* TSChatEmojiDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C5987210744470009E1B5 /* TSChatEmojiDictionary.swift */; };
+		510C598A210744480009E1B5 /* TSChatTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C5988210744480009E1B5 /* TSChatTextParser.swift */; };
 		5120A1AC20DA27EE00190B1E /* BBCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AB20DA27EE00190B1E /* BBCommon.swift */; };
 		5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AD20DA294100190B1E /* BBBaseHistory.swift */; };
 		5120A1B020DA2F0500190B1E /* BBHistoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */; };
@@ -1189,6 +1191,8 @@
 		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
 		510C59642106BAED0009E1B5 /* ConversationViewController+ActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ActionBar.swift"; sourceTree = "<group>"; };
+		510C5987210744470009E1B5 /* TSChatEmojiDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSChatEmojiDictionary.swift; sourceTree = "<group>"; };
+		510C5988210744480009E1B5 /* TSChatTextParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSChatTextParser.swift; sourceTree = "<group>"; };
 		5120A1AB20DA27EE00190B1E /* BBCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommon.swift; sourceTree = "<group>"; };
 		5120A1AD20DA294100190B1E /* BBBaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBBaseHistory.swift; sourceTree = "<group>"; };
 		5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBHistoryType.swift; sourceTree = "<group>"; };
@@ -2289,6 +2293,15 @@
 			path = Speakerbox;
 			sourceTree = "<group>";
 		};
+		510C59862107442D0009E1B5 /* ChatHelper */ = {
+			isa = PBXGroup;
+			children = (
+				510C5987210744470009E1B5 /* TSChatEmojiDictionary.swift */,
+				510C5988210744480009E1B5 /* TSChatTextParser.swift */,
+			);
+			path = ChatHelper;
+			sourceTree = "<group>";
+		};
 		5120A1B320DA3C0400190B1E /* Withdraw */ = {
 			isa = PBXGroup;
 			children = (
@@ -2350,6 +2363,7 @@
 		5154EA512105AD4A008BFC91 /* NewChatActionBar */ = {
 			isa = PBXGroup;
 			children = (
+				510C59862107442D0009E1B5 /* ChatHelper */,
 				5154EA772105B51C008BFC91 /* General */,
 				5154EA562105ADFD008BFC91 /* Views */,
 				5154EA522105AD90008BFC91 /* TestConversationVC.swift */,
@@ -3448,6 +3462,7 @@
 				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
 				"${BUILT_PRODUCTS_DIR}/YBPopupMenu/YBPopupMenu.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
+				"${BUILT_PRODUCTS_DIR}/YYText/YYText.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
@@ -3489,6 +3504,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YBPopupMenu.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYText.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
@@ -3844,6 +3860,7 @@
 				5120A1B620DA3C3F00190B1E /* NewWithdrawAddressVC.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				518D4CEE20D9083F0020B353 /* BBDepositHistory.swift in Sources */,
+				510C598A210744480009E1B5 /* TSChatTextParser.swift in Sources */,
 				5154EA682105ADFD008BFC91 /* TSChatButton+UI.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				5158E1D120F5D593001DCA4E /* SendGroupPackageVC.swift in Sources */,
@@ -3952,6 +3969,7 @@
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
+				510C5989210744480009E1B5 /* TSChatEmojiDictionary.swift in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
@@ -4130,11 +4148,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
-					"DEBUG=1",
-					"$(inherited)",
-					"SSK_BUILDING_FOR_TESTS=1",
-				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

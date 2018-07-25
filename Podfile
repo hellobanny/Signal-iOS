@@ -51,6 +51,7 @@ target 'Signal' do
   pod 'RxBlocking', '~> 4.0'
   pod 'Cent', '7.0.0'
   pod 'TimedSilver', '1.1.0'
+  pod 'YYText', '1.0.7'
   target 'SignalTests' do
     inherit! :search_paths
   end

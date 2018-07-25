@@ -29,16 +29,16 @@ class TSChatShareMoreView: UIView {
     fileprivate let itemDataSouce: [(name: String, iconImage: UIImage)] = [
         ("照片", TSAsset.Sharemore_pic.image),
         ("相机", TSAsset.Sharemore_video.image),
-        ("小视频", TSAsset.Sharemore_sight.image),
-        ("视频聊天", TSAsset.Sharemore_videovoip.image),
         ("红包", TSAsset.Sharemore_wallet.image),  //Where is the lucky money icon!  T.T
         ("转账", TSAsset.SharemorePay.image),
-        ("位置", TSAsset.Sharemore_location.image),
-        ("收藏", TSAsset.Sharemore_myfav.image),
-        ("个人名片", TSAsset.Sharemore_friendcard.image),
-        ("语音输入", TSAsset.Sharemore_voiceinput.image),
-        ("卡券", TSAsset.Sharemore_wallet.image),
     ]
+    
+    fileprivate let itemDataSouceGroup: [(name: String, iconImage: UIImage)] = [
+        ("照片", TSAsset.Sharemore_pic.image),
+        ("相机", TSAsset.Sharemore_video.image),
+        ("群红包", TSAsset.Sharemore_wallet.image),  //Where is the lucky money icon!  T.T
+        ]
+    
     fileprivate var groupDataSouce = [[(name: String, iconImage: UIImage)]]()
     
     override init(frame: CGRect) {
@@ -89,6 +89,11 @@ class TSChatShareMoreView: UIView {
         self.pageControl.numberOfPages = self.groupDataSouce.count
     }
     
+    func changeToGroupShareView() {
+        self.groupDataSouce = Dollar.chunk(self.itemDataSouceGroup, size: Int(kItemCountOfRow)*2)
+        self.pageControl.numberOfPages = self.groupDataSouce.count
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         //Fix the width
@@ -103,16 +108,7 @@ extension TSChatShareMoreView: UICollectionViewDelegate {
         guard let delegate = self.delegate else {
             return
         }
-
-        let section = indexPath.section
-        let row = indexPath.row
-        if section == 0 {
-            if row == 0 {
-                delegate.chatShareMoreViewPhotoTaped()
-            } else if row == 1 {
-                delegate.chatShareMoreViewCameraTaped()
-            }
-        }
+        delegate.userClickShareViewAt(index: indexPath)
     }
 }
 
@@ -159,15 +155,8 @@ extension TSChatShareMoreView: UIScrollViewDelegate {
 
  // MARK: - @delgate ChatShareMoreViewDelegate
 protocol ChatShareMoreViewDelegate: class {
-    /**
-     选择相册
-     */
-    func chatShareMoreViewPhotoTaped()
-    
-    /**
-     选择相机
-     */
-    func chatShareMoreViewCameraTaped()
+    //用户点击了某个index
+    func userClickShareViewAt(index:IndexPath)
 }
 
 

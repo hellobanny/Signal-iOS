@@ -529,6 +529,7 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
+    [self callAfterViewDidLoad];
 }
 
 - (void)loadView
@@ -2511,9 +2512,9 @@ typedef enum : NSUInteger {
         OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReply.class);
         return;
     }
-
-    self.inputToolbar.quotedReply = quotedReply;
-    [self.inputToolbar beginEditingTextMessage];
+    [self setReplyModelWithReplyModel:quotedReply];
+    //self.inputToolbar.quotedReply = quotedReply;
+    //[self.inputToolbar beginEditingTextMessage];
 }
 
 #pragma mark - System Messages
@@ -4574,13 +4575,13 @@ typedef enum : NSUInteger {
         // before the attachment is downloaded)
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
-                                       quotedReplyModel:self.inputToolbar.quotedReply
+                                       quotedReplyModel:[self getQuotedReplyModel]
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text
                                          inThread:self.thread
-                                 quotedReplyModel:self.inputToolbar.quotedReply
+                                 quotedReplyModel:[self getQuotedReplyModel]
                                     messageSender:self.messageSender];
     }
 
