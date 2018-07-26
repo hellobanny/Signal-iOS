@@ -417,6 +417,8 @@
 		510C59652106BAED0009E1B5 /* ConversationViewController+ActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C59642106BAED0009E1B5 /* ConversationViewController+ActionBar.swift */; };
 		510C5989210744480009E1B5 /* TSChatEmojiDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C5987210744470009E1B5 /* TSChatEmojiDictionary.swift */; };
 		510C598A210744480009E1B5 /* TSChatTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C5988210744480009E1B5 /* TSChatTextParser.swift */; };
+		510C598C21096D4E0009E1B5 /* BBColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C598B21096D4E0009E1B5 /* BBColor.swift */; };
+		510C598E21096D8B0009E1B5 /* BBNetCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510C598D21096D8B0009E1B5 /* BBNetCode.swift */; };
 		5120A1AC20DA27EE00190B1E /* BBCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AB20DA27EE00190B1E /* BBCommon.swift */; };
 		5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AD20DA294100190B1E /* BBBaseHistory.swift */; };
 		5120A1B020DA2F0500190B1E /* BBHistoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */; };
@@ -1193,6 +1195,8 @@
 		510C59642106BAED0009E1B5 /* ConversationViewController+ActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ActionBar.swift"; sourceTree = "<group>"; };
 		510C5987210744470009E1B5 /* TSChatEmojiDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSChatEmojiDictionary.swift; sourceTree = "<group>"; };
 		510C5988210744480009E1B5 /* TSChatTextParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSChatTextParser.swift; sourceTree = "<group>"; };
+		510C598B21096D4E0009E1B5 /* BBColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBColor.swift; sourceTree = "<group>"; };
+		510C598D21096D8B0009E1B5 /* BBNetCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBNetCode.swift; sourceTree = "<group>"; };
 		5120A1AB20DA27EE00190B1E /* BBCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBCommon.swift; sourceTree = "<group>"; };
 		5120A1AD20DA294100190B1E /* BBBaseHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBBaseHistory.swift; sourceTree = "<group>"; };
 		5120A1AF20DA2F0500190B1E /* BBHistoryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBHistoryType.swift; sourceTree = "<group>"; };
@@ -2474,6 +2478,8 @@
 				51EFE9A720DCCDF80068CEED /* BBNumberFT.swift */,
 				5158E1E520F87E0E001DCA4E /* BBTimeFT.swift */,
 				51F1004020E6283800FCB2E7 /* LabelConfig.swift */,
+				510C598B21096D4E0009E1B5 /* BBColor.swift */,
+				510C598D21096D8B0009E1B5 /* BBNetCode.swift */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -3775,6 +3781,7 @@
 				5158E17720EC7242001DCA4E /* BBOperationView.swift in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
+				510C598E21096D8B0009E1B5 /* BBNetCode.swift in Sources */,
 				5158E1E820F892BA001DCA4E /* NewGroupViewController.swift in Sources */,
 				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
 				5154EA6A2105ADFD008BFC91 /* TSChatEmotionCell.swift in Sources */,
@@ -3832,6 +3839,7 @@
 				5144C9A020CF9F3500319062 /* ScanAndQRCodeVC.swift in Sources */,
 				5154EA8B2105BCCB008BFC91 /* UIView+Frame.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
+				510C598C21096D4E0009E1B5 /* BBColor.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				5120A1AE20DA294100190B1E /* BBBaseHistory.swift in Sources */,
@@ -4148,7 +4156,11 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"SSK_BUILDING_FOR_TESTS=1",
+				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

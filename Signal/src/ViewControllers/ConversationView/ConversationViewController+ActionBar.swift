@@ -65,10 +65,11 @@ func associateNullableObject<ValueType: AnyObject>(
                              .OBJC_ASSOCIATION_RETAIN)
 }
 
+let AudioRecordOperationQueue = OperationQueue()
 //MARK: 定义变量和向OC暴露的接口
 extension ConversationViewController {
 
-    var chatActionBarView: TSChatActionBarView! { //action bar
+    @objc var chatActionBarView: TSChatActionBarView! { //action bar
         get {
             return associatedObject(base: self, key: &chatABVKey, initialiser: {
                 return TSChatActionBarView()
@@ -143,13 +144,15 @@ extension ConversationViewController {
     }
     
     //设置回复的标识，在输入的文字前面加入 ReplyKeyword [回复] ,不重复插入
-    @objc func setReplyModel(replyModel:OWSQuotedReplyModel){
+    @objc func setReplyModel(replyModel:OWSQuotedReplyModel?){
         self.quotedReply = replyModel
-        if !self.chatActionBarView.inputTextView.text.hasPrefix(ReplyKeyword){
-            let text = ReplyKeyword + chatActionBarView.inputTextView.text
-            self.chatActionBarView.inputTextView.text = text
+        if replyModel != nil {
+            if !self.chatActionBarView.inputTextView.text.hasPrefix(ReplyKeyword){
+                let text = ReplyKeyword + chatActionBarView.inputTextView.text
+                self.chatActionBarView.inputTextView.text = text
+            }
+            chatActionBarView.inputTextView.becomeFirstResponder()
         }
-        chatActionBarView.inputTextView.becomeFirstResponder()
     }
     
     @objc func getQuotedReplyModel() -> OWSQuotedReplyModel? {
@@ -202,6 +205,9 @@ extension ConversationViewController {
                 finishRecording = true
                 strongSelf.voiceIndicatorView.recording()
                 strongSelf.voiceMemoGestureDidStart()
+                let operation = BlockOperation()
+                operation.addExecutionBlock(self!.startUpdateAudioMeters)
+                AudioRecordOperationQueue.addOperation(operation)
                 //ZZTODO AudioRecordInstance.startRecord()
                 recordButton.replaceRecordButtonUI(isRecording: true)
             } else if longTap.state == .changed { //长按平移
@@ -220,6 +226,7 @@ extension ConversationViewController {
                 } else {
                     //ZZTODO AudioRecordInstance.cancelRrcord()
                     strongSelf.voiceMemoGestureDidCancel()
+                    AudioRecordOperationQueue.cancelAllOperations()
                 }
                 strongSelf.voiceIndicatorView.endRecord()
                 recordButton.replaceRecordButtonUI(isRecording: false)
@@ -289,6 +296,22 @@ extension ConversationViewController {
             //ZZTODO self.listTableView.scrollBottomToLastRow()
             textView?.contentOffset = CGPoint.zero
         })
+    }
+    
+    //录音时，音量UI随着声音变化而变化
+    @objc func startUpdateAudioMeters() {
+        let recorder = self.audioRecorder
+        
+        repeat {
+            recorder.updateMeters()
+            let averagePower = recorder.averagePower(forChannel: 0)
+            let lowPassResults = pow(10, (0.05 * averagePower)) * 10
+            dispatch_async_safely_to_main_queue({ () -> () in
+                self.voiceIndicatorView.updateMetersValue(lowPassResults)
+            })
+            //print("### LL \(lowPassResults)")
+            Thread.sleep(forTimeInterval: 0.55)
+        } while(recorder.isRecording)
     }
 }
 
@@ -618,7 +641,7 @@ extension ConversationViewController {
      1.点击 UITableView 使用
      2.开始滚动 UITableView 使用
      */
-    func hideAllKeyboard() {
+    @objc func hideAllKeyboard() {
         self.hideCusttomKeyboard()
         self.chatActionBarView.resignKeyboard()
     }

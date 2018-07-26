@@ -141,7 +141,6 @@ typedef enum : NSUInteger {
     UINavigationControllerDelegate,
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
-    ConversationInputToolbarDelegate,
     GifPickerViewControllerDelegate>
 
 // Show message info animation
@@ -171,7 +170,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
-@property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
+//@property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
@@ -494,16 +493,16 @@ typedef enum : NSUInteger {
 - (void)hideInputIfNeeded
 {
     if (_peek) {
-        self.inputToolbar.hidden = YES;
+        //self.inputToolbar.hidden = YES;
         [self dismissKeyBoard];
         return;
     }
 
     if (self.userLeftGroup) {
-        self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
+        //self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
         [self dismissKeyBoard];
     } else {
-        self.inputToolbar.hidden = NO;
+        //self.inputToolbar.hidden = NO;
     }
 }
 
@@ -529,7 +528,7 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
-    [self callAfterViewDidLoad];
+    
 }
 
 - (void)loadView
@@ -565,10 +564,11 @@ typedef enum : NSUInteger {
 
     [self.collectionView applyScrollViewInsetsFix];
 
-    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    self.inputToolbar.inputToolbarDelegate = self;
-    self.inputToolbar.inputTextViewDelegate = self;
-    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    //_inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
+    //self.inputToolbar.inputToolbarDelegate = self;
+    //self.inputToolbar.inputTextViewDelegate = self;
+    [self callAfterViewDidLoad];
+    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:50];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -597,11 +597,6 @@ typedef enum : NSUInteger {
 - (BOOL)canBecomeFirstResponder
 {
     return YES;
-}
-
-- (nullable UIView *)inputAccessoryView
-{
-    return self.inputToolbar;
 }
 
 - (void)registerCellClasses
@@ -1147,25 +1142,6 @@ typedef enum : NSUInteger {
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
 
-    // HACK: Because the inputToolbar is the inputAccessoryView, we make some special considertations WRT it's firstResponder status.
-    //
-    // When a view controller is presented, it is first responder. However if we resign first responder
-    // and the view re-appears, without being presented, the inputToolbar can become invisible.
-    // e.g. specifically works around the scenario:
-    // - Present this VC
-    // - Longpress on a message to show edit menu, which entails making the pressed view the first responder.
-    // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
-    // - toolbar will be not be visible unless we reaquire first responder.
-    if (!self.isFirstResponder) {
-        
-        // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
-        // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
-        // a distracting animation.
-        if (!self.inputToolbar.isInputTextViewFirstResponder) {
-            DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
-            [self becomeFirstResponder];
-        }
-    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -1547,7 +1523,7 @@ typedef enum : NSUInteger {
         [viewItem clearCachedLayoutState];
     }
     [self resetContentAndLayout];
-    [self.inputToolbar updateFontSizes];
+    //[self.inputToolbar updateFontSizes];
 }
 
 #pragma mark - Actions
@@ -2810,7 +2786,8 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
-    self.inputToolbar.quotedReply = nil;
+    [self setReplyModelWithReplyModel:nil];
+    //self.inputToolbar.quotedReply = nil;
 
     if ([Environment.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
@@ -3149,7 +3126,7 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
-                                                      quotedReplyModel:self.inputToolbar.quotedReply
+                                                      quotedReplyModel:[self getQuotedReplyModel]
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4060,12 +4037,15 @@ typedef enum : NSUInteger {
 
 - (void)popKeyBoard
 {
-    [self.inputToolbar beginEditingTextMessage];
+    [self.chatActionBarView.inputTextView becomeFirstResponder];
+    //[self.inputToolbar beginEditingTextMessage];
 }
 
 - (void)dismissKeyBoard
 {
-    [self.inputToolbar endEditingTextMessage];
+    [self hideAllKeyboard];
+    //[self.chatActionBarView.inputTextView resignFirstResponder];
+    //[self.inputToolbar endEditingTextMessage];
 }
 
 #pragma mark Drafts
@@ -4078,14 +4058,15 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         draft = [_thread currentDraftWithTransaction:transaction];
     }];
-    [self.inputToolbar setMessageText:draft];
+    self.chatActionBarView.inputTextView.text = draft;
+    //[self.inputToolbar setMessageText:draft];
 }
 
 - (void)saveDraft
 {
-    if (self.inputToolbar.hidden == NO) {
+    if (self.chatActionBarView.hidden == NO) {
         __block TSThread *thread = _thread;
-        __block NSString *currentDraft = [self.inputToolbar messageText];
+        __block NSString *currentDraft = self.chatActionBarView.inputTextView.text;
 
         [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [thread setDraft:currentDraft transaction:transaction];
@@ -4488,13 +4469,13 @@ typedef enum : NSUInteger {
         // before the attachment is downloaded)
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
-                                       quotedReplyModel:self.inputToolbar.quotedReply
+                                       quotedReplyModel:nil
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:opText
                                          inThread:self.thread
-                                 quotedReplyModel:self.inputToolbar.quotedReply
+                                 quotedReplyModel:nil
                                     messageSender:self.messageSender];
     }
     
@@ -4525,7 +4506,7 @@ typedef enum : NSUInteger {
 
 - (void)sendButtonPressed
 {
-    [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
+    //[self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
 }
 
 - (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState
@@ -4588,9 +4569,9 @@ typedef enum : NSUInteger {
     [self messageWasSent:message];
 
     if (updateKeyboardState) {
-        [self.inputToolbar toggleDefaultKeyboard];
+        //[self.inputToolbar toggleDefaultKeyboard];
     }
-    [self.inputToolbar clearTextMessage];
+    //[self.inputToolbar clearTextMessage];
     [self clearDraft];
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
@@ -4608,13 +4589,13 @@ typedef enum : NSUInteger {
         [[NSDate new] timeIntervalSinceDate:self.lastMessageSentDate] < kIgnoreMessageSendDoubleTapDurationSeconds) {
         // If users double-taps the message send button, the second tap can look like a
         // very short voice message gesture.  We want to ignore such gestures.
-        [self.inputToolbar cancelVoiceMemoIfNecessary];
-        [self.inputToolbar hideVoiceMemoUI:NO];
+        //[self.inputToolbar cancelVoiceMemoIfNecessary];
+        //[self.inputToolbar hideVoiceMemoUI:NO];
         [self cancelRecordingVoiceMemo];
         return;
     }
 
-    [self.inputToolbar showVoiceMemoUI];
+    //[self.inputToolbar showVoiceMemoUI];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self requestRecordingVoiceMemo];
 }
@@ -4625,7 +4606,7 @@ typedef enum : NSUInteger {
 
     DDLogInfo(@"voiceMemoGestureDidEnd");
 
-    [self.inputToolbar hideVoiceMemoUI:YES];
+    //[self.inputToolbar hideVoiceMemoUI:YES];
     [self endRecordingVoiceMemo];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
@@ -4636,7 +4617,7 @@ typedef enum : NSUInteger {
 
     DDLogInfo(@"voiceMemoGestureDidCancel");
 
-    [self.inputToolbar hideVoiceMemoUI:NO];
+    //[self.inputToolbar hideVoiceMemoUI:NO];
     [self cancelRecordingVoiceMemo];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
@@ -4645,15 +4626,15 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
+    //[self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
 - (void)cancelVoiceMemo
 {
     OWSAssertIsOnMainThread();
 
-    [self.inputToolbar cancelVoiceMemoIfNecessary];
-    [self.inputToolbar hideVoiceMemoUI:NO];
+    //[self.inputToolbar cancelVoiceMemoIfNecessary];
+    //[self.inputToolbar hideVoiceMemoUI:NO];
     [self cancelRecordingVoiceMemo];
 }
 

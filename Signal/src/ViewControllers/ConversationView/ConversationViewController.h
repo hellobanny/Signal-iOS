@@ -3,6 +3,7 @@
 //
 
 #import <SignalMessaging/OWSViewController.h>
+#import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @interface ConversationViewController : OWSViewController
 
 @property (nonatomic, readonly) TSThread *thread;
+@property (nonatomic, readonly) AVAudioRecorder *audioRecorder;
 
 - (void)configureForThread:(TSThread *)thread
                     action:(ConversationViewAction)action
