@@ -39,7 +39,7 @@ class CurrencyDetailVC: UIViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "历史明细", style: .done, target: self, action: #selector(CurrencyDetailVC.viewCurrencyHistory))
         loadCurrencyDetail()
         
-        buttonDeposit.backgroundColor = BBCommon.ColorGreen
+        buttonDeposit.backgroundColor = UIColor.bbButtonGreen
         buttonDeposit.layer.masksToBounds = true
         buttonDeposit.layer.cornerRadius = 4.0
         

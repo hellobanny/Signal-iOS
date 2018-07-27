@@ -45,7 +45,7 @@ class ScanAndQRCodeVC: UIViewController {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(ScanAndQRCodeVC.close))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: currency.name, style: .done, target: self, action: #selector(ScanAndQRCodeVC.switchCurrency))
-        self.viewQRCode.backgroundColor = BBCommon.ColorBlack
+        self.viewQRCode.backgroundColor = UIColor.bbNavBlack
     }
     
     @objc func close(){

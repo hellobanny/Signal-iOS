@@ -164,7 +164,7 @@ public class ConversationStyle: NSObject {
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return UIColor.ows_white
+            return UIColor.ows_dark60
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:

@@ -52,7 +52,7 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ciw-lH-Lx0">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="transferSuccess" translatesAutoresizingMaskIntoConstraints="NO" id="Ciw-lH-Lx0">
                     <rect key="frame" x="151.5" y="84" width="72" height="72"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="72" id="hTk-gN-Ac7"/>
@@ -90,4 +90,7 @@
             <point key="canvasLocation" x="25.5" y="51.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="transferSuccess" width="68" height="68"/>
+    </resources>
 </document>

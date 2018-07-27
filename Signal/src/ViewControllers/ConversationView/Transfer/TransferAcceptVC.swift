@@ -39,6 +39,10 @@ class TransferAcceptVC: UIViewController {
         df.dateStyle = .short
         timeLabel.toSmallLabel()
         self.timeLabel.text = "转账时间: " + df.string(from: operation.time)
+        buttonAccept.layer.masksToBounds = true
+        buttonAccept.layer.cornerRadius = 4.0
+        buttonAccept.ts_setBackgroundColor(UIColor.bbActionGreenEnable, forState: UIControlState.normal)
+        buttonAccept.ts_setBackgroundColor(UIColor.bbActionGreenDisable, forState: .disabled)
     }
 
     override func didReceiveMemoryWarning() {

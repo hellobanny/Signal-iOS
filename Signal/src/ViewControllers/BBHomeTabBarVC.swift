@@ -15,7 +15,7 @@ import UIKit
 
         // Do any additional setup after loading the view.
         self.delegate = self
-        UITabBar.appearance().tintColor = BBCommon.ColorGreen
+        UITabBar.appearance().tintColor = UIColor.bbButtonGreen
     }
     
     override func viewWillAppear(_ animated: Bool) {

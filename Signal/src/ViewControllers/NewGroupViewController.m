@@ -90,6 +90,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
+    _isCreatGroup = false;
 
     self.memberRecipientIds = [NSMutableSet new];
 }
@@ -439,10 +440,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)makeGroup
 {
+    if(_isCreatGroup){
+        return;
+    }
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     //从服务器获得group的ID，然后再近些后续的动作
+    _isCreatGroup = true;
     [self createGroupModelWithName:groupName phones:recipientIds image:self.groupAvatar];
 }
 

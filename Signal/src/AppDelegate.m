@@ -551,9 +551,9 @@ static NSTimeInterval launchStartedAt;
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
     [WRNavigationBar wr_widely];
-    [WRNavigationBar wr_setDefaultNavBarBarTintColor:BBCommon.ColorBlack];
-    [WRNavigationBar wr_setDefaultNavBarTintColor:BBCommon.ColorWhite];
-    [WRNavigationBar wr_setDefaultNavBarTitleColor:BBCommon.ColorWhite];
+    [WRNavigationBar wr_setDefaultNavBarBarTintColor: UIColor.bbNavBlack];
+    [WRNavigationBar wr_setDefaultNavBarTintColor: UIColor.bbNavWhite];
+    [WRNavigationBar wr_setDefaultNavBarTitleColor: UIColor.bbNavWhite];
     [WRNavigationBar wr_setDefaultStatusBarStyle:UIStatusBarStyleLightContent];
     [WRNavigationBar wr_setDefaultNavBarShadowImageHidden:YES];
 }

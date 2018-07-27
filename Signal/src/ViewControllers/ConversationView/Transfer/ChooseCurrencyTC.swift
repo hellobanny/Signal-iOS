@@ -50,7 +50,8 @@ class ChooseCurrencyTC: UITableViewController {
         let url = URL(string: currency.iconURL)
         cell.imageView?.kf.setImage(with: url)
         cell.textLabel?.text = currency.name
-        cell.detailTextLabel?.text = "总量: " + BBNumberFT.shared.goodNumber(value: currency.balance ?? 0.0)
+        cell.detailTextLabel?.textColor = UIColor.bbTextLight
+        cell.detailTextLabel?.text = "持有量：" + BBNumberFT.shared.goodNumber(value: currency.balance ?? 0.0)
         return cell
     }
     

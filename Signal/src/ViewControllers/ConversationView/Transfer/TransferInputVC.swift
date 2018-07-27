@@ -19,6 +19,7 @@ class TransferInputVC: UIViewController {
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var buttonChooseCurrency: UIButton!
+    @IBOutlet weak var chooseCurLabel: UILabel!
     @IBOutlet weak var numberTitleLabel: UILabel!
     @IBOutlet weak var textFieldValue: UITextField!
     @IBOutlet weak var memoLabel: UILabel!
@@ -40,12 +41,12 @@ class TransferInputVC: UIViewController {
     var memo:String?{
         didSet{
             if memo?.isEmpty ?? true {
-                let att = NSAttributedString(string: "添加转币说明", attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorClickText])
+                let att = NSAttributedString(string: "添加转币说明", attributes: [NSAttributedStringKey.foregroundColor: UIColor.bbTextClick])
                 memoLabel.attributedText = att
             }
             else {
-                let att = NSMutableAttributedString(string: memo!, attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorLightText])
-                let s2 = NSAttributedString(string: " 修改", attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorClickText])
+                let att = NSMutableAttributedString(string: memo!, attributes: [NSAttributedStringKey.foregroundColor: UIColor.bbTextLight])
+                let s2 = NSAttributedString(string: " 修改", attributes: [NSAttributedStringKey.foregroundColor: UIColor.bbTextClick])
                 att.append(s2)
                 memoLabel.attributedText = att
             }
@@ -69,6 +70,9 @@ class TransferInputVC: UIViewController {
         numberTitleLabel.toSmallLabel()
         buttonTransfer.layer.masksToBounds = true
         buttonTransfer.layer.cornerRadius = 4.0
+        buttonTransfer.ts_setBackgroundColor(UIColor.bbActionGreenEnable, forState: UIControlState.normal)
+        buttonTransfer.ts_setBackgroundColor(UIColor.bbActionGreenDisable, forState: .disabled)
+        buttonTransfer.isEnabled = false
         
         memoLabel.isUserInteractionEnabled = true
         memoLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TransferInputVC.changeMemo)))
@@ -76,10 +80,18 @@ class TransferInputVC: UIViewController {
         self.title = "转账给朋友"
         
         self.currency = BBCurrencyCache.shared.allCurrencys().first
+        chooseCurLabel.textColor = UIColor.bbTextLight
+        chooseCurLabel.text = "发送的币种，点击进行切换"
+        let tap = UITapGestureRecognizer(target: self, action: #selector(TransferInputVC.tapped))
+        self.bigBGView.addGestureRecognizer(tap)
     }
     
     @objc func close(){
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func tapped(){
+        self.textFieldValue.resignFirstResponder()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -202,6 +214,7 @@ extension TransferInputVC: ChooseCurrencyDelegate{
 
 extension TransferInputVC: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        buttonTransfer.isEnabled = true
         return NumberChecker.checkInputNumber(textField: textField, string: string)
     }
 }

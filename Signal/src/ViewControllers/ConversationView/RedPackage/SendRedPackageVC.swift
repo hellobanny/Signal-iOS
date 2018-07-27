@@ -13,6 +13,7 @@ class SendRedPackageVC: UIViewController {
     static let defaultMsg = "恭喜发财，大吉大利"
 
     @IBOutlet weak var buttonChooseCur: UIButton!
+    @IBOutlet weak var chooseCurLabel: UILabel!
     
     @IBOutlet weak var valueBackground: UIView!
     @IBOutlet weak var valueTitle: UILabel!
@@ -56,6 +57,11 @@ class SendRedPackageVC: UIViewController {
         
         self.currency = BBCurrencyCache.shared.allCurrencys().first
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SendRedPackageVC.userTapBgView)))
+        buttonSend.ts_setBackgroundColor(UIColor.bbPocketRedEnable, forState: UIControlState.normal)
+        buttonSend.ts_setBackgroundColor(UIColor.bbPocketRedDisable, forState: .disabled)
+        buttonSend.isEnabled = false
+        chooseCurLabel.textColor = UIColor.bbTextLight
+        chooseCurLabel.text = "发送的币种，点击进行切换"
     }
     
     @objc func userTapBgView(){
@@ -87,6 +93,8 @@ class SendRedPackageVC: UIViewController {
 
     @IBAction func editingChanged(_ sender: Any) {
         self.valueLabel.text = self.valueTextField.text
+        let (ok,_) = NumberChecker.isGoodNumber(string: self.valueTextField.text ?? "")
+        buttonSend.isEnabled = ok
     }
     
     @IBAction func userChooseCurrency(_ sender: Any) {
@@ -168,6 +176,7 @@ extension SendRedPackageVC: InputPaywordDelegate{
 extension SendRedPackageVC: ChooseCurrencyDelegate{
     func userChoose(currency: BBCurrency) {
         self.currency = currency
+        self.valueLabel.text = "0.0"
     }
 }
 

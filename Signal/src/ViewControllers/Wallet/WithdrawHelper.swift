@@ -49,17 +49,11 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
             if let res = obj {
                 print(res)
                 let code = BBRequestHelper.parseCodeOnly(object: res)
-                if code == BBCommon.NetCodeSuccess {
+                if code == BBNetCode.success {
                     self.baseVC.dismiss(animated: true, completion: nil)
                     BBCommon.notice(title: "转账成功")
                 }
-                else if code == BBCommon.NetCodeBalaceLess {
-                    BBCommon.notice(title: "余额不足")
-                }
-                else if code == BBCommon.NetCodeAddressError {
-                    BBCommon.notice(title: "地址错误")
-                }
-                else if code == BBCommon.NetCodePaywordError {//可重新输入密码
+                else if code == BBNetCode.paywordError {//可重新输入密码
                     let av = UIAlertController(title: "字符密码错误", message: nil, preferredStyle: .alert)
                     av.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
                     av.addAction(UIAlertAction(title: "重新输入", style: .default, handler: { (_) in
@@ -67,13 +61,9 @@ class WithdrawHelper: NSObject, InputPaywordDelegate {
                     }))
                     self.baseVC.present(av, animated: true, completion: nil)
                 }
-                else if code == BBCommon.NetCodeAccountLocked {
-                    BBCommon.notice(title: "账号已经被锁定，30分钟后解锁")
+                else {
+                    BBCommon.notice(title: code.description())
                 }
-                else if code == BBCommon.NetCodePaywordUnset {
-                    BBCommon.notice(title: "字符密码未设置")
-                }
-                
             }
         }) { (task, error) in
             BBRequestHelper.showError(error: error)

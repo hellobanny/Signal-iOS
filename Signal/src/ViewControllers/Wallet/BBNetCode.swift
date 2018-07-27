@@ -10,14 +10,29 @@ import UIKit
 
 enum BBNetCode : Int {
     case success = 200
-    case balanceLess = 90001
+    case balanceLake = 90001
+    case addressError = 90002
+    case paywordError = 90003
+    case accountLocked = 90004
+    case paywordUnset = 90005
+    case undefine = 7777
+    
+    func description() -> String {
+        switch self {
+        case .success:
+            return "成功"
+        case .balanceLake:
+            return "余额不足"
+        case .addressError:
+            return "钱包地址错误"
+        case .paywordError:
+            return "支付密码错误"
+        case .accountLocked:
+            return "账号已经被锁定，30分钟后解锁"
+        case .paywordUnset:
+            return "支付密码未设置"
+        default:
+            return "未定义错误"
+        }
+    }
 }
-/*
-class BBNetCode: NSObject {
-    static let  NetCodeSuccess = 200    //成功
-    static let  NetCodeBalaceLess = 90001 //余额不足
-    static let  NetCodeAddressError = 90002 //目标地址不存在
-    static let  NetCodePaywordError = 90003 //密码错误
-    static let  NetCodeAccountLocked = 90004 // 账户已锁定, 30分钟自动解锁
-    static let  NetCodePaywordUnset = 90005 //交易密码未设置
-}*/

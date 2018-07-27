@@ -347,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView.layer.opacity = 0.75f;
         }
 
-        if (self.hasFullWidthMediaView) {
+        if (self.hasFullWidthMediaView || self.cellType == OWSMessageCellType_Operation) {
             // Flush any pending "text" subviews.
             [self insertAnyTextViewsIntoStackView:textViews];
             [textViews removeAllObjects];
@@ -385,19 +385,19 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.bubbleView addPartnerView:self.mediaClipView];
 
                 // TODO: Consider only using a single shadow for perf.
-                self.mediaShadowView1.fillColor = self.bubbleColor;
+                /*self.mediaShadowView1.fillColor = self.bubbleColor;
                 self.mediaShadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
                 self.mediaShadowView1.layer.shadowOpacity = 0.2f;
                 self.mediaShadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
-                self.mediaShadowView1.layer.shadowRadius = 20.f;
+                self.mediaShadowView1.layer.shadowRadius = 4.f;
 
                 self.mediaShadowView2.fillColor = self.bubbleColor;
                 self.mediaShadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
                 self.mediaShadowView2.layer.shadowOpacity = 0.08f;
                 self.mediaShadowView2.layer.shadowOffset = CGSizeZero;
-                self.mediaShadowView2.layer.shadowRadius = 4.f;
+                self.mediaShadowView2.layer.shadowRadius = 4.f;*/
             } else {
-                OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
+                //OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
 
                 [self.stackView addArrangedSubview:bodyMediaView];
 
@@ -499,11 +499,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL hasOnlyBodyMediaView = (self.hasBodyMediaWithThumbnail && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
+        self.bubbleView.strokeColor = self.strokeColor;
         self.bubbleView.bubbleColor = self.bubbleColor;
     } else {
         // Media-only messages should have no background color; they will fill the bubble's bounds
         // and we don't want artifacts at the edges.
         self.bubbleView.bubbleColor = nil;
+        self.bubbleView.strokeColor = nil;
     }
 }
 
@@ -512,7 +514,26 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [self.conversationStyle bubbleColorWithMessage:message];
+    if(message.interactionType == OWSInteractionType_OutgoingMessage){
+        return UIColor.bbMessageOutGreenA;
+    }
+    else {
+        return UIColor.bbMessageInWhiteA;
+    }
+    //return [self.conversationStyle bubbleColorWithMessage:message];
+}
+
+- (UIColor *)strokeColor
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    if(message.interactionType == OWSInteractionType_OutgoingMessage){
+        return UIColor.bbMessageOutGreenB;
+    }
+    else {
+        return UIColor.bbMessageInWhiteB;
+    }
 }
 
 - (BOOL)hasBodyMediaWithThumbnail
@@ -525,12 +546,12 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Video:
+        case OWSMessageCellType_Operation:
             return YES;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
-        case OWSMessageCellType_Operation:
             return NO;
     }
 }

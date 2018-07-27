@@ -25,7 +25,7 @@ class HistoryCell: UITableViewCell {
     }
     
     func setValue(value:Double){
-        labelValue.textColor = value > 0 ? BBCommon.ColorGreen : BBCommon.ColorBlack
+        labelValue.textColor = value > 0 ? UIColor.bbButtonGreen : UIColor.bbNavBlack
         let str = BBNumberFT.shared.goodNumber(value: value)
         labelValue.text = (value > 0 ? "+ " : "- " ) + str
     }

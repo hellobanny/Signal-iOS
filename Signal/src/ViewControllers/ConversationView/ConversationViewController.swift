@@ -170,7 +170,7 @@ extension ConversationViewController : TransferAcceptDelegate {
             TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
                 if let result = obj{
                     let code = BBRequestHelper.parseCodeOnly(object: result)
-                    if code == BBCommon.NetCodeSuccess {
+                    if code == BBNetCode.success {
                         //发确认消息
                         let echo = operation.copyAck()
                         self.try(toSendOperationText: echo.getMessageString())
@@ -189,7 +189,7 @@ extension ConversationViewController : TransferAcceptDelegate {
             TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
                 if let result = obj{
                     let code = BBRequestHelper.parseCodeOnly(object: result)
-                    if code == BBCommon.NetCodeSuccess {
+                    if code == BBNetCode.success {
                         //ZZTODO  要发一条回执消息
                         let echo = operation.copyAck()
                         self.try(toSendOperationText: echo.getMessageString())

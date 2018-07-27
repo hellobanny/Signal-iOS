@@ -15,6 +15,7 @@
                 <outlet property="bigBGView" destination="jFe-kk-u8o" id="8cw-TU-QGx"/>
                 <outlet property="buttonChooseCurrency" destination="DdL-Wl-1JY" id="QSg-Qc-JoD"/>
                 <outlet property="buttonTransfer" destination="HNb-xC-blF" id="Nrm-Yh-uRv"/>
+                <outlet property="chooseCurLabel" destination="X6d-nT-kvG" id="V8c-8T-rio"/>
                 <outlet property="memoLabel" destination="ROi-s2-mQL" id="EA0-Lw-LdV"/>
                 <outlet property="nameLabel" destination="klR-VC-V5u" id="Bwj-tU-tsV"/>
                 <outlet property="numberTitleLabel" destination="SRp-l2-ITJ" id="gJb-qE-li3"/>
@@ -68,6 +69,7 @@
                             <constraints>
                                 <constraint firstAttribute="height" constant="44" id="Zn5-NO-Rck"/>
                             </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <state key="normal" title="转币">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -75,6 +77,15 @@
                                 <action selector="startTransfer:" destination="-1" eventType="touchUpInside" id="eAu-hK-v6b"/>
                             </connections>
                         </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="发送的币种，点击进行切换" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X6d-nT-kvG">
+                            <rect key="frame" x="0.0" y="162" width="343" height="16"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="16" id="aky-QC-gUr"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dQI-DZ-JlA">
                             <rect key="frame" x="16" y="259" width="311" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -127,23 +138,26 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="sRX-fY-06B" secondAttribute="trailing" constant="16" id="2nj-Vf-wju"/>
                         <constraint firstItem="SRp-l2-ITJ" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="7s4-Fj-rio"/>
+                        <constraint firstItem="X6d-nT-kvG" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" id="CjW-Aj-Mk8"/>
                         <constraint firstAttribute="trailing" secondItem="DdL-Wl-1JY" secondAttribute="trailing" constant="16" id="G3X-Yy-c02"/>
                         <constraint firstItem="f4J-HN-w55" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" id="HQy-Q1-JS4"/>
                         <constraint firstAttribute="trailing" secondItem="SRp-l2-ITJ" secondAttribute="trailing" constant="16" id="JG3-wA-oQS"/>
+                        <constraint firstItem="SRp-l2-ITJ" firstAttribute="top" secondItem="X6d-nT-kvG" secondAttribute="bottom" constant="8" id="O2G-Wb-JXs"/>
                         <constraint firstAttribute="trailing" secondItem="ROi-s2-mQL" secondAttribute="trailing" constant="16" id="Q7z-Kd-XDr"/>
                         <constraint firstItem="f4J-HN-w55" firstAttribute="top" secondItem="jFe-kk-u8o" secondAttribute="top" id="SLP-Yf-sjs"/>
+                        <constraint firstAttribute="trailing" secondItem="X6d-nT-kvG" secondAttribute="trailing" id="SmB-fp-XI3"/>
                         <constraint firstItem="HNb-xC-blF" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="T7l-uh-tsn"/>
                         <constraint firstItem="ROi-s2-mQL" firstAttribute="top" secondItem="dQI-DZ-JlA" secondAttribute="bottom" constant="8" id="Uku-gB-3mc"/>
                         <constraint firstItem="sRX-fY-06B" firstAttribute="top" secondItem="SRp-l2-ITJ" secondAttribute="bottom" constant="8" id="V12-BW-9n2"/>
                         <constraint firstItem="HNb-xC-blF" firstAttribute="top" secondItem="ROi-s2-mQL" secondAttribute="bottom" constant="12" id="WGK-G2-j6G"/>
                         <constraint firstItem="DdL-Wl-1JY" firstAttribute="top" secondItem="f4J-HN-w55" secondAttribute="bottom" constant="16" id="apl-yJ-iZR"/>
-                        <constraint firstItem="SRp-l2-ITJ" firstAttribute="top" secondItem="DdL-Wl-1JY" secondAttribute="bottom" constant="24" id="cGa-pv-dma"/>
                         <constraint firstAttribute="trailing" secondItem="dQI-DZ-JlA" secondAttribute="trailing" constant="16" id="cTt-co-Hzf"/>
                         <constraint firstItem="DdL-Wl-1JY" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="coQ-jS-UbE"/>
                         <constraint firstItem="sRX-fY-06B" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="kIN-NH-OqK"/>
                         <constraint firstAttribute="trailing" secondItem="HNb-xC-blF" secondAttribute="trailing" constant="16" id="nq3-87-O2y"/>
                         <constraint firstAttribute="height" constant="360" id="nwg-N2-JUl"/>
                         <constraint firstItem="dQI-DZ-JlA" firstAttribute="top" secondItem="sRX-fY-06B" secondAttribute="bottom" id="rSD-2O-C3g"/>
+                        <constraint firstItem="X6d-nT-kvG" firstAttribute="top" secondItem="DdL-Wl-1JY" secondAttribute="bottom" id="syT-hE-3WR"/>
                         <constraint firstItem="ROi-s2-mQL" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="uh1-h6-bQj"/>
                         <constraint firstItem="dQI-DZ-JlA" firstAttribute="leading" secondItem="jFe-kk-u8o" secondAttribute="leading" constant="16" id="wXb-c3-3Ak"/>
                         <constraint firstAttribute="trailing" secondItem="f4J-HN-w55" secondAttribute="trailing" id="yqv-GZ-rQi"/>

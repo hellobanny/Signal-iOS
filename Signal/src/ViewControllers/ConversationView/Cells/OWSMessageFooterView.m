@@ -76,14 +76,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
-    UIColor *textColor;
-    if (isOverlayingMedia) {
+    UIColor *textColor = [UIColor ows_light60Color];
+    /*if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
     } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         textColor = [UIColor colorWithWhite:1.f alpha:0.7f];
     } else {
         textColor = [UIColor ows_light60Color];
-    }
+    }*/
     self.timestampLabel.textColor = textColor;
 
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {

@@ -28,10 +28,10 @@ class CurrencyCell: UITableViewCell {
     }
     
     func configWith(currency:BBCurrency){
-        labelName.textColor = BBCommon.ColorDarkText
-        labelNumber.textColor = BBCommon.ColorDarkText
-        labelPrice.textColor = BBCommon.ColorLightText
-        labelTotal.textColor = BBCommon.ColorLightText
+        labelName.textColor = UIColor.bbTextDark
+        labelNumber.textColor = UIColor.bbTextDark
+        labelPrice.textColor = UIColor.bbTextLight
+        labelTotal.textColor = UIColor.bbTextLight
         let url = URL(string: currency.iconURL)
         avator.kf.setImage(with: url)
         labelName.text = currency.name

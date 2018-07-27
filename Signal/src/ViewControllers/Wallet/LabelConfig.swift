@@ -11,17 +11,17 @@ import UIKit
 extension UILabel{
     
     func toLargeLabel(){
-        self.textColor = BBCommon.ColorBlackText
+        self.textColor = UIColor.bbTextBlack
         self.font = UIFont.systemFont(ofSize: 36)
     }
     
     func toMiddleLabel(){
-        self.textColor = BBCommon.ColorBlackText
+        self.textColor = UIColor.bbTextBlack
         self.font = UIFont.systemFont(ofSize: 16)
     }
     
     func toSmallLabel(){
-        self.textColor = BBCommon.ColorLightText
+        self.textColor = UIColor.bbTextLight
         self.font = UIFont.systemFont(ofSize: 12)
     }
 }

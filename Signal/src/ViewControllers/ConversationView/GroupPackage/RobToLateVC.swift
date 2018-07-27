@@ -33,7 +33,10 @@ class RobToLateVC: UIViewController {
         
         // Do any additional setup after loading the view.
         self.labelName.text = groupPocket.sender.name
+        self.labelName.textColor = UIColor.bbPocketTextLight
         self.labelMessage.text = "手慢了，红包派完了"
+        self.labelMessage.textColor = UIColor.bbPocketTextLight
+        self.buttonOpenDetail.setTitleColor(UIColor.bbPocketTextLight, for: .normal)
         if let ref = groupPocket.sender.avatarRef {
             let url = URL(string: ref)
             self.imageViewAvator.kf.setImage(with: url)
@@ -61,7 +64,7 @@ class RobToLateVC: UIViewController {
     static func displayRobToLate(home: UIViewController, groupPocket: GroupPocket, operation: OperationMessage){
         let vc = RobToLateVC(groupPocket: groupPocket, operation: operation)
         vc.baseVC = home
-        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
         home.present(pd, animated: true, completion: nil)
     }
 

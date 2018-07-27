@@ -16,7 +16,7 @@ class BBRequestHelper: NSObject {
         print(object)
         let js = JSON(object)
         let code = js["code"].intValue
-        if code == BBCommon.NetCodeSuccess {
+        if code == BBNetCode.success.rawValue {
             return (js["data"],js["cid"].string)
         }
         else{
@@ -25,9 +25,10 @@ class BBRequestHelper: NSObject {
         return (nil,nil)
     }
     
-    static func parseCodeOnly(object:Any) -> Int{
+    static func parseCodeOnly(object:Any) -> BBNetCode{
         let js = JSON(object)
-        return js["code"].intValue
+        let v = js["code"].intValue
+        return BBNetCode(rawValue: v) ?? BBNetCode.undefine
     }
     
     static func showError(error:Error){

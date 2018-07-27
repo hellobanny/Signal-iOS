@@ -23,6 +23,7 @@ extern const CGFloat kOWSMessageCellCornerRadius;
 @interface OWSBubbleView : UIView
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
+@property (nonatomic, nullable) UIColor *strokeColor;
 
 - (UIBezierPath *)maskPath;
 

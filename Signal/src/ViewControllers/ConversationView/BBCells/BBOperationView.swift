@@ -32,6 +32,7 @@ class BBOperationView: UIView {
             make.left.equalTo(self).offset(8)
             make.top.equalTo(self).offset(8)
         }
+        iv.contentMode = .center
         self.iconImageView = iv
         
         let title = UILabel(frame: CGRect(x: 72, y: 8, width: 200, height: 24))
@@ -65,27 +66,33 @@ class BBOperationView: UIView {
     
     @objc
     func config(operation:OperationMessage){
-        self.iconImageView.image = UIImage(named: "testRed")
+        
         if operation.type == .transfer {
             self.titleLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
             self.detailLabel.text = (operation.picked ? "已被领取-" : "") + operation.message
+            self.iconImageView.image = UIImage(named: "transfer")
         }
         else if operation.type == .transferDone{
             self.titleLabel.text = BBCurrencyCache.shared.getValueString(cid: operation.currencyType, value: operation.value)
             self.detailLabel.text = "已收钱"
+            self.iconImageView.image = UIImage(named: "transferDone")
         }
         else if operation.type == .redPocket {
             self.titleLabel.text = operation.message
             self.detailLabel.text = operation.picked ? "红包已领取" : "查看红包"
+            self.iconImageView.image = operation.picked ? UIImage(named: "redPocketOpend") : UIImage(named: "redPocketClosed")
         }
         else if operation.type == .redPocketDone{
             self.titleLabel.text = operation.message
             self.detailLabel.text = "红包已领取"
+            self.iconImageView.image = UIImage(named: "redPocketOpend")
         }
         else if operation.type == .groupRedP {
             self.titleLabel.text = operation.message
             self.detailLabel.text = operation.picked ? "红包已领取" : "查看红包"
+            self.iconImageView.image = operation.picked ? UIImage(named: "redPocketOpend") : UIImage(named: "redPocketClosed")
         }
+        self.backgroundColor = operation.picked ? UIColor(red:1.00, green:0.76, blue:0.53, alpha:1.00) : UIColor(red:0.97, green:0.53, blue:0.18, alpha:1.00)
     }
     
 }

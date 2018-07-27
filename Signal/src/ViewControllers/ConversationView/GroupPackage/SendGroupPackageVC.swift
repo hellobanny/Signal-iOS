@@ -11,6 +11,7 @@ import UIKit
 class SendGroupPackageVC: UIViewController {
     
     @IBOutlet weak var buttonChooseCur: UIButton!
+    @IBOutlet weak var chooseCurLabel: UILabel!
     
     @IBOutlet weak var valueBackground: UIView!
     @IBOutlet weak var valueTitle: UILabel!
@@ -32,9 +33,9 @@ class SendGroupPackageVC: UIViewController {
     var isRandomRP:Bool = true{
         didSet{
             let s1 = isRandomRP ? "当前为拼手气红包，" : "当前为普通红包，"
-            let s2 = isRandomRP ? "改为普通红包" : "改为拼手气红包"
-            let att1 = NSMutableAttributedString(string: s1, attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorLightText])
-            let att2 = NSAttributedString(string: s2, attributes: [NSAttributedStringKey.foregroundColor:BBCommon.ColorClickText])
+            let s2 = isRandomRP ? "点击改为普通红包" : "点击改为拼手气红包"
+            let att1 = NSMutableAttributedString(string: s1, attributes: [NSAttributedStringKey.foregroundColor:UIColor.bbTextLight])
+            let att2 = NSAttributedString(string: s2, attributes: [NSAttributedStringKey.foregroundColor:UIColor.bbTextClick])
             att1.append(att2)
             changeTypeLabel.attributedText = att1
             valueTitle.text = isRandomRP ? "🎲总金额" : "单个金额"
@@ -73,6 +74,12 @@ class SendGroupPackageVC: UIViewController {
         isRandomRP = true
         changeTypeLabel.isUserInteractionEnabled = true
         changeTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SendGroupPackageVC.userTapChangeType)))
+        buttonSend.ts_setBackgroundColor(UIColor.bbPocketRedEnable, forState: UIControlState.normal)
+        buttonSend.ts_setBackgroundColor(UIColor.bbPocketRedDisable, forState: .disabled)
+        buttonSend.isEnabled = false
+        
+        chooseCurLabel.textColor = UIColor.bbTextLight
+        chooseCurLabel.text = "发送的币种，点击进行切换"
     }
     
     @objc func userTapBgView(){
@@ -109,6 +116,8 @@ class SendGroupPackageVC: UIViewController {
     
     @IBAction func editingChanged(_ sender: Any) {
         self.valueLabel.text = self.valueTextField.text
+        let (ok,_) = NumberChecker.isGoodNumber(string: self.valueTextField.text ?? "")
+        buttonSend.isEnabled = ok
     }
     
     @IBAction func userChooseCurrency(_ sender: Any) {
@@ -201,6 +210,7 @@ extension SendGroupPackageVC: InputPaywordDelegate{
 extension SendGroupPackageVC: ChooseCurrencyDelegate{
     func userChoose(currency: BBCurrency) {
         self.currency = currency
+        self.valueLabel.text = "0.0"
     }
 }
 

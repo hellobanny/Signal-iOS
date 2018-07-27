@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kOWSMessageCellCornerRadius = 16;
+const CGFloat kOWSMessageCellCornerRadius = 4;
 
 @interface OWSBubbleView ()
 
@@ -98,6 +98,7 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
     [CATransaction setDisableActions:YES];
 
     self.shapeLayer.fillColor = bubbleColor.CGColor;
+    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
 
     [CATransaction commit];
 }
@@ -118,6 +119,7 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
     [CATransaction setDisableActions:YES];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
+    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
     self.shapeLayer.path = bezierPath.CGPath;
     self.maskLayer.path = bezierPath.CGPath;
 
@@ -166,7 +168,7 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
 
 + (CGFloat)minWidth
 {
-    return (kOWSMessageCellCornerRadius * 2);
+    return (kOWSMessageCellCornerRadius * 8);
 }
 
 @end

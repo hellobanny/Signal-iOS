@@ -49,11 +49,11 @@ class WithdrawVC: UIViewController {
         }
         self.title = "提币"
         
-        buttonChoose.backgroundColor = BBCommon.ColorLightText
+        buttonChoose.backgroundColor = UIColor.bbTextLight
         buttonChoose.layer.masksToBounds = true
         buttonChoose.layer.cornerRadius = 4.0
         
-        buttonWithdraw.backgroundColor = BBCommon.ColorGreen
+        buttonWithdraw.backgroundColor = UIColor.bbButtonGreen
         buttonWithdraw.layer.masksToBounds = true
         buttonWithdraw.layer.cornerRadius = 4.0
     }

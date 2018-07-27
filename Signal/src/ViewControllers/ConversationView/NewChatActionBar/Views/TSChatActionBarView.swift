@@ -50,7 +50,7 @@ class TSChatActionBarView: UIView {
         inputTextView.layer.cornerRadius = 5.0
         inputTextView.scrollsToTop = false
         inputTextView.textContainerInset = UIEdgeInsetsMake(7, 5, 5, 5)
-        inputTextView.backgroundColor = UIColor.init(ts_hexString:"#f8fefb")
+        inputTextView.backgroundColor = UIColor.white
         inputTextView.returnKeyType = .send
         inputTextView.isHidden = false
         inputTextView.enablesReturnKeyAutomatically = true

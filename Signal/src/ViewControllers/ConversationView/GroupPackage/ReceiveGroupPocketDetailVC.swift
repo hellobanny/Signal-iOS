@@ -104,7 +104,7 @@ extension ReceiveGroupPocketDetailVC: UITableViewDelegate,UITableViewDataSource{
                     TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
                         if let result = obj{
                             let code = BBRequestHelper.parseCodeOnly(object: result)
-                            if code == BBCommon.NetCodeSuccess {
+                            if code == BBNetCode.success {
                                 self.groupPocket.luckyGuys[indexPath.row].thanks = tf.text ?? ""
                                 self.tableView.reloadRows(at: [indexPath], with: .fade)
                             }

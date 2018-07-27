@@ -557,7 +557,7 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = UIColor.bbBackGroundGray;
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinWidthToSuperview];
     [self.collectionView autoPinToTopLayoutGuideOfViewController:self withInset:0];

@@ -51,12 +51,15 @@ class TransferDetailVC: UIViewController {
                     if let st = cus["status"].int {//正确获得了transferId
                         if st == 1{
                             self.statusLabel.text = "待确认"
+                            self.statusImageView.image = UIImage(named: "transferWait")
                         }
                         else if st == 10{
                             self.statusLabel.text = "已确认"
+                            self.statusImageView.image = UIImage(named: "transferSuccess")
                         }
                         else if st == 20{
                             self.statusLabel.text = "已过期"
+                            self.statusImageView.image = UIImage(named: "transferWait")
                         }
                     }
                 }

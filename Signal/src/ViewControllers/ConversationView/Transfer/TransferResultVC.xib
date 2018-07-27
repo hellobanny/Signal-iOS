@@ -25,7 +25,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zaO-CS-SmM">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="paysuccess" translatesAutoresizingMaskIntoConstraints="NO" id="zaO-CS-SmM">
                     <rect key="frame" x="157.5" y="80" width="60" height="60"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="60" id="2eZ-cD-mJX"/>
@@ -90,4 +90,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
         </view>
     </objects>
+    <resources>
+        <image name="paysuccess" width="68" height="68"/>
+    </resources>
 </document>

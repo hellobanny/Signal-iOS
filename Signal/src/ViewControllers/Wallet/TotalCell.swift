@@ -8,6 +8,8 @@
 
 import UIKit
 
+let NFHiddenCurrency = Notification.Name("NFHiddenCurrency")
+
 class TotalCell: UITableViewCell {
 
     @IBOutlet weak var labelTitle: UILabel!
@@ -26,11 +28,11 @@ class TotalCell: UITableViewCell {
     }
     
     @IBAction func showOrHideValue(_ sender: Any) {
-        
+        NotificationCenter.default.post(name: NFHiddenCurrency, object: true)
     }
     
     func configWith(currencys:[BBCurrency]){
-        self.contentView.backgroundColor = BBCommon.ColorBlack
+        self.contentView.backgroundColor = UIColor.bbNavBlack
         self.labelTitle.text = "总资产"
         var sum = 0.0
         for c in currencys{

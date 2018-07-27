@@ -18,11 +18,13 @@ extension NewGroupViewController {
                     let groupId = cus["groupId"].stringValue
                     if let gd = groupId.data(using: .utf8){
                         let model = TSGroupModel(title: name, memberIds: phones, image: image, groupId: gd)
+                        self.isCreatGroup = false
                         self.createGroup(model)
                     }
                 }
             }
         }) { (task, error) in
+            self.isCreatGroup = false
             BBRequestHelper.showError(error: error)
         }
     }

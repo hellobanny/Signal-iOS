@@ -36,8 +36,11 @@ class ReceiveRedPackageVC: UIViewController {
 
         // Do any additional setup after loading the view.
         self.labelName.text = contact.name
+        self.labelName.textColor = UIColor.bbPocketTextLight
         self.labelAction.text = "给你发了一个红包"
+        self.labelAction.textColor = UIColor.bbPocketTextDark
         self.labelMessage.text = operation.message
+        self.labelMessage.textColor = UIColor.bbPocketTextLight
         self.imageViewAvator.image = contact.avatar
     }
 
@@ -60,7 +63,7 @@ class ReceiveRedPackageVC: UIViewController {
     static func displayRedPocket(home: UIViewController, delegate: TransferAcceptDelegate, contact: BBContact, operation: OperationMessage){
         let vc = ReceiveRedPackageVC(contact: contact, operation: operation)
         vc.delegate = delegate
-        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: false, completion: nil)
+        let pd = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
         home.present(pd, animated: true, completion: nil)
     }
     

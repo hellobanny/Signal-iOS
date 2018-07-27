@@ -49,7 +49,7 @@ class PaywordHelper: NSObject, InputPaywordDelegate {
                 TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
                     if let result = obj{
                         let code = BBRequestHelper.parseCodeOnly(object: result)
-                        if code == BBCommon.NetCodeSuccess {
+                        if code == BBNetCode.success {
                             BBCommon.notice(title: "交易密码更新成功")
                         }
                         else {
@@ -75,7 +75,7 @@ class PaywordHelper: NSObject, InputPaywordDelegate {
                     TSNetworkManager.shared().makeRequest(request, success: { (task, obj) in
                         if let result = obj{
                             let code = BBRequestHelper.parseCodeOnly(object: result)
-                            if code == BBCommon.NetCodeSuccess {
+                            if code == BBNetCode.success {
                                 BBCommon.notice(title: "交易密码设置成功")
                             }
                             else {

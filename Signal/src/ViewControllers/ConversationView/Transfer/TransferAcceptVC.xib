@@ -53,7 +53,7 @@
                     <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CjX-WA-bY6">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="transferWait" translatesAutoresizingMaskIntoConstraints="NO" id="CjX-WA-bY6">
                     <rect key="frame" x="151.5" y="72" width="72" height="72"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="72" id="Q0e-1e-LSB"/>
@@ -62,10 +62,14 @@
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AaE-3S-hOq">
                     <rect key="frame" x="16" y="265" width="343" height="44"/>
+                    <color key="backgroundColor" red="0.2006623337" green="1" blue="0.24557262790000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="npS-Qn-Llw"/>
                     </constraints>
-                    <state key="normal" title="确认收钱"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <state key="normal" title="确认收钱">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
                     <connections>
                         <action selector="accept:" destination="-1" eventType="touchUpInside" id="dAB-6a-eY9"/>
                     </connections>
@@ -104,4 +108,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
         </view>
     </objects>
+    <resources>
+        <image name="transferWait" width="68" height="68"/>
+    </resources>
 </document>
