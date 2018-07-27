@@ -28,16 +28,40 @@ class TotalCell: UITableViewCell {
     }
     
     @IBAction func showOrHideValue(_ sender: Any) {
-        NotificationCenter.default.post(name: NFHiddenCurrency, object: true)
+        let hidden = TotalCell.isHiddenWealth()
+        TotalCell.setHiddenWealth(hidden: !hidden)
+        updateEyeImage()
+        NotificationCenter.default.post(name: NFHiddenCurrency, object: !hidden)
+    }
+    
+    func updateEyeImage(){
+        let img = TotalCell.isHiddenWealth() ? UIImage(named: "eyeclose") : UIImage(named: "eyeopen")
+        buttonVision.setImage(img, for: .normal)
     }
     
     func configWith(currencys:[BBCurrency]){
         self.contentView.backgroundColor = UIColor.bbNavBlack
         self.labelTitle.text = "总资产"
-        var sum = 0.0
-        for c in currencys{
-            sum += c.balance! * c.price!
+        if TotalCell.isHiddenWealth() {
+            self.labelValue.text = "******"
         }
-        self.labelValue.text = BBNumberFT.shared.goodPrice(value: sum)
+        else {
+            var sum = 0.0
+            for c in currencys{
+                sum += c.balance! * c.price!
+            }
+            self.labelValue.text = BBNumberFT.shared.goodPrice(value: sum)
+        }
+        updateEyeImage()
+    }
+    
+    static func isHiddenWealth() -> Bool{
+        return UserDefaults.standard.bool(forKey: NFHiddenCurrency.rawValue)
+    }
+    
+    static func setHiddenWealth(hidden:Bool){
+        let ud = UserDefaults.standard
+        ud.set(hidden, forKey: NFHiddenCurrency.rawValue)
+        ud.synchronize()
     }
 }

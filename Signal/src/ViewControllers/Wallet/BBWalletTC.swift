@@ -38,6 +38,15 @@ class BBWalletTC: UITableViewController {
         BBCurrencyCache.shared.loadCurrency()
         pwh = PaywordHelper()
         pwh?.checkPaywordInited()
+        NotificationCenter.default.addObserver(self, selector: #selector(BBWalletTC.hideWealthChanged), name: NFHiddenCurrency, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NFHiddenCurrency, object: nil)
+    }
+    
+    @objc func hideWealthChanged(){
+        self.tableView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
